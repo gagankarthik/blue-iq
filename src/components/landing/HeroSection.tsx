@@ -1,5 +1,5 @@
 'use client'
-
+import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
@@ -59,7 +59,7 @@ export default function HeroSection() {
           </div>
 
           <div className="hidden lg:flex">
-            <a href="#demo" className="text-sm font-semibold text-gray-900 hover:text-indigo-600">
+            <a href="/dashboard" className="text-sm font-semibold text-gray-900 hover:text-indigo-600">
               Log in →
             </a>
           </div>
@@ -150,14 +150,14 @@ export default function HeroSection() {
             </p>
 
             <div className="mt-10 flex flex-col gap-8 items-center sm:flex-row sm:justify-center">
-              <a
+              <Link
                 href="/dashboard"
                 className="rounded-md bg-indigo-600 px-6 py-3 text-sm
                 font-semibold text-white shadow-lg
                 hover:bg-indigo-500 hover:shadow-indigo-500/40 transition"
               >
                 Request a Demo
-              </a>
+              </Link>
 
               <a
                 href="#plans"
