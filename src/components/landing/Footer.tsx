@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import React from 'react'
 
 const Footer = () => {
@@ -12,7 +13,14 @@ const Footer = () => {
           
           {/* Brand */}
           <div className="lg:col-span-2">
-            <h3 className="text-xl font-semibold text-gray-900">BlueIQ</h3>
+            <h3 className="text-xl font-semibold text-gray-900">
+              <Image 
+                src="/logo_medium.webp"
+                alt="BlueIQ Logo"
+                width={150}
+                height={150}
+              />
+            </h3>
             <p className="mt-4 max-w-md text-sm text-gray-600">
               BlueIQ delivers AI-powered resume parsing that helps staffing firms
               and HR teams move faster, reduce costs, and hire smarter.

@@ -9,13 +9,14 @@ const navigation = [
   { name: 'Benefits', href: '#benefits' },
   { name: 'Pricing', href: '#plans' },
   { name: 'FAQ', href: '#faq' },
+  { name: 'Contact', href: '/contact' },
 ]
 
 export default function HeroSection() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-white">
+    <section className="relative min-h-screen overflow-hidden bg-transparent">
       {/* ================= NAVBAR ================= */}
       <header className="absolute inset-x-0 top-0 z-50">
         <nav className="flex items-center justify-between px-6 py-6 lg:px-8">
@@ -111,7 +112,7 @@ export default function HeroSection() {
 
           <div className="mt-10 flex flex-col gap-8 items-center sm:flex-row sm:justify-center">
             <a
-              href="/contact"
+              href="/dashboard"
               className="rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow hover:bg-indigo-500"
             >
               Request a Demo

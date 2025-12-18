@@ -24,8 +24,8 @@ export default function Benfits() {
                 <div className="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl">
                   <img
                     alt=""
-                    src="https://tailwindcss.com/plus-assets/img/component-images/bento-03-mobile-friendly.png"
-                    className="size-full object-cover object-top"
+                    src="/undraw_my-resume.svg"
+                    className="size-full object-cover object-top p-6"
                   />
                 </div>
               </div>

@@ -1,3 +1,5 @@
+import Image from 'next/image'
+
 export default function CTA() {
   return (
     <section className="relative isolate flex min-h-screen items-center bg-white">
@@ -55,7 +57,12 @@ export default function CTA() {
           <div className="relative mt-16 h-80 w-full max-w-xl lg:mt-0">
             <div className="absolute inset-0 rounded-xl bg-white/5 ring-1 ring-white/10 backdrop-blur">
               <div className="flex h-full items-center justify-center text-sm text-gray-300">
-                BlueIQ Dashboard Preview
+               <Image 
+                alt=""
+                src="/undraw_hiring.svg"
+                width={300} height={300}
+               /> 
+            
               </div>
             </div>
           </div>
