@@ -13,6 +13,7 @@ export default function Home() {
   return (
     <div className="min-h-screen font-sans bg-white dark:bg-black">
       <main className="flex flex-col">
+    
         <HeroSection />
         <WhyUs />
         <Features />

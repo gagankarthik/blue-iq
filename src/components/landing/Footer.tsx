@@ -25,6 +25,16 @@ const Footer = () => {
               BlueIQ delivers AI-powered resume parsing that helps staffing firms
               and HR teams move faster, reduce costs, and hire smarter.
             </p>
+           {/* Partner Logos */}
+              <div className="mt-6 flex flex-wrap items-center gap-6 opacity-90">
+                <img src="/aws_logo.svg" alt="AWS Partner" className="h-6 w-auto" />
+                <img src="/snowflake.svg" alt="Snowflake" className="h-6 w-auto" />
+                <img
+                  src="https://cdn.brandfetch.io/idSUrLOWbH/theme/dark/symbol.svg?c=1dxbfHSJFAPEGdCLU4o5B"
+                  alt="Databricks"
+                  className="h-6 w-auto"
+                />
+              </div>
           </div>
 
           {/* Product */}

@@ -31,11 +31,31 @@ export default function WhyUs() {
           </div>
         </div>
         <div className="-mt-12 -ml-12 p-12 lg:sticky lg:top-4 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:overflow-hidden">
+           <svg
+            viewBox="0 0 1024 1024"
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 h-full w-full mask-[radial-gradient(closest-side,white,transparent)]"
+          >
+            <circle
+              r={512}
+              cx={512}
+              cy={512}
+              fill="url(#blueiq-gradient)"
+              fillOpacity="0.7"
+            />
+            <defs>
+              <radialGradient id="blueiq-gradient">
+                <stop stopColor="#3B82F6" />
+                <stop offset={1} stopColor="#6366F1" />
+              </radialGradient>
+            </defs>
+          </svg>
+
           <Image
             alt=""
             src="/undraw_online-resume.svg"
             width={150} height={150}
-            className="p-24 rounded-xl bg-gray-900 shadow-xl sm:w-228"
+            className="p-24 rounded-xl bg-transparent sm:w-228"
           />
         </div>
         <div className="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">

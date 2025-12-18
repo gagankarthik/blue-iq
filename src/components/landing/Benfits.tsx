@@ -1,3 +1,4 @@
+
 import { DocumentArrowUpIcon } from "@heroicons/react/20/solid";
 
 export default function Benfits() {
@@ -8,6 +9,7 @@ export default function Benfits() {
         <p className="mx-auto mt-2 max-w-lg text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl">
           What You Gain with BlueIQ
         </p>
+       
         <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
           <div className="relative lg:row-span-2">
             <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-4xl" />
