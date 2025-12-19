@@ -60,11 +60,13 @@ const [resumeData, setResumeData] = useState(EMPTY_RESUME);
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <a href="/" >
               <img 
                 src="/logo_medium.webp" 
                 alt="OceanBlue Solutions Logo" 
                 className="h-20 w-auto"
               />
+              </a>
               <div>
               </div>
             </div>

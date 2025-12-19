@@ -1,3 +1,5 @@
+"use client"
+import { ArrowUp } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -14,12 +16,14 @@ const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2">
             <h3 className="text-xl font-semibold text-gray-900">
+              <a href='/'>
               <Image 
                 src="/logo_medium.webp"
                 alt="BlueIQ Logo"
                 width={150}
                 height={150}
               />
+              </a>
             </h3>
             <p className="mt-4 max-w-md text-sm text-gray-600">
               BlueIQ delivers AI-powered resume parsing that helps staffing firms
@@ -85,6 +89,14 @@ const Footer = () => {
             <span className="text-gray-500">#BlueIQ</span>
             <span className="text-gray-500">#HireSmarter</span>
             <span className="text-gray-500">#OceanBlueSolutions</span>
+          </div>
+          <div className="flex space-x-6 text-sm">
+            {/* Go to top */}
+            <span className="bg-white/20 backdrop-blur-2xl shadow-lg p-4">
+              <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <ArrowUp className="h-6 w-6" />
+              </button>
+              </span>
           </div>
         </div>
       </div>

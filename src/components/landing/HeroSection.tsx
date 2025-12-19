@@ -134,10 +134,10 @@ export default function HeroSection() {
         <div className="relative flex min-h-screen items-center justify-center px-6">
           <div className="mx-auto max-w-3xl text-center animate-fade-up">
 
-            <h1 className="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl">
+            <h1 className="text-5xl font-semibold tracking-tight text-gray-900 sm:text-7xl animate-in" >
               <span
                 className="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600
-                bg-[length:200%_200%] bg-clip-text text-transparent animate-gradient"
+                bg-[length:200%_200%] bg-clip-text text-transparent animate-gradient "
               >
                 BlueIQ
               </span>

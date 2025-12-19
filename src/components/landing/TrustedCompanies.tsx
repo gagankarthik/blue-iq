@@ -15,7 +15,7 @@ export default function TrustedCompanies() {
           />
           <img
             alt="Ohio Department of Transportation"
-            src="https://oceanbluecorp.com/storage/images/1717579153.png"
+            src="https://development.ohio.gov/wps/wcm/connect/gov/7efff5ea-f9fd-4c0f-9a71-401183103f50/development-logo.png?MOD=AJPERES"
             width={158}
             height={48}
             className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
@@ -35,9 +35,9 @@ export default function TrustedCompanies() {
             className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
           />
           <img
-            alt="Statamic"
-            src="https://tailwindcss.com/plus-assets/img/logos/158x48/statamic-logo-gray-900.svg"
-            width={158}
+            alt="Satya Wholesale"
+            src="https://oceanbluecorp.com/storage/images/1719296477.png"
+            width={160}
             height={48}
             className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
           />
