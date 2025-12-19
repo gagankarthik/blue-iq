@@ -22,7 +22,7 @@ export default function TrustedCompanies() {
           />
           <img
             alt="Condado Tacos"
-            src="/crave.webp"
+            src="/Crave.webp"
             width={158}
             height={48}
             className="col-span-2 max-h-12 w-full object-contain lg:col-span-1 bg-gree"
