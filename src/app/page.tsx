@@ -1,6 +1,6 @@
 // app/page.tsx
 "use client";
-
+import Image from "next/image";
 import PixelBlast from "@/components/PixelBlast";
 import { useEffect, useState } from "react";
 
@@ -26,7 +26,9 @@ export default function Home() {
 <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b-[0.5px] border-slate-200">
   <div className="max-w-[1400px] mx-auto px-6 lg:px-12 border-l-[0.5px] border-r-[0.5px] border-slate-200">
     <div className="flex justify-between items-center w-full py-4">
-      <div className="text-xl font-bold tracking-tighter text-slate-900 font-headline">BLUE-IQ</div>
+      <div className="text-xl font-bold tracking-tighter text-slate-900 font-headline">
+        <Image src="/logo_large.webp" alt="Blue-IQ Logo" width={120} height={40} />
+      </div>
       
       {/* Desktop Navigation */}
       <div className="hidden md:flex gap-12 items-center">
@@ -640,7 +642,9 @@ export default function Home() {
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12 border-l-[0.5px] border-r-[0.5px] border-slate-200">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12 px-8 py-16">
             <div className="flex flex-col gap-4">
-              <div className="text-base font-bold text-slate-900 font-headline uppercase">BLUE-IQ</div>
+              <div className="text-base font-bold text-slate-900 font-headline uppercase">
+                <Image src="/logo_large.webp" alt="Blue-IQ Logo" width={120} height={30} />
+              </div>
               <p className="font-headline text-[9px] uppercase tracking-widest font-medium text-[#4c635c]">The intelligence layer for workforce, vendors, and services operations.</p>
             </div>
             <div className="flex flex-col gap-3">
