@@ -13,8 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blue-IQ — The Intelligence Layer for Workforce, Vendors & Services",
-  description: "While traditional VMS and ATS tools track workflow, Blue-IQ delivers intelligence — from hire to governed to spend, complete visibility across your vendor ecosystem.",
+  metadataBase: new URL("https://blue-iq.com"),
+  title: "Blue-IQ — Intelligence for workforce, vendors & services",
+  description:
+    "Traditional VMS and ATS tools track workflow. Blue-IQ reads it — turning every hire, contract, and dollar into decisions you can act on.",
+  openGraph: {
+    title: "Blue-IQ — Intelligence for workforce, vendors & services",
+    description:
+      "Turning every hire, contract, and dollar into decisions you can act on.",
+    images: ["/logo_large.webp"],
+    type: "website",
+  },
 };
 
 export default function RootLayout({

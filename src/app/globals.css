@@ -190,3 +190,11 @@
   }
 }
 
+/* shared Blue-IQ type utilities (used across all pages) */
+.font-display { font-family: var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.01em; }
+.font-sans-g  { font-family: var(--font-geist-sans), system-ui, sans-serif; }
+.font-mono-g  { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+
+/* prevent any horizontal scroll on small screens */
+html, body { max-width: 100%; overflow-x: hidden; }
+
