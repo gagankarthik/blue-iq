@@ -1,21 +1,30 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, AnimatePresence, type Variants } from "framer-motion";
+import {
+  motion,
+  useInView,
+  AnimatePresence,
+  useScroll,
+  useSpring,
+  type Variants,
+} from "framer-motion";
 import PixelBlast from "@/components/PixelBlast";
 
 /* ── animation presets ── */
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 28 },
+  hidden: { opacity: 0, y: 30 },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
+    transition: { duration: 0.7, delay: i * 0.09, ease: EASE },
   }),
 };
 const stagger: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.09 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
 function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -32,6 +41,59 @@ function Reveal({ children, className = "", delay = 0 }: { children: React.React
     >
       {children}
     </motion.div>
+  );
+}
+
+/* ── indexed section label: [ 02 ] —— THE CHALLENGE ── */
+function SectionLabel({ index, children, light = false }: { index: string; children: React.ReactNode; light?: boolean }) {
+  return (
+    <motion.div variants={fadeUp} custom={0} className="inline-flex items-center gap-3 mb-5">
+      <span className={`font-mono-tech text-[10px] tracking-tight ${light ? "text-white/70" : "text-[#002181]"}`}>[ {index} ]</span>
+      <span className={`h-px w-8 ${light ? "bg-white/30" : "bg-[#bfc9c4]"}`} />
+      <span className={`font-label text-[10px] tracking-[0.3em] uppercase ${light ? "text-white/60" : "text-[#4c635c]"}`}>{children}</span>
+    </motion.div>
+  );
+}
+
+/* ── L-shaped registration / crop marks framing a region ── */
+function CornerMarks({ color = "rgba(0,33,129,0.35)", size = 18, inset = "1rem" }: { color?: string; size?: number; inset?: string }) {
+  const corners = [
+    { pos: { top: inset, left: inset }, b: "borderTop borderLeft" },
+    { pos: { top: inset, right: inset }, b: "borderTop borderRight" },
+    { pos: { bottom: inset, left: inset }, b: "borderBottom borderLeft" },
+    { pos: { bottom: inset, right: inset }, b: "borderBottom borderRight" },
+  ];
+  return (
+    <>
+      {corners.map((c, i) => {
+        const style: React.CSSProperties = { position: "absolute", width: size, height: size, ...c.pos };
+        if (c.b.includes("borderTop")) style.borderTop = `1px solid ${color}`;
+        if (c.b.includes("borderBottom")) style.borderBottom = `1px solid ${color}`;
+        if (c.b.includes("borderLeft")) style.borderLeft = `1px solid ${color}`;
+        if (c.b.includes("borderRight")) style.borderRight = `1px solid ${color}`;
+        return <span key={i} className="z-[3] pointer-events-none hidden sm:block" style={style} />;
+      })}
+    </>
+  );
+}
+
+/* ── animated mini bar chart for product dashboard mockups ── */
+function MiniChart({ accent = "#4d8aff" }: { accent?: string }) {
+  const bars = [38, 60, 46, 72, 55, 84, 68, 96];
+  return (
+    <div className="flex items-end gap-[5px] h-14">
+      {bars.map((h, i) => (
+        <motion.div
+          key={i}
+          initial={{ height: "4%", opacity: 0 }}
+          whileInView={{ height: `${h}%`, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.35 + i * 0.06, duration: 0.55, ease: EASE }}
+          className="flex-1 rounded-[2px]"
+          style={{ background: i === bars.length - 1 ? accent : "rgba(77,138,255,0.22)" }}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -63,6 +125,10 @@ export default function Home() {
   const vendors  = useCounter(1200,  2000, statsInView);
   const oversight = useCounter(63,   1800, statsInView);
   const hiring   = useCounter(32,    1600, statsInView);
+
+  /* scroll-progress hairline */
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
 
   useEffect(() => {
     document.documentElement.classList.add("light");
@@ -130,15 +196,17 @@ export default function Home() {
   return (
     <>
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0');
 
         html { scroll-behavior: smooth; }
         * { box-sizing: border-box; }
 
-        .font-headline { font-family: 'Space Grotesk', sans-serif; }
-        .font-body     { font-family: 'Inter', sans-serif; }
-        .font-label    { font-family: 'Space Grotesk', sans-serif; }
+        .font-headline  { font-family: 'Space Grotesk', sans-serif; }
+        .font-body      { font-family: 'Inter', sans-serif; }
+        .font-label     { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono-tech { font-family: 'Space Mono', monospace; }
+        .data-num       { font-variant-numeric: tabular-nums; }
 
         .material-symbols-outlined {
           font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
@@ -157,30 +225,50 @@ export default function Home() {
           background-size: 40px 40px;
         }
 
-        .vertical-text {
-          writing-mode: vertical-rl;
-          text-orientation: mixed;
+        /* measurement tick rail — major ticks every 80px, minor every 16px */
+        .tick-rail {
+          height: 11px;
+          background-image:
+            linear-gradient(to right, #aab4af 0 1px, transparent 1px),
+            linear-gradient(to right, #d2d9d4 0 1px, transparent 1px);
+          background-size: 80px 11px, 16px 5px;
+          background-position: left bottom, left bottom;
+          background-repeat: repeat-x, repeat-x;
         }
+
+        .vertical-text { writing-mode: vertical-rl; text-orientation: mixed; }
 
         details summary { list-style: none; }
         details summary::-webkit-details-marker { display: none; }
 
-        .product-tab-active {
-          border-bottom: 2px solid #002181;
-          color: #002181;
-        }
-
-        @keyframes marquee {
-          0%   { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .marquee-track { animation: marquee 30s linear infinite; white-space: nowrap; }
+
+        @keyframes pulse-ring {
+          0%   { box-shadow: 0 0 0 0 rgba(0,33,129,0.45); }
+          70%  { box-shadow: 0 0 0 6px rgba(0,33,129,0); }
+          100% { box-shadow: 0 0 0 0 rgba(0,33,129,0); }
+        }
+        .pulse-dot { animation: pulse-ring 2.4s ease-out infinite; }
+
+        @keyframes scroll-cue {
+          0%   { transform: translateY(0); opacity: 0; }
+          40%  { opacity: 1; }
+          100% { transform: translateY(7px); opacity: 0; }
+        }
+        .scroll-cue-dot { animation: scroll-cue 1.8s ease-in-out infinite; }
 
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #f9f9fb; }
         ::-webkit-scrollbar-thumb { background: #bfc9c4; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #002181; }
       `}</style>
+
+      {/* ── SCROLL PROGRESS HAIRLINE ── */}
+      <motion.div
+        style={{ scaleX: progress, transformOrigin: "0%" }}
+        className="fixed top-0 left-0 right-0 h-[2px] bg-[#002181] z-[60]"
+      />
 
       {/* ── NAVIGATION ── */}
       <nav
@@ -222,12 +310,13 @@ export default function Home() {
                 Contact
               </a>
               <button
-                className="hidden sm:block font-label text-[11px] font-bold tracking-[0.12em] px-5 py-2.5 transition-all duration-200 uppercase"
+                className="hidden sm:inline-flex items-center gap-2 font-label text-[11px] font-bold tracking-[0.12em] px-5 py-2.5 transition-all duration-200 uppercase group"
                 style={{ background: "#002181", color: "white" }}
                 onMouseEnter={e => (e.currentTarget.style.background = "#0033cc")}
                 onMouseLeave={e => (e.currentTarget.style.background = "#002181")}
               >
                 Request Demo
+                <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
               </button>
 
               {/* Hamburger */}
@@ -253,7 +342,7 @@ export default function Home() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.3, ease: EASE }}
               className="lg:hidden overflow-hidden bg-white border-t border-slate-100"
             >
               <div className="px-5 py-6 space-y-5 max-h-[80vh] overflow-y-auto">
@@ -289,12 +378,17 @@ export default function Home() {
           <a
             key={l}
             href={`#${l.toLowerCase()}`}
-            className="vertical-text font-label text-[9px] tracking-widest transition-colors"
-            style={{ color: i === 0 ? "#002181" : "#bfc9c4" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "#002181")}
-            onMouseLeave={e => (e.currentTarget.style.color = i === 0 ? "#002181" : "#bfc9c4")}
+            className="group flex flex-col items-center gap-2"
           >
-            {l}
+            <span className="font-mono-tech text-[8px] text-[#bfc9c4] group-hover:text-[#002181] transition-colors">0{i + 1}</span>
+            <span
+              className="vertical-text font-label text-[9px] tracking-widest transition-colors"
+              style={{ color: i === 0 ? "#002181" : "#bfc9c4" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#002181")}
+              onMouseLeave={e => (e.currentTarget.style.color = i === 0 ? "#002181" : "#bfc9c4")}
+            >
+              {l}
+            </span>
           </a>
         ))}
       </aside>
@@ -323,53 +417,115 @@ export default function Home() {
             />
           </div>
           <div className="absolute inset-0 blueprint-grid opacity-[0.12] pointer-events-none z-[1]" />
+          <CornerMarks inset="1.25rem" />
 
           {/* Content */}
           <div className="relative z-10 flex flex-col grow justify-center max-w-[1360px] mx-auto w-full px-5 sm:px-8 lg:px-16 py-16 pt-20">
+            {/* top meta strip */}
+            <div className="hidden sm:flex items-center justify-between font-mono-tech text-[10px] tracking-wider text-[#707975] mb-10">
+              <span>BLUE-IQ / PLATFORM SUITE</span>
+              <span className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#002181]" />
+                REV 3.0 — 2025
+              </span>
+            </div>
+
             <Reveal>
-              <motion.span variants={fadeUp} custom={0} className="font-label text-[10px] tracking-[0.3em] text-[#4c635c] uppercase block mb-5">
-                Blue-IQ · The Intelligence Layer
+              <motion.span variants={fadeUp} custom={0} className="inline-flex items-center gap-2.5 font-label text-[10px] tracking-[0.25em] text-[#4c635c] uppercase mb-6 border border-[#bfc9c4]/70 bg-white/50 backdrop-blur-sm px-3 py-1.5">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="pulse-dot absolute inline-flex h-full w-full rounded-full bg-[#002181]" />
+                </span>
+                The Intelligence Layer
               </motion.span>
 
               <motion.h1
                 variants={fadeUp}
                 custom={1}
-                className="font-headline font-bold leading-[1.04] tracking-[-0.02em] text-[#1a1c1d] mb-6"
-                style={{ fontSize: "clamp(38px, 6.5vw, 80px)", maxWidth: "860px" }}
+                className="font-headline font-bold leading-[1.03] tracking-[-0.025em] text-[#1a1c1d] mb-6"
+                style={{ fontSize: "clamp(38px, 6.5vw, 84px)", maxWidth: "880px" }}
               >
                 THE INTELLIGENCE LAYER FOR{" "}
                 <span style={{ color: "#002181" }}>WORKFORCE, VENDORS</span>{" "}
                 &amp; SERVICES
               </motion.h1>
 
-              <motion.p variants={fadeUp} custom={2} className="font-body text-[#3f4945] text-base sm:text-lg leading-relaxed mb-8 max-w-xl">
+              <motion.p variants={fadeUp} custom={2} className="font-body text-[#3f4945] text-base sm:text-lg leading-relaxed mb-9 max-w-xl">
                 While traditional VMS and ATS tools track workflow, Blue-IQ delivers intelligence —
                 from hire to governed to spend, complete visibility across your vendor ecosystem.
               </motion.p>
 
               <motion.div variants={fadeUp} custom={3} className="flex flex-wrap gap-3">
                 <button
-                  className="font-label text-[11px] font-bold tracking-[0.15em] uppercase px-7 py-3 transition-all duration-200"
+                  className="group inline-flex items-center gap-2.5 font-label text-[11px] font-bold tracking-[0.15em] uppercase px-7 py-3.5 transition-all duration-200"
                   style={{ background: "#002181", color: "white" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "#0033cc")}
                   onMouseLeave={e => (e.currentTarget.style.background = "#002181")}
                 >
                   Explore Platform
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
                 </button>
                 <button
-                  className="font-label text-[11px] font-bold tracking-[0.15em] uppercase px-7 py-3 border transition-all duration-200 hover:bg-slate-50"
+                  className="group inline-flex items-center gap-2.5 font-label text-[11px] font-bold tracking-[0.15em] uppercase px-7 py-3.5 border transition-all duration-200 hover:bg-white/60"
                   style={{ borderColor: "#bfc9c4", color: "#1a1c1d" }}
                 >
+                  <span className="material-symbols-outlined !text-[16px] text-[#002181]">play_circle</span>
                   Watch Demo
                 </button>
               </motion.div>
             </Reveal>
+
+            {/* floating system-spec annotation */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.9, duration: 0.7, ease: EASE }}
+              className="hidden xl:block absolute right-16 top-[26%] w-[208px] bg-white/70 backdrop-blur-md border border-[#bfc9c4]/70"
+            >
+              <div className="flex items-center justify-between px-3.5 py-2 border-b border-[#e2e8e4]">
+                <span className="font-mono-tech text-[9px] tracking-wider text-[#4c635c]">SYSTEM</span>
+                <span className="flex items-center gap-1.5 font-mono-tech text-[9px] text-emerald-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" style={{ boxShadow: "0 0 6px #10b981" }} />
+                  OPERATIONAL
+                </span>
+              </div>
+              <div className="px-3.5 py-3 space-y-2">
+                {[
+                  { k: "uptime", v: "99.98%" },
+                  { k: "latency", v: "42 ms" },
+                  { k: "audits/day", v: "8,420" },
+                ].map((r) => (
+                  <div key={r.k} className="flex items-center justify-between font-mono-tech text-[10px]">
+                    <span className="text-[#707975]">{r.k}</span>
+                    <span className="text-[#1a1c1d] data-num">{r.v}</span>
+                  </div>
+                ))}
+                <div className="pt-1"><MiniChart accent="#002181" /></div>
+              </div>
+            </motion.div>
+
+            {/* scroll cue */}
+            <div className="hidden lg:flex items-center gap-3 mt-14">
+              <div className="w-[18px] h-[28px] rounded-full border border-[#bfc9c4] flex items-start justify-center pt-1.5">
+                <span className="scroll-cue-dot w-1 h-1 rounded-full bg-[#002181]" />
+              </div>
+              <span className="font-mono-tech text-[9px] tracking-widest text-[#707975] uppercase">Scroll to explore</span>
+            </div>
+          </div>
+
+          {/* measurement tick rail */}
+          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-5 sm:px-8 lg:px-16">
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-mono-tech text-[9px] text-[#aab4af]">00</span>
+              <span className="font-mono-tech text-[9px] text-[#aab4af] tracking-widest">SCALE 1:1</span>
+              <span className="font-mono-tech text-[9px] text-[#aab4af]">100</span>
+            </div>
+            <div className="tick-rail w-full" />
           </div>
 
           {/* Stats bar */}
           <div
             ref={statsRef}
-            className="relative z-10 w-full grid grid-cols-2 sm:grid-cols-4 bg-white/90 backdrop-blur-sm border-t border-[#e2e8e4]"
+            className="relative z-10 w-full grid grid-cols-2 sm:grid-cols-4 bg-white/90 backdrop-blur-sm border-t border-[#e2e8e4] mt-3"
           >
             {[
               { val: sow >= 10000 ? "10,000+" : sow.toLocaleString(), lbl: "SOWs Managed" },
@@ -382,9 +538,13 @@ export default function Home() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={statsInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.1 * i, duration: 0.5 }}
-                className="p-5 sm:p-6 border-r border-[#e2e8e4] last:border-r-0 flex flex-col gap-1"
+                className="group relative p-5 sm:p-6 border-r border-[#e2e8e4] last:border-r-0 flex flex-col gap-1 transition-colors hover:bg-white"
               >
-                <span className="font-headline text-2xl sm:text-3xl font-bold text-[#1a1c1d]">{s.val}</span>
+                <span className="absolute top-4 right-4 font-mono-tech text-[9px] text-[#bfc9c4] opacity-0 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
+                <span className="font-headline data-num text-2xl sm:text-3xl font-bold text-[#1a1c1d] flex items-baseline gap-1.5">
+                  {s.val}
+                  <span className="material-symbols-outlined !text-[14px] text-emerald-500">trending_up</span>
+                </span>
                 <span className="font-label text-[9px] text-[#707975] uppercase tracking-widest">{s.lbl}</span>
               </motion.div>
             ))}
@@ -408,10 +568,8 @@ export default function Home() {
         <section className="border-b border-[#e2e8e4] py-20 sm:py-28">
           <div className="max-w-[1360px] mx-auto px-5 sm:px-8 lg:px-16">
             <Reveal>
-              <div className="max-w-3xl mx-auto text-center">
-                <motion.span variants={fadeUp} custom={0} className="font-label text-[10px] tracking-[0.3em] text-[#4c635c] uppercase block mb-5">
-                  The Challenge
-                </motion.span>
+              <div className="max-w-3xl mx-auto text-center flex flex-col items-center">
+                <SectionLabel index="01">The Challenge</SectionLabel>
                 <motion.h2 variants={fadeUp} custom={1} className="font-headline font-bold tracking-tight text-[#1a1c1d] mb-6" style={{ fontSize: "clamp(28px,4.5vw,52px)" }}>
                   Complex vendor ecosystems.<br />Billions in flow.
                 </motion.h2>
@@ -425,16 +583,18 @@ export default function Home() {
 
               <div className="mt-14 grid grid-cols-1 sm:grid-cols-3 gap-px bg-[#e2e8e4]">
                 {[
-                  { icon: "analytics", title: "AI-Powered Insights", body: "ML algorithms identify patterns, predict risks, and optimize spend before issues arise." },
-                  { icon: "verified",  title: "10-Dimension Audit",  body: "Proprietary SOW evaluation rubric that catches compliance gaps before contracts are signed." },
-                  { icon: "bolt",      title: "Real-Time Visibility", body: "Every dollar, every vendor, every SOW in one unified intelligence dashboard." },
+                  { icon: "analytics", title: "AI-Powered Insights", body: "ML algorithms identify patterns, predict risks, and optimize spend before issues arise.", num: "01" },
+                  { icon: "verified",  title: "10-Dimension Audit",  body: "Proprietary SOW evaluation rubric that catches compliance gaps before contracts are signed.", num: "02" },
+                  { icon: "bolt",      title: "Real-Time Visibility", body: "Every dollar, every vendor, every SOW in one unified intelligence dashboard.", num: "03" },
                 ].map((c, i) => (
-                  <motion.div key={i} variants={fadeUp} custom={i} className="bg-[#fefefe] p-8 sm:p-10">
-                    <span className="material-symbols-outlined text-[#002181] mb-5 block">
+                  <motion.div key={i} variants={fadeUp} custom={i} className="group relative bg-[#fefefe] p-8 sm:p-10 transition-colors hover:bg-white">
+                    <span className="absolute top-6 right-6 font-mono-tech text-[10px] text-[#bfc9c4]">{c.num}</span>
+                    <span className="material-symbols-outlined text-[#002181] mb-5 block transition-transform duration-300 group-hover:-translate-y-0.5">
                       {c.icon}
                     </span>
                     <h3 className="font-headline font-bold text-[15px] uppercase tracking-wide mb-3">{c.title}</h3>
                     <p className="font-body text-sm text-[#3f4945] leading-relaxed">{c.body}</p>
+                    <span className="block mt-5 h-px w-0 bg-[#002181] transition-all duration-300 group-hover:w-10" />
                   </motion.div>
                 ))}
               </div>
@@ -454,7 +614,8 @@ export default function Home() {
                 <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center ${idx % 2 !== 0 ? "lg:[&>*:first-child]:order-2" : ""}`}>
                   {/* Text side */}
                   <div>
-                    <motion.div variants={fadeUp} custom={0} className="flex items-center gap-2 mb-4">
+                    <motion.div variants={fadeUp} custom={0} className="flex items-center gap-3 mb-4">
+                      <span className="font-mono-tech text-[10px] text-[#002181]">[ 0{idx + 1} ]</span>
                       <div className="w-1 h-4 bg-[#002181]" />
                       <span className="font-label text-[10px] tracking-[0.2em] text-[#002181] uppercase font-semibold">{p.tag}</span>
                     </motion.div>
@@ -481,11 +642,11 @@ export default function Home() {
 
                     <motion.div variants={fadeUp} custom={5} className="flex gap-6 pt-6 border-t border-[#e2e8e4]">
                       <div>
-                        <div className="font-headline text-3xl font-bold text-[#002181]">{p.stat1.val}</div>
+                        <div className="font-headline data-num text-3xl font-bold text-[#002181]">{p.stat1.val}</div>
                         <div className="font-label text-[9px] text-[#707975] uppercase tracking-widest mt-1">{p.stat1.lbl}</div>
                       </div>
                       <div>
-                        <div className="font-headline text-3xl font-bold text-[#002181]">{p.stat2.val}</div>
+                        <div className="font-headline data-num text-3xl font-bold text-[#002181]">{p.stat2.val}</div>
                         <div className="font-label text-[9px] text-[#707975] uppercase tracking-widest mt-1">{p.stat2.lbl}</div>
                       </div>
                     </motion.div>
@@ -495,39 +656,51 @@ export default function Home() {
                   <motion.div
                     variants={fadeUp}
                     custom={1}
-                    className="relative rounded-2xl overflow-hidden min-h-[320px] sm:min-h-[380px]"
+                    className="relative rounded-2xl overflow-hidden min-h-[340px] sm:min-h-[400px] group"
                     style={{ background: "#0d1117" }}
                   >
                     <div className="absolute inset-0 blueprint-grid opacity-[0.08]" />
                     <div
-                      className="absolute inset-0 pointer-events-none"
+                      className="absolute inset-0 pointer-events-none transition-opacity duration-500 group-hover:opacity-80"
                       style={{ background: "radial-gradient(ellipse at 60% 40%, rgba(0,33,129,0.35) 0%, transparent 65%)" }}
                     />
 
-                    <div className="relative z-10 h-full flex flex-col justify-between p-8 sm:p-10 min-h-[320px] sm:min-h-[380px]">
+                    <div className="relative z-10 h-full flex flex-col justify-between p-8 sm:p-10 min-h-[340px] sm:min-h-[400px]">
                       {/* Mini dashboard mockup */}
-                      <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center justify-between mb-5">
                         <span className="font-label text-[10px] tracking-[0.2em] text-white/40 uppercase">Blue-IQ {p.name}</span>
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 6px #34d399" }} />
+                        <span className="flex items-center gap-1.5 font-mono-tech text-[9px] text-emerald-300/70">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400" style={{ boxShadow: "0 0 6px #34d399" }} />
+                          LIVE
+                        </span>
                       </div>
 
-                      <div className="space-y-3">
+                      {/* sparkline / bar chart */}
+                      <div className="mb-5 bg-white/[0.03] border border-white/5 rounded-lg px-4 pt-3 pb-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-mono-tech text-[9px] text-white/40 tracking-wider">PERFORMANCE INDEX</span>
+                          <span className="font-mono-tech text-[10px] text-[#4d8aff]">+{12 + idx * 6}.4%</span>
+                        </div>
+                        <MiniChart />
+                      </div>
+
+                      <div className="space-y-2.5">
                         {p.bullets.slice(0, 3).map((b, bi) => (
-                          <div key={bi} className="flex items-center gap-3 bg-white/5 rounded-lg px-4 py-3 border border-white/5">
+                          <div key={bi} className="flex items-center gap-3 bg-white/5 rounded-lg px-4 py-2.5 border border-white/5 transition-colors group-hover:border-white/10">
                             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#4d8aff" }} />
                             <span className="font-body text-[12px] text-white/60">{b}</span>
-                            <span className="ml-auto font-label text-[10px] text-white/30">Active</span>
+                            <span className="ml-auto font-mono-tech text-[9px] text-emerald-300/50">ACTIVE</span>
                           </div>
                         ))}
                       </div>
 
                       <div className="mt-6 pt-5 border-t border-white/5 grid grid-cols-2 gap-4">
                         <div>
-                          <div className="font-headline text-[28px] font-bold text-white">{p.stat1.val}</div>
+                          <div className="font-headline data-num text-[28px] font-bold text-white">{p.stat1.val}</div>
                           <div className="font-label text-[9px] text-white/30 uppercase tracking-widest">{p.stat1.lbl}</div>
                         </div>
                         <div>
-                          <div className="font-headline text-[28px] font-bold text-white">{p.stat2.val}</div>
+                          <div className="font-headline data-num text-[28px] font-bold text-white">{p.stat2.val}</div>
                           <div className="font-label text-[9px] text-white/30 uppercase tracking-widest">{p.stat2.lbl}</div>
                         </div>
                       </div>
@@ -544,12 +717,12 @@ export default function Home() {
           <div className="max-w-[1360px] mx-auto px-5 sm:px-8 lg:px-16">
             <Reveal>
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-3">
-                <motion.h2 variants={fadeUp} custom={0} className="font-headline font-bold uppercase tracking-tight text-[#1a1c1d]" style={{ fontSize: "clamp(26px,3.5vw,40px)" }}>
-                  What You Gain
-                </motion.h2>
-                <motion.span variants={fadeUp} custom={1} className="font-label text-[10px] tracking-widest text-[#4c635c] uppercase">
-                  Value Drivers
-                </motion.span>
+                <div>
+                  <SectionLabel index="05">Value Drivers</SectionLabel>
+                  <motion.h2 variants={fadeUp} custom={1} className="font-headline font-bold uppercase tracking-tight text-[#1a1c1d]" style={{ fontSize: "clamp(26px,3.5vw,40px)" }}>
+                    What You Gain
+                  </motion.h2>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-[#e2e8e4]">
@@ -559,8 +732,9 @@ export default function Home() {
                   { icon: "bolt",          title: "Operational Efficiency", body: "Accelerate procurement and hiring, standardize governance, automate manual reviews." },
                   { icon: "insights",      title: "Strategic Visibility",   body: "Real-time insights, clear performance profiles, data-driven executive reporting." },
                 ].map((c, i) => (
-                  <motion.div key={i} variants={fadeUp} custom={i} className="bg-[#fefefe] p-7 sm:p-8 flex flex-col gap-4">
-                    <span className="material-symbols-outlined text-[#002181]">{c.icon}</span>
+                  <motion.div key={i} variants={fadeUp} custom={i} className="group relative bg-[#fefefe] p-7 sm:p-8 flex flex-col gap-4 transition-colors hover:bg-white">
+                    <span className="absolute top-6 right-6 font-mono-tech text-[10px] text-[#bfc9c4]">0{i + 1}</span>
+                    <span className="material-symbols-outlined text-[#002181] transition-transform duration-300 group-hover:-translate-y-0.5">{c.icon}</span>
                     <h3 className="font-headline font-bold text-[13px] uppercase tracking-wide">{c.title}</h3>
                     <p className="font-body text-[12px] text-[#3f4945] leading-relaxed">{c.body}</p>
                   </motion.div>
@@ -575,19 +749,19 @@ export default function Home() {
           <div className="max-w-[1360px] mx-auto px-5 sm:px-8 lg:px-16">
             <Reveal>
               <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-3">
-                <motion.h2 variants={fadeUp} custom={0} className="font-headline font-bold uppercase tracking-tight text-[#1a1c1d]" style={{ fontSize: "clamp(26px,3.5vw,40px)" }}>
-                  Client Stories
-                </motion.h2>
-                <motion.span variants={fadeUp} custom={1} className="font-label text-[10px] tracking-widest text-[#4c635c] uppercase">
-                  Trusted by leaders
-                </motion.span>
+                <div>
+                  <SectionLabel index="06">Trusted by leaders</SectionLabel>
+                  <motion.h2 variants={fadeUp} custom={1} className="font-headline font-bold uppercase tracking-tight text-[#1a1c1d]" style={{ fontSize: "clamp(26px,3.5vw,40px)" }}>
+                    Client Stories
+                  </motion.h2>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-[#e2e8e4]">
                 {testimonials.map((t, i) => (
-                  <motion.div key={i} variants={fadeUp} custom={i * 0.1} className="bg-[#fefefe] p-8 sm:p-10 flex flex-col gap-5">
+                  <motion.div key={i} variants={fadeUp} custom={i * 0.1} className="group bg-[#fefefe] p-8 sm:p-10 flex flex-col gap-5 transition-colors hover:bg-white">
                     {/* quote mark */}
-                    <div className="font-headline text-[64px] leading-none text-[#e2e8e4] select-none -mb-4">"</div>
+                    <div className="font-headline text-[64px] leading-none text-[#e2e8e4] select-none -mb-4 transition-colors group-hover:text-[#002181]/15">&ldquo;</div>
                     <p className="font-body text-[14px] sm:text-[15px] text-[#1a1c1d] leading-relaxed flex-1 italic">
                       {t.q}
                     </p>
@@ -617,8 +791,8 @@ export default function Home() {
         <section className="border-b border-[#e2e8e4] py-20 sm:py-28 bg-[#f9f9fb]">
           <div className="max-w-[1360px] mx-auto px-5 sm:px-8 lg:px-16">
             <Reveal>
-              <motion.div variants={fadeUp} className="text-center mb-12">
-                <span className="font-label text-[10px] tracking-[0.3em] text-[#4c635c] uppercase block mb-4">Complete Intelligence Ecosystem</span>
+              <motion.div variants={fadeUp} className="text-center mb-12 flex flex-col items-center">
+                <SectionLabel index="07">Complete Intelligence Ecosystem</SectionLabel>
                 <h2 className="font-headline font-bold text-[#1a1c1d] tracking-tight" style={{ fontSize: "clamp(26px,3.5vw,40px)" }}>
                   Before · As Contracted · As Delivered
                 </h2>
@@ -631,7 +805,7 @@ export default function Home() {
                   { icon: "payments", name: "SPEND",   sub: "Ensures visibility as delivered",   num: "03" },
                 ].map((c, i) => (
                   <motion.div key={i} variants={fadeUp} custom={i} className="bg-[#fefefe] p-10 text-center group hover:bg-[#002181] transition-colors duration-300 cursor-default">
-                    <span className="font-label text-[10px] text-[#bfc9c4] group-hover:text-white/40 tracking-widest block mb-6">{c.num}</span>
+                    <span className="font-mono-tech text-[10px] text-[#bfc9c4] group-hover:text-white/40 tracking-widest block mb-6">{c.num}</span>
                     <span className="material-symbols-outlined text-[#002181] group-hover:text-white text-[36px] mb-4 block transition-colors duration-300">{c.icon}</span>
                     <h3 className="font-headline font-bold text-xl mb-2 group-hover:text-white transition-colors duration-300">{c.name}</h3>
                     <p className="font-label text-[10px] text-[#4c635c] group-hover:text-white/60 uppercase tracking-wider transition-colors duration-300">{c.sub}</p>
@@ -648,9 +822,7 @@ export default function Home() {
             <Reveal>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-20">
                 <div>
-                  <motion.span variants={fadeUp} custom={0} className="font-label text-[10px] tracking-[0.3em] text-[#4c635c] uppercase block mb-4">
-                    Common Questions
-                  </motion.span>
+                  <SectionLabel index="08">Common Questions</SectionLabel>
                   <motion.h2 variants={fadeUp} custom={1} className="font-headline font-bold uppercase tracking-tight text-[#1a1c1d] mb-5" style={{ fontSize: "clamp(26px,3vw,38px)" }}>
                     FAQ
                   </motion.h2>
@@ -668,13 +840,16 @@ export default function Home() {
                       key={i}
                       variants={fadeUp}
                       custom={i * 0.08}
-                      className="border border-[#e2e8e4] overflow-hidden"
+                      className="border border-[#e2e8e4] overflow-hidden transition-colors hover:border-[#bfc9c4]"
                     >
                       <button
                         className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#f9f9fb] transition-colors"
                         onClick={() => setOpenFaq(openFaq === i ? null : i)}
                       >
-                        <span className="font-headline font-semibold text-[14px] pr-4">{faq.q}</span>
+                        <span className="flex items-center gap-3 pr-4">
+                          <span className="font-mono-tech text-[10px] text-[#bfc9c4]">0{i + 1}</span>
+                          <span className="font-headline font-semibold text-[14px]">{faq.q}</span>
+                        </span>
                         <motion.span
                           animate={{ rotate: openFaq === i ? 45 : 0 }}
                           transition={{ duration: 0.2 }}
@@ -691,7 +866,7 @@ export default function Home() {
                             initial={{ height: 0 }}
                             animate={{ height: "auto" }}
                             exit={{ height: 0 }}
-                            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                            transition={{ duration: 0.25, ease: EASE }}
                             className="overflow-hidden"
                           >
                             <div className="px-5 py-4 border-t border-[#e2e8e4] bg-[#f9f9fb]">
@@ -725,14 +900,16 @@ export default function Home() {
                     backgroundSize: "40px 40px",
                   }}
                 />
+                {/* radial glow */}
+                <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(77,138,255,0.35) 0%, transparent 60%)" }} />
                 {/* Corner brackets */}
                 {["top-0 left-0 border-t border-l","top-0 right-0 border-t border-r","bottom-0 left-0 border-b border-l","bottom-0 right-0 border-b border-r"].map((cls) => (
                   <div key={cls} className={`absolute w-7 h-7 border-white/30 ${cls}`} />
                 ))}
 
                 <div className="relative z-10">
-                  <motion.span variants={fadeUp} custom={0} className="font-label text-[10px] tracking-[0.3em] text-white/60 uppercase block mb-5">
-                    Get Started
+                  <motion.span variants={fadeUp} custom={0} className="font-mono-tech text-[10px] tracking-[0.3em] text-white/60 uppercase block mb-5">
+                    [ 09 ] — Get Started
                   </motion.span>
                   <motion.h2 variants={fadeUp} custom={1} className="font-headline font-bold text-white leading-tight tracking-[-0.02em] mb-5" style={{ fontSize: "clamp(30px,5vw,64px)" }}>
                     Ready to Move from<br />Workflow to Intelligence?
@@ -741,14 +918,11 @@ export default function Home() {
                     Join 500+ enterprises managing over $10B in SOW and contingent workforce spend with Blue-IQ.
                   </motion.p>
                   <motion.div variants={fadeUp} custom={3} className="flex flex-wrap justify-center gap-4">
-                    <button
-                      className="font-label text-[11px] font-bold tracking-[0.15em] uppercase px-8 py-3.5 bg-white text-[#002181] transition-all hover:bg-slate-100"
-                    >
+                    <button className="group inline-flex items-center gap-2.5 font-label text-[11px] font-bold tracking-[0.15em] uppercase px-8 py-3.5 bg-white text-[#002181] transition-all hover:bg-slate-100">
                       Request Platform Demo
+                      <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
                     </button>
-                    <button
-                      className="font-label text-[11px] font-bold tracking-[0.15em] uppercase px-8 py-3.5 text-white border border-white/30 transition-all hover:bg-white/10"
-                    >
+                    <button className="font-label text-[11px] font-bold tracking-[0.15em] uppercase px-8 py-3.5 text-white border border-white/30 transition-all hover:bg-white/10">
                       Talk to an Expert
                     </button>
                   </motion.div>
@@ -790,10 +964,10 @@ export default function Home() {
           </div>
 
           <div className="mt-12 pt-6 border-t border-[#e2e8e4] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <p className="font-label text-[10px] tracking-[0.1em] text-[#bfc9c4]">
+            <p className="font-mono-tech text-[10px] tracking-[0.1em] text-[#bfc9c4]">
               © 2025 BLUE-IQ. THE INTELLIGENCE LAYER. ALL RIGHTS RESERVED.
             </p>
-            <a href="mailto:hello@blue-iq.com" className="font-label text-[10px] tracking-widest text-slate-400 hover:text-[#002181] uppercase transition-colors">
+            <a href="mailto:hello@blue-iq.com" className="font-mono-tech text-[10px] tracking-widest text-slate-400 hover:text-[#002181] uppercase transition-colors">
               hello@blue-iq.com
             </a>
           </div>

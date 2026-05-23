@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BlueIQ - AI Powered Resume Platform",
-  description: "AI-powered resume parsing for staffing firms and HR teams",
+  title: "Blue-IQ — The Intelligence Layer for Workforce, Vendors & Services",
+  description: "While traditional VMS and ATS tools track workflow, Blue-IQ delivers intelligence — from hire to governed to spend, complete visibility across your vendor ecosystem.",
 };
 
 export default function RootLayout({
