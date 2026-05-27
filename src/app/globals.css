@@ -191,7 +191,7 @@
 }
 
 /* shared Blue-IQ type utilities (used across all pages) */
-.font-display { font-family: var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.01em; }
+.font-display { font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.018em; }
 .font-sans-g  { font-family: var(--font-geist-sans), system-ui, sans-serif; }
 .font-mono-g  { font-family: var(--font-geist-mono), ui-monospace, monospace; }
 

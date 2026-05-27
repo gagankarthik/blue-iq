@@ -5,7 +5,20 @@
       "Bash(npx next *)",
       "Bash(cd \"C:\\\\Users\\\\gagan\\\\.claude\\\\projects\\\\C--Users-gagan-Desktop-Projects-blue-iq\\\\memory\")",
       "Bash(ls -la)",
-      "Bash(cat MEMORY.md)"
+      "Bash(cat MEMORY.md)",
+      "Read(//tmp/**)",
+      "Bash(break)",
+      "Bash(curl -s -o /tmp/biq-home.html -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,5600 --screenshot=/tmp/biq-tall.png http://localhost:3000/)",
+      "Bash(echo \"exit: $?\")",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,1100 --virtual-time-budget=4000 --screenshot=/tmp/biq-stories.png 'http://localhost:3000/#stories')",
+      "Bash(echo \"stories exit: $?\")",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,1200 --virtual-time-budget=4000 --screenshot=/tmp/biq-faq.png 'http://localhost:3000/#faq')",
+      "Bash(echo \"faq exit: $?\")",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,5600 --virtual-time-budget=6000 --screenshot=/tmp/biq-tall2.png http://localhost:3000/)",
+      "WebFetch(domain:www.tinyfish.ai)",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,6200 --virtual-time-budget=7000 --screenshot=/tmp/biq-tf.png http://localhost:3000/)",
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,7600 --virtual-time-budget=8000 --screenshot=/tmp/biq-tf2.png http://localhost:3000/)"
     ]
   }
 }
