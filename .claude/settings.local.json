@@ -18,7 +18,24 @@
       "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,5600 --virtual-time-budget=6000 --screenshot=/tmp/biq-tall2.png http://localhost:3000/)",
       "WebFetch(domain:www.tinyfish.ai)",
       "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,6200 --virtual-time-budget=7000 --screenshot=/tmp/biq-tf.png http://localhost:3000/)",
-      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,7600 --virtual-time-budget=8000 --screenshot=/tmp/biq-tf2.png http://localhost:3000/)"
+      "Bash('/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe' --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1440,7600 --virtual-time-budget=8000 --screenshot=/tmp/biq-tf2.png http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(npx tsc *)",
+      "Bash(curl -s -o /dev/null -w \"home %{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"hire %{http_code}\\\\n\" http://localhost:3000/hire)",
+      "Bash(curl -s -o /dev/null -w \"spend %{http_code}\\\\n\" http://localhost:3000/spend)",
+      "Bash(curl -s -o /dev/null -w \"contact %{http_code}\\\\n\" http://localhost:3000/contact)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"home %{http_code}\\\\n\" http://localhost:3010/)",
+      "Bash(curl -s -o /dev/null -w \"hire %{http_code}\\\\n\" http://localhost:3010/hire)",
+      "Bash(curl -s -o /dev/null -w \"spend %{http_code}\\\\n\" http://localhost:3010/spend)",
+      "Bash(curl -s -o /dev/null -w \"contact %{http_code}\\\\n\" http://localhost:3010/contact)",
+      "Bash(curl -s http://localhost:3010/)",
+      "Bash(curl -s http://localhost:3010/hire)",
+      "Bash(curl -s http://localhost:3010/contact)",
+      "PowerShell(foreach \\($p in 3000,3010\\) { try { Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue; \"killed PID $_ on $p\" } } catch { \"nothing on $p\" } }; if \\(Test-Path .next\\) { Remove-Item .next -Recurse -Force -ErrorAction SilentlyContinue; \"removed .next\" })",
+      "PowerShell(try { Get-NetTCPConnection -LocalPort 3010 -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}; \"ok\")",
+      "PowerShell(try { Get-NetTCPConnection -LocalPort 3010 -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}; \"stopped\")"
     ]
   }
 }

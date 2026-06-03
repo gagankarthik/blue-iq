@@ -14,9 +14,9 @@ const resources: Res[] = [
   { cat: "Docs", title: "Documentation", desc: "Setup, configuration, and integration guides for HIRE, GOVERN, and SPEND.", href: "/contact", Icon: IconDoc },
   { cat: "Developers", title: "API reference", desc: "REST endpoints, webhooks, and authentication for building on Blue-IQ.", href: "/contact", Icon: IconCode },
   { cat: "Playbooks", title: "Guides & playbooks", desc: "Best practices for procurement, SOW governance, and contingent spend.", href: "/contact", Icon: IconLayers },
-  { cat: "Customers", title: "Case studies", desc: "How procurement and finance teams cut overspend and review time.", href: "/#stories", Icon: IconStar },
+  { cat: "Customers", title: "Case studies", desc: "How procurement and finance teams cut overspend and review time.", href: "/contact", Icon: IconStar },
   { cat: "Events", title: "Webinars & events", desc: "Live sessions and recordings on vendor intelligence and compliance.", href: "/contact", Icon: IconCalendar },
-  { cat: "Support", title: "Help center", desc: "Answers to common questions and direct ways to reach our team.", href: "/#faq", Icon: IconLifebuoy },
+  { cat: "Support", title: "Help center", desc: "Answers to common questions and direct ways to reach our team.", href: "/contact", Icon: IconLifebuoy },
   { cat: "Trust", title: "Security & compliance", desc: "SOC 2 Type II, data handling, and our privacy commitments.", href: "/privacy", Icon: IconShield },
   { cat: "Product", title: "GOVERN docs", desc: "Documentation for the GOVERN SOW-audit product at govern.blue-iq.ai.", href: "https://govern.blue-iq.ai/", external: true, Icon: IconGovern },
 ];

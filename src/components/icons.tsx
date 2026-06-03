@@ -14,35 +14,39 @@ export const Check = ({ className = "w-3 h-3" }: IconProps) => (
   </svg>
 );
 
-/* ── isometric 3D product icons ── */
-function Iso({ children, className = "w-7 h-7" }: { children?: React.ReactNode; className?: string }) {
+/* ── editorial framed product marks (tint via currentColor, no fixed blue) ── */
+function Frame({ children, className = "w-7 h-7" }: { children?: React.ReactNode; className?: string }) {
   return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden>
-      <polygon points="24,6 41.5,16 24,26 6.5,16" fill="#6E8BF2" />
-      <polygon points="6.5,16 24,26 24,45.5 6.5,35.5" fill="#2C49D6" />
-      <polygon points="41.5,16 24,26 24,45.5 41.5,35.5" fill="#002181" />
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="currentColor" strokeOpacity="0.2" strokeWidth="1.3" />
       {children}
     </svg>
   );
 }
+const fw = { stroke: "currentColor", strokeWidth: 1.7, strokeLinecap: "round" as const, strokeLinejoin: "round" as const, fill: "none" };
+
+/* HIRE — ascending double chevron (the right candidate surfacing to the top) */
 export const IconHire = ({ className }: IconProps) => (
-  <Iso className={className}>
-    <path d="M24 21V12.5M20.6 15.6L24 12.3l3.4 3.3" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-  </Iso>
+  <Frame className={className}>
+    <path d="M7.8 12.3 12 8.1l4.2 4.2" {...fw} />
+    <path d="M7.8 16 12 11.8 16.2 16" {...fw} stroke="currentColor" strokeOpacity="0.4" />
+  </Frame>
 );
+/* GOVERN — shield with a verified clause check */
 export const IconGovern = ({ className }: IconProps) => (
-  <Iso className={className}>
-    <path d="M19.6 16.1l2.9 2.9 5.9-6.2" stroke="#fff" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-  </Iso>
+  <Frame className={className}>
+    <path d="M12 4.6l5.4 2.1v3.5c0 3.2-2.3 5.6-5.4 6.5-3.1-.9-5.4-3.3-5.4-6.5V6.7L12 4.6z" {...fw} />
+    <path d="M9.7 11.3l1.7 1.7 3.2-3.5" {...fw} />
+  </Frame>
 );
+/* SPEND — reconciled bars (spend held to plan) */
 export const IconSpend = ({ className }: IconProps) => (
-  <Iso className={className}>
-    <g stroke="#fff" strokeWidth="2.1" strokeLinecap="round">
-      <line x1="19.5" y1="18.5" x2="19.5" y2="15.5" />
-      <line x1="24" y1="19.5" x2="24" y2="12.5" />
-      <line x1="28.5" y1="18.5" x2="28.5" y2="16" />
-    </g>
-  </Iso>
+  <Frame className={className}>
+    <path d="M8 16.2v-2.6" {...fw} />
+    <path d="M12 16.2V8.4" {...fw} />
+    <path d="M16 16.2v-4.6" {...fw} />
+    <path d="M6.6 16.4h10.8" {...fw} stroke="currentColor" strokeOpacity="0.4" />
+  </Frame>
 );
 
 /* ── duotone feature icons (soft fill + line glyph, tint via currentColor) ── */
@@ -125,5 +129,32 @@ export const IconTarget = ({ className }: IconProps) => (
     <circle cx="12" cy="12" r="9" {...sw} />
     <circle cx="12" cy="12" r="5" {...sw} />
     <circle cx="12" cy="12" r="1.6" fill="currentColor" />
+  </D>
+);
+
+/* Sonar — concentric "ping" arcs emanating from a core, the intelligence engine */
+export const IconSonar = ({ className }: IconProps) => (
+  <D className={className}>
+    <circle cx="12" cy="12" r="9" {...soft} />
+    <circle cx="12" cy="13" r="1.8" fill="currentColor" />
+    <path d="M12 11.2a4.4 4.4 0 014.4 4.4M12 7.6a8 8 0 018 8" {...sw} />
+  </D>
+);
+
+/* People / team mark for buyer-persona cards */
+export const IconUsers = ({ className }: IconProps) => (
+  <D className={className}>
+    <circle cx="9" cy="8.5" r="5.5" {...soft} />
+    <circle cx="9" cy="9" r="2.6" {...sw} />
+    <path d="M3.8 18a5.2 5.2 0 0110.4 0" {...sw} />
+    <path d="M16 7.3a2.6 2.6 0 010 5.2M16.5 18a5.2 5.2 0 00-2.1-4.2" {...sw} />
+  </D>
+);
+
+/* Building / institution mark for government & finance */
+export const IconBank = ({ className }: IconProps) => (
+  <D className={className}>
+    <path d="M4 10l8-5 8 5v1H4v-1z" {...soft} />
+    <path d="M4 10l8-5 8 5M5.5 11v6M10 11v6M14 11v6M18.5 11v6M3.5 20h17" {...sw} />
   </D>
 );
