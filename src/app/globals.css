@@ -191,9 +191,22 @@
 }
 
 /* shared Blue-IQ type utilities (used across all pages) */
-.font-display { font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.018em; }
+.font-display { font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.02em; }
 .font-sans-g  { font-family: var(--font-geist-sans), system-ui, sans-serif; }
 .font-mono-g  { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+
+body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+/* site-wide base (one theme across every page) */
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-geist-sans), system-ui, sans-serif; background: #F6F8FC; color: #12141A; }
+::selection { background: #002181; color: #fff; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #F6F8FC; }
+::-webkit-scrollbar-thumb { background: #D9DEE9; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #8A93A3; }
+a:focus-visible, button:focus-visible { outline: 2px solid #2C49D6; outline-offset: 3px; border-radius: 8px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 /* prevent any horizontal scroll on small screens */
 html, body { max-width: 100%; overflow-x: hidden; }
@@ -216,4 +229,60 @@ html, body { max-width: 100%; overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .spotlight::before { display: none; }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   BRUTALIST SYSTEM — bone / near-black / single deep-blue accent.
+   Themed entirely through custom properties for consistency.
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  --bx-paper: #EDE9DF;
+  --bx-paper-2: #E5E0D3;
+  --bx-ink: #14130F;
+  --bx-accent: #002181;
+  --bx-hair: rgba(20, 19, 15, 0.16);
+  --bx-hair-soft: rgba(20, 19, 15, 0.08);
+}
+
+/* blueprint / graph-paper hairline field — spec-sheet backdrop, no gradients */
+.bx-blueprint {
+  background-image:
+    linear-gradient(var(--bx-hair-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bx-hair-soft) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: -1px -1px;
+}
+.bx-blueprint-fine {
+  background-image:
+    linear-gradient(var(--bx-hair-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bx-hair-soft) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* kinetic marquee band — reverses via direction utility, pauses for reduced motion */
+@keyframes bx-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.bx-marquee { display: inline-flex; white-space: nowrap; animation: bx-marquee 34s linear infinite; will-change: transform; }
+.bx-marquee-rev { animation-direction: reverse; }
+
+/* 3D tilt container — Z-axis card layering on hover (perspective set on parent) */
+.bx-scene { perspective: 1000px; }
+.bx-tilt { transform-style: preserve-3d; transition: transform .45s cubic-bezier(0.16,1,0.3,1); }
+.bx-pop { transform: translateZ(38px); }
+
+/* status dot — a breathing accent pulse (no outer neon glow) */
+@keyframes bx-breathe { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .45; transform: scale(.82); } }
+.bx-dot { animation: bx-breathe 2.4s ease-in-out infinite; }
+
+/* mood cursor — hidden by default, revealed only for fine pointers */
+.bx-cursor { position: fixed; top: 0; left: 0; z-index: 90; pointer-events: none; display: none; }
+@media (hover: hover) and (pointer: fine) { .bx-cursor { display: block; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .bx-marquee, .bx-dot { animation: none; }
+  .bx-tilt { transition: none; }
+}
+
+/* gentle perpetual float for the hero card scatter — translateY only, GPU-safe */
+@keyframes bx-card-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.bx-card-float { animation: bx-card-float 6.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .bx-card-float { animation: none; } }
 

@@ -35,7 +35,11 @@
       "Bash(curl -s http://localhost:3010/contact)",
       "PowerShell(foreach \\($p in 3000,3010\\) { try { Get-NetTCPConnection -LocalPort $p -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue; \"killed PID $_ on $p\" } } catch { \"nothing on $p\" } }; if \\(Test-Path .next\\) { Remove-Item .next -Recurse -Force -ErrorAction SilentlyContinue; \"removed .next\" })",
       "PowerShell(try { Get-NetTCPConnection -LocalPort 3010 -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}; \"ok\")",
-      "PowerShell(try { Get-NetTCPConnection -LocalPort 3010 -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}; \"stopped\")"
+      "PowerShell(try { Get-NetTCPConnection -LocalPort 3010 -State Listen -ErrorAction Stop | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } catch {}; \"stopped\")",
+      "WebFetch(domain:govern.blue-iq.ai)",
+      "WebFetch(domain:www.parsinglab.blue-iq.ai)",
+      "WebFetch(domain:grafana.com)",
+      "WebFetch(domain:www.affinda.com)"
     ]
   }
 }

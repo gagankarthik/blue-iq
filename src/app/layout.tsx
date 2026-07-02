@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Figtree, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
 import "@/app/globals.css";
 
-const geistSans = Geist({
+/* Humanist sans for body — warm, legible, professional (renders accents cleanly) */
+const bodySans = Figtree({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -12,15 +14,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const spaceGrotesk = Space_Grotesk({
+/* Bold grotesque display — editorial, distinctive, agency-grade */
+const display = Bricolage_Grotesque({
   variable: "--font-display",
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
   subsets: ["latin"],
 });
 
-const TITLE = "Blue-IQ — AI for hiring, contract governance & vendor spend";
+const TITLE = "Blue-IQ — enterprise software, engineered end to end";
 const DESC =
-  "Blue-IQ is the AI intelligence layer for the contingent workforce. Sonar parses résumés, runs a 10-dimension SOW contract audit, and reconciles vendor invoices — across HIRE, GOVERN, and SPEND. SOC 2 Type II.";
+  "Blue-IQ is an enterprise software company. We build our own products, including ParsingLab and Govern, and design custom platforms and migrations for clients, all on our Sonar engine. SOC 2, HIPAA & GDPR aligned.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blue-iq.com"),
@@ -31,10 +34,10 @@ export const metadata: Metadata = {
   description: DESC,
   applicationName: "Blue-IQ",
   keywords: [
-    "AI contract review", "SOW audit software", "vendor spend management",
-    "contingent workforce platform", "résumé screening AI", "procurement intelligence",
-    "VMS alternative", "ATS alternative", "contract risk scoring", "invoice reconciliation",
-    "SOC 2 Type II", "enterprise procurement software", "Sonar AI",
+    "enterprise software company", "custom software development", "document intelligence",
+    "resume parsing API", "contract review AI", "clause extraction", "legacy system migration",
+    "enterprise integrations", "schema-validated JSON", "SOC 2", "HIPAA", "GDPR",
+    "ParsingLab", "Blue-IQ Govern",
   ],
   authors: [{ name: "Blue-IQ" }],
   creator: "Blue-IQ",
@@ -49,7 +52,7 @@ export const metadata: Metadata = {
     description: DESC,
     url: "https://blue-iq.com",
     siteName: "Blue-IQ",
-    images: [{ url: "/logo_large.webp", width: 1200, height: 630, alt: "Blue-IQ — the intelligence layer" }],
+    images: [{ url: "/logo.svg", width: 1200, height: 630, alt: "Blue-IQ — enterprise software company" }],
     locale: "en_US",
     type: "website",
   },
@@ -57,7 +60,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESC,
-    images: ["/logo_large.webp"],
+    images: ["/logo.svg"],
   },
   category: "technology",
 };
@@ -71,7 +74,7 @@ const jsonLd = {
       "@id": "https://blue-iq.com/#org",
       name: "Blue-IQ",
       url: "https://blue-iq.com",
-      logo: "https://blue-iq.com/logo_large.webp",
+      logo: "https://blue-iq.com/logo.svg",
       description: DESC,
       sameAs: ["https://www.linkedin.com/company/blue-iq"],
     },
@@ -88,12 +91,12 @@ const jsonLd = {
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       description: DESC,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "GOVERN free trial; HIRE & SPEND via scoped pilot" },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "ParsingLab API and Govern via scoped demo; custom solutions scoped on request" },
       featureList: [
-        "AI résumé parsing and candidate scoring",
-        "10-dimension Statement of Work audit",
-        "Clause extraction across 13 contract types",
-        "Invoice-to-SOW reconciliation and spend leakage detection",
+        "Resume parsing to schema-validated JSON with confidence scoring (ParsingLab)",
+        "Contract clause extraction and playbook risk scoring (Govern)",
+        "Custom document and data product development",
+        "Enterprise legacy-system migrations and integrations",
       ],
       publisher: { "@id": "https://blue-iq.com/#org" },
     },
@@ -108,7 +111,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${bodySans.variable} ${geistMono.variable} ${display.variable} antialiased`}
       >
         <script
           type="application/ld+json"

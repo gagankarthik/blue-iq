@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import LegalPage, { type LegalSection } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Blue-IQ",
-  description: "How Blue-IQ collects, uses, shares, and protects personal information across its platform and products.",
+  title: "Privacy Policy",
+  description: "How Blue-IQ collects, uses, shares, and protects personal information across its platform and products, including ParsingLab and Govern.",
+  alternates: { canonical: "/privacy" },
 };
 
 const sections: LegalSection[] = [
-  { h: "Overview", body: ["This Privacy Policy explains how Blue-IQ (“we,” “us”) collects, uses, shares, and protects personal information when you use our platform, websites, and products, including HIRE, GOVERN, and SPEND (the “Service”). It applies to visitors, customers, and the authorized users of our customers."] },
+  { h: "Overview", body: ["This Privacy Policy explains how Blue-IQ (“we,” “us”) collects, uses, shares, and protects personal information when you use our platform, websites, and products, including ParsingLab and Govern (the “Service”). It applies to visitors, customers, and the authorized users of our customers."] },
   { h: "Information we collect", body: ["Account information you provide, such as name, work email, company, and role.", "Usage data, such as log files, device and browser details, and how you interact with the Service.", "Content you upload or connect, such as resumes, statements of work, invoices, and integration data, processed on behalf of our customers.", "Cookies and similar technologies used to operate and improve the Service."] },
   { h: "How we use information", body: ["We use information to provide, secure, and improve the Service; to authenticate users and prevent abuse; to provide support; to communicate about your account; and to comply with legal obligations. Where we act as a processor for customer content, we use it only to deliver the Service under our customer agreements."] },
   { h: "Legal bases", body: ["Where the GDPR or similar laws apply, we process personal information on the bases of performance of a contract, our legitimate interests in operating and securing the Service, your consent where required, and compliance with legal obligations."] },
