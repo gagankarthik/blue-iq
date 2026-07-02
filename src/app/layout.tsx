@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Figtree, Geist_Mono, Bricolage_Grotesque } from "next/font/google";
+import { Space_Grotesk, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 
-/* Humanist sans for body — warm, legible, professional (renders accents cleanly) */
-const bodySans = Figtree({
+/* Single modern geometric grotesque across the whole site. Rendered behind the
+   "Phonic" family name so a self-hosted Phonic swaps in automatically if added. */
+const phonic = Space_Grotesk({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -14,19 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/* Bold grotesque display — editorial, distinctive, agency-grade */
-const display = Bricolage_Grotesque({
-  variable: "--font-display",
-  weight: ["500", "600", "700", "800"],
-  subsets: ["latin"],
-});
-
-const TITLE = "Blue-IQ — enterprise software, engineered end to end";
+const TITLE = "Blue-IQ | Enterprise Document AI Platform";
 const DESC =
-  "Blue-IQ is an enterprise software company. We build our own products, including ParsingLab and Govern, and design custom platforms and migrations for clients, all on our Sonar engine. SOC 2, HIPAA & GDPR aligned.";
+  "Enterprise document AI that turns resumes, contracts, and invoices into structured, confidence-scored data. Powered by the Blue-IQ Sonar engine. SOC 2, HIPAA and GDPR aligned.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://blue-iq.com"),
+  metadataBase: new URL("https://blue-iq.ai"),
   title: {
     default: TITLE,
     template: "%s · Blue-IQ",
@@ -34,10 +28,11 @@ export const metadata: Metadata = {
   description: DESC,
   applicationName: "Blue-IQ",
   keywords: [
-    "enterprise software company", "custom software development", "document intelligence",
-    "resume parsing API", "contract review AI", "clause extraction", "legacy system migration",
-    "enterprise integrations", "schema-validated JSON", "SOC 2", "HIPAA", "GDPR",
-    "ParsingLab", "Blue-IQ Govern",
+    "document AI", "enterprise document AI", "intelligent document processing", "IDP software",
+    "document data extraction", "AI contract review software", "contract intelligence", "clause extraction",
+    "resume parsing API", "healthcare resume parser", "candidate data extraction", "confidence scoring",
+    "enterprise document automation", "legacy parser migration", "document AI integrations", "schema-validated JSON",
+    "SOC 2", "HIPAA", "GDPR", "ParsingLab", "Blue-IQ Govern", "Sonar engine",
   ],
   authors: [{ name: "Blue-IQ" }],
   creator: "Blue-IQ",
@@ -50,9 +45,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: TITLE,
     description: DESC,
-    url: "https://blue-iq.com",
+    url: "https://blue-iq.ai",
     siteName: "Blue-IQ",
-    images: [{ url: "/logo.svg", width: 1200, height: 630, alt: "Blue-IQ — enterprise software company" }],
+    images: [{ url: "/logo.svg", width: 1200, height: 630, alt: "Blue-IQ, enterprise software company" }],
     locale: "en_US",
     type: "website",
   },
@@ -71,19 +66,19 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://blue-iq.com/#org",
+      "@id": "https://blue-iq.ai/#org",
       name: "Blue-IQ",
-      url: "https://blue-iq.com",
-      logo: "https://blue-iq.com/logo.svg",
+      url: "https://blue-iq.ai",
+      logo: "https://blue-iq.ai/logo.svg",
       description: DESC,
       sameAs: ["https://www.linkedin.com/company/blue-iq"],
     },
     {
       "@type": "WebSite",
-      "@id": "https://blue-iq.com/#website",
-      url: "https://blue-iq.com",
+      "@id": "https://blue-iq.ai/#website",
+      url: "https://blue-iq.ai",
       name: "Blue-IQ",
-      publisher: { "@id": "https://blue-iq.com/#org" },
+      publisher: { "@id": "https://blue-iq.ai/#org" },
     },
     {
       "@type": "SoftwareApplication",
@@ -98,7 +93,7 @@ const jsonLd = {
         "Custom document and data product development",
         "Enterprise legacy-system migrations and integrations",
       ],
-      publisher: { "@id": "https://blue-iq.com/#org" },
+      publisher: { "@id": "https://blue-iq.ai/#org" },
     },
   ],
 };
@@ -111,7 +106,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${bodySans.variable} ${geistMono.variable} ${display.variable} antialiased`}
+        className={`${phonic.variable} ${geistMono.variable} antialiased`}
       >
         <script
           type="application/ld+json"

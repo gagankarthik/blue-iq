@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ContactClient from "./ContactClient";
 
 export const metadata: Metadata = {
-  title: "Contact — book a Blue-IQ walkthrough",
+  title: "Book an Enterprise Document AI Demo",
   description:
-    "Talk to the Blue-IQ team about resume parsing, contract intelligence, or a custom document-AI solution. We'll run a walkthrough on your own documents and reply within a business day.",
+    "Talk to Blue-IQ about document AI for your resumes, contracts, or invoices. Book a walkthrough on your own files or scope a custom solution with our team.",
   alternates: { canonical: "/contact" },
   openGraph: {
     title: "Contact Blue-IQ",

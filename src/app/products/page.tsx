@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import ProductsClient from "./ProductsClient";
 
 export const metadata: Metadata = {
-  title: "Products — software built by Blue-IQ",
+  title: "Document AI Products: ParsingLab & Govern",
   description:
-    "ParsingLab and Govern are production products built by Blue-IQ on our Sonar engine. See what they do, then talk to us about a custom product for your own workflow.",
+    "Explore Blue-IQ document AI products: ParsingLab for healthcare resume parsing and Govern for AI contract review, both built on the Sonar engine. SOC 2, HIPAA, GDPR.",
   alternates: { canonical: "/products" },
   openGraph: {
     title: "Blue-IQ Products",

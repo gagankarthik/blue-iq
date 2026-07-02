@@ -10,18 +10,18 @@ type Card = {
 };
 
 /*
- * Fixed, hand-placed scatter of capability cards framing the hero headline —
+ * Fixed, hand-placed scatter of capability cards framing the hero headline -
  * every position/rotation is a literal so server and client render
  * identically (no Math.random, no hydration mismatch).
  *
- * Every card is fully opaque and crisp (no blur, no reduced opacity) —
+ * Every card is fully opaque and crisp (no blur, no reduced opacity) -
  * "background" cards are de-emphasized purely through lighter text/icon
  * color, the same technique the reference composition uses. Container is
  * offset below the fixed nav so nothing collides with the transparent
  * header at the top of the page.
  */
 const cards: Card[] = [
-  // ── in-focus cards — gentle rotation, dark legible text, anchor the frame ──
+  // ── in-focus cards - gentle rotation, dark legible text, anchor the frame ──
   { Icon: FileText, tag: "ParsingLab", text: "Extract RN licence and compact status", top: "5%", left: "4%", rotate: -9, sharp: true, delay: 0, w: 204 },
   { Icon: Radar, tag: "Sonar", text: "Score confidence on every extracted field", top: "32%", left: "80%", rotate: 10, sharp: true, delay: 1.1, w: 198 },
   { Icon: Webhook, tag: "Enterprise", text: "Batch process 200 documents per call", top: "4%", left: "73%", rotate: -7, sharp: true, delay: 0.9, w: 202 },
@@ -31,7 +31,7 @@ const cards: Card[] = [
   { Icon: FileText, tag: "ParsingLab", text: "Untangle travel assignment history", top: "79%", left: "81%", rotate: -10, sharp: true, delay: 1.5, w: 202 },
   { Icon: ShieldCheck, tag: "Govern", text: "Recalculate value on a contract amendment", top: "82%", left: "9%", rotate: 8, sharp: true, delay: 0.5, w: 214 },
 
-  // ── background cards — wide, varied rotation, lighter gray text (never blurred or transparent) ──
+  // ── background cards - wide, varied rotation, lighter gray text (never blurred or transparent) ──
   { Icon: ShieldCheck, tag: "Govern", text: "Compare auto-renewal clause against playbook", top: "2%", left: "20%", rotate: 6, sharp: false, delay: 0.6, w: 216 },
   { Icon: GitMerge, tag: "Migrations", text: "Map legacy parser fields to a new schema", top: "6%", left: "83%", rotate: 16, sharp: false, delay: 0.3, w: 196 },
   { Icon: Boxes, tag: "Custom build", text: "Design a schema around a client workflow", top: "1%", left: "90%", rotate: -14, sharp: false, delay: 1.4, w: 208 },
@@ -43,7 +43,7 @@ const cards: Card[] = [
   { Icon: GitMerge, tag: "Migrations", text: "Cut over on a schedule that fits your calendar", top: "88%", left: "18%", rotate: 11, sharp: false, delay: 0.9, w: 216 },
   { Icon: Boxes, tag: "Solutions", text: "Bespoke products, delivered and supported", top: "34%", left: "13%", rotate: -18, sharp: false, delay: 1.1, w: 198 },
 
-  // ── tiny tag-only chips — icon + label, no body copy, moderate rotation ──
+  // ── tiny tag-only chips - icon + label, no body copy, moderate rotation ──
   { Icon: Building2, tag: "Healthcare staffing", top: "36%", left: "13%", rotate: -16, sharp: false, delay: 0.2, w: 128 },
   { Icon: Scale, tag: "Legal", top: "13%", left: "16%", rotate: 10, sharp: false, delay: 0.5, w: 100 },
   { Icon: Landmark, tag: "Procurement", top: "58%", left: "92%", rotate: 20, sharp: false, delay: 0.9, w: 128 },

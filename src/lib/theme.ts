@@ -1,10 +1,10 @@
-/* shared Blue-IQ palette + elevation tokens — warm cream canvas, deep-blue brand */
+/* shared Blue-IQ palette + elevation tokens - warm cream canvas, deep-blue brand */
 export const C = {
   bg: "#F6F4EF",      // warm cream canvas (TinyFish-style)
   surface: "#FFFFFF", // crisp white cards on cream
   ink: "#1A1815",     // warm near-black
   sub: "#605B53",     // warm body gray
-  faint: "#9A948A",   // warm faint / labels
+  faint: "#726D5E",   // warm faint / labels
   line: "#ECE7DF",    // warm hairline
   line2: "#DED8CE",   // warm border
   blue: "#002181",    // brand primary
@@ -23,51 +23,93 @@ export const SHADOW_LG = "0 2px 4px rgba(14,17,22,0.04), 0 40px 80px -32px rgba(
 /* ────────────────────────────────────────────────────────────────
    Brutalist reinvention palette (homepage + shared nav/footer).
    Monochrome bone/near-black base with a single deep-blue accent.
-   Added, not substituted — existing C tokens keep every other page intact.
+   Added, not substituted - existing C tokens keep every other page intact.
    ──────────────────────────────────────────────────────────────── */
 export const B = {
   paper: "#EDE9DF",     // bone-white base
-  paper2: "#E5E0D3",    // deeper bone — zebra / inset panels
+  paper2: "#E5E0D3",    // deeper bone - zebra / inset panels
   ink: "#14130F",       // warm near-black (never pure #000)
   ink2: "#3B382F",      // secondary ink
   sub: "#5B564B",       // body copy
-  faint: "#8E887A",     // mono labels / coordinates
+  faint: "#726D5E",     // mono labels / coordinates
   hair: "rgba(20,19,15,0.16)",   // structural hairline rule
   hairSoft: "rgba(20,19,15,0.08)",
-  accent: "#002181",    // the single aggressive accent — brand deep blue
+  accent: "#002181",    // the single aggressive accent - brand deep blue
   accentLift: "#2C49D6",// lighter blue, on-dark only (still one hue family)
   onInkSub: "rgba(237,233,223,0.60)", // muted text on the near-black block
   onInkFaint: "rgba(237,233,223,0.38)",
 } as const;
 
-/* flat, offset "hard" shadow for brutalist elevation — no blur glow */
+/* flat, offset "hard" shadow for brutalist elevation - no blur glow */
 export const HARD = "6px 6px 0 rgba(20,19,15,0.14)";
 export const HARD_ACCENT = "6px 6px 0 rgba(0,33,129,0.22)";
 
 /* ────────────────────────────────────────────────────────────────
-   Clean SaaS palette (Affinda/Grafana-style) — white base, deep-blue
+   Clean SaaS palette (Affinda/Grafana-style) - white base, deep-blue
    accent, soft elevation, one dark navy anchor. Used by homepage + shell.
    ──────────────────────────────────────────────────────────────── */
+/* Modern SaaS system on a warm cream canvas with a single deep-blue brand
+   accent. Every existing page inherits this via the shared UI tokens.
+   Semantics preserved: blue = brand accent, blue2 = link/lighter accent,
+   code/ink2 = warm near-black. */
 export const UI = {
-  bg: "#F6F8FC",       // very light cool canvas
-  bg2: "#EFF3FA",      // alt section band
-  surface: "#FFFFFF",  // cards
-  soft: "#EEF1FC",     // blue-tint panel
-  ink: "#12141A",      // near-black text (never pure #000)
-  sub: "#565D6B",      // cool body gray
-  faint: "#8A93A3",    // labels / muted
-  line: "#E7EAF1",     // hairline
-  line2: "#D9DEE9",    // border
-  blue: "#002181",     // brand primary accent
-  blue2: "#2C49D6",    // links / secondary
-  blue3: "#6E8BFF",    // light accent on dark
-  amber: "#D98A15",    // functional warning only
-  green: "#16A06B",    // functional ok only
-  code: "#0B1020",     // dark code / product panel
+  bg: "oklch(96.7% 0.005 95.1)",   // soft warm off-white canvas
+  bg2: "oklch(93.6% 0.006 95.1)",  // slightly deeper warm band
+  surface: "#FFFFFF",  // crisp white cards
+  soft: "#E8EBF7",     // blue-tint panel
+  ink: "#1A1712",      // warm near-black text (never pure #000)
+  sub: "#5D574B",      // warm muted body
+  faint: "#726D5E",    // warm labels / muted
+  line: "#E7DFCE",     // warm hairline
+  line2: "#D9D0BB",    // warm border
+  blue: "#002181",     // deep brand blue accent
+  blue2: "#2C49D6",    // links / lighter accent
+  blue3: "#7C8FFF",    // light accent on dark
+  amber: "#B07A08",    // functional warning only
+  green: "#1F7A54",    // functional ok only
+  code: "#161410",     // dark code / product panel
 } as const;
 
-/* deep navy anchor for hero mockups' chrome + CTA band */
-export const DEEP = "linear-gradient(165deg, #001A6B 0%, #002181 55%, #16337F 100%)";
+/* warm near-black anchor for dark feature blocks + footer */
+export const DEEP = "linear-gradient(165deg, #221E16 0%, #17140E 60%, #14120D 100%)";
+
+/* ────────────────────────────────────────────────────────────────
+   MAZE-STYLE SYSTEM - faithful clone of maze.co's design theory.
+   White canvas + light lavender-gray sections, warm near-black ink,
+   one electric-blue accent, near-black primary buttons, very rounded
+   cards, soft diffuse shadows, and pastel-tinted feature tiles.
+   ──────────────────────────────────────────────────────────────── */
+export const MZ = {
+  bg: "oklch(96.7% 0.005 95.1)",   // soft warm off-white canvas
+  bg2: "oklch(93.6% 0.006 95.1)",  // slightly deeper warm section
+  bg3: "oklch(91% 0.007 95.1)",    // deeper inset
+  surface: "#FFFFFF",   // crisp white cards
+  soft: "#E8EBF7",      // blue-tint panel
+  ink: "#1A1712",       // warm near-black text
+  ink2: "#14120D",      // warm near-black - dark sections
+  sub: "#5D574B",       // warm muted body
+  faint: "#726D5E",     // labels / faint
+  line: "#E7DFCE",      // warm hairline
+  line2: "#D9D0BB",     // warm border
+  accent: "#002181",    // deep brand blue - the single accent
+  accent2: "#2C49D6",   // lighter accent (links/hover)
+  accentSoft: "#7C8FFF",// light accent on dark
+  code: "#161410",      // dark code / product panel
+} as const;
+
+/* Maze's colorful pastel feature tiles - each card a different tint */
+export const MZ_TINTS = [
+  { bg: "#ECEBFF", ink: "#3D3BF5" }, // lilac / accent
+  { bg: "#E3F6EC", ink: "#0E8A57" }, // mint
+  { bg: "#FFEBE2", ink: "#DE522C" }, // coral
+  { bg: "#FFF3D4", ink: "#B07A08" }, // butter
+  { bg: "#E4EEFF", ink: "#2C57DE" }, // sky
+  { bg: "#FCE7F4", ink: "#C13A86" }, // blush
+] as const;
+
+/* Maze soft, wide-diffusion elevation (no tight drop shadow) */
+export const MZ_SHADOW = "0 2px 4px rgba(20,18,32,0.03), 0 24px 56px -28px rgba(20,18,32,0.16)";
+export const MZ_SHADOW_LG = "0 2px 6px rgba(20,18,32,0.04), 0 48px 90px -40px rgba(61,59,245,0.22)";
 
 /* soft, cool-tinted elevations (Affinda-style) */
 export const CARD = "0 1px 2px rgba(18,20,26,0.04), 0 12px 30px -14px rgba(18,20,26,0.14)";

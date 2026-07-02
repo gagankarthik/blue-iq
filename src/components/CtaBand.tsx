@@ -8,9 +8,21 @@ import Magnetic from "@/components/Magnetic";
 
 type Action = { label: string; href: string; external?: boolean };
 
+/* deterministic small-pixel constellation, brighter toward the right edge (SSR-safe) */
+const CB_COLS = 34, CB_ROWS = 22;
+const CB_PIX: { c: number; r: number; o: number }[] = (() => {
+  const arr: { c: number; r: number; o: number }[] = [];
+  for (let r = 0; r < CB_ROWS; r++) for (let c = 0; c < CB_COLS; c++) {
+    if (Math.sin(r * 1.4 + c * 0.8) + Math.cos(c * 0.6 - r * 1.1) < 0.55) continue;
+    const o = Math.round(Math.min(0.85, 0.12 + (c / CB_COLS) * 0.8) * 1000) / 1000;
+    arr.push({ c, r, o });
+  }
+  return arr;
+})();
+
 /**
- * Site-wide closing CTA. A deep-blue band with a related Unsplash photograph
- * on one side, kept on-brand with a blue overlay. Reused on every page.
+ * Site-wide closing CTA. A warm near-black band paired with an on-brand
+ * pixel-circuit panel (no external imagery). Reused on every page.
  */
 export default function CtaBand({
   eyebrow = "Let's talk",
@@ -18,25 +30,23 @@ export default function CtaBand({
   text,
   primary = { label: "Talk to us", href: "/contact" },
   secondary,
-  image,
-  imageAlt = "",
 }: {
   eyebrow?: string;
   title: string;
   text: string;
   primary?: Action;
   secondary?: Action;
-  image: string;
+  image?: string;
   imageAlt?: string;
 }) {
   return (
     <section className="px-5 sm:px-8 py-16 sm:py-24">
       <Reveal className="max-w-[1280px] mx-auto">
-        <motion.div variants={fadeUp} className="relative overflow-hidden rounded-[1.75rem] grid lg:grid-cols-2" style={{ background: "#001A6B", minHeight: 360 }}>
+        <motion.div variants={fadeUp} className="relative overflow-hidden rounded-[2rem] grid lg:grid-cols-2" style={{ background: "#14120D", minHeight: 360 }}>
           {/* copy */}
           <div className="relative z-10 px-8 sm:px-14 py-14 sm:py-20 flex flex-col justify-center">
             <span className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: UI.blue3 }}>{eyebrow}</span>
-            <h2 className="mt-4 font-display font-bold tracking-[-0.03em] leading-[1.03]" style={{ fontSize: "clamp(1.9rem, 3.6vw, 3rem)", color: "#fff" }}>
+            <h2 className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.03]" style={{ fontSize: "clamp(1.9rem, 3.6vw, 3rem)", color: "#fff" }}>
               {title}
             </h2>
             <p className="mt-5 font-sans-g leading-relaxed max-w-[44ch]" style={{ fontSize: "1.02rem", color: "rgba(255,255,255,0.74)" }}>
@@ -55,12 +65,18 @@ export default function CtaBand({
             </div>
           </div>
 
-          {/* image */}
-          <div className="relative min-h-[220px] lg:min-h-full">
-            <img src={image} alt={imageAlt} loading="lazy" decoding="async" className="absolute inset-0 w-full h-full object-cover" />
-            {/* brand wash so any photo stays on-theme */}
-            <div aria-hidden className="absolute inset-0" style={{ background: "linear-gradient(90deg, #001A6B 0%, rgba(0,26,107,0.55) 30%, rgba(0,33,129,0.32) 100%)" }} />
-            <div aria-hidden className="absolute inset-0 lg:hidden" style={{ background: "rgba(0,26,107,0.35)" }} />
+          {/* on-brand pixel-circuit panel */}
+          <div aria-hidden className="relative min-h-[200px] lg:min-h-full overflow-hidden">
+            <div className="absolute inset-0 bx-blueprint opacity-[0.14]" />
+            <div className="absolute inset-0" style={{ background: "radial-gradient(65% 75% at 78% 42%, rgba(44,73,214,0.5), transparent 72%)" }} />
+            <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" viewBox={`0 0 ${CB_COLS} ${CB_ROWS}`}>
+              {CB_PIX.map((p, i) => (
+                <rect key={i} x={p.c + 0.22} y={p.r + 0.22} width="0.5" height="0.5" rx="0.1" fill="#9DB0EE" fillOpacity={p.o} />
+              ))}
+            </svg>
+            {/* left fade so the seam into the copy panel is soft */}
+            <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #14120D 0%, rgba(20,18,13,0.4) 26%, transparent 60%)" }} />
+            <div className="absolute inset-0 lg:hidden" style={{ background: "rgba(20,18,13,0.45)" }} />
           </div>
         </motion.div>
       </Reveal>

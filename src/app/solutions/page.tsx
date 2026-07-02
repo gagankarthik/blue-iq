@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import SolutionsClient from "./SolutionsClient";
 
 export const metadata: Metadata = {
-  title: "Solutions — custom enterprise software from Blue-IQ",
+  title: "Custom Document AI & Enterprise Automation",
   description:
-    "Blue-IQ designs and builds custom document and data products for the enterprise, migrates teams off legacy systems, and integrates our Sonar engine into your existing stack.",
+    "Custom document AI, legacy parser migrations, and enterprise integrations, engineered on the Blue-IQ Sonar engine and delivered for your document-heavy workflows.",
   alternates: { canonical: "/solutions" },
   openGraph: {
     title: "Blue-IQ Solutions",

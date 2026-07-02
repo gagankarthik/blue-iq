@@ -39,7 +39,9 @@
       "WebFetch(domain:govern.blue-iq.ai)",
       "WebFetch(domain:www.parsinglab.blue-iq.ai)",
       "WebFetch(domain:grafana.com)",
-      "WebFetch(domain:www.affinda.com)"
+      "WebFetch(domain:www.affinda.com)",
+      "WebFetch(domain:maze.co)",
+      "Bash(taskkill //F //IM node.exe //T)"
     ]
   }
 }

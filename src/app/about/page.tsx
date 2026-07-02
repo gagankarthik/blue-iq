@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import AboutClient from "./AboutClient";
 
 export const metadata: Metadata = {
-  title: "About — the company behind Blue-IQ",
+  title: "About | Enterprise Document AI Company",
   description:
-    "Blue-IQ is an enterprise software company built around Sonar, our AI engine for reading documents and data. Learn how we work and why we started.",
+    "Blue-IQ builds enterprise document AI on the Sonar engine, the intelligence core behind ParsingLab, Govern, and the custom platforms we ship for regulated teams.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About Blue-IQ",

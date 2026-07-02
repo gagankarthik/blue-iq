@@ -11,8 +11,9 @@ export default function Magnetic({
   const ref = useRef<HTMLAnchorElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 250, damping: 18 });
-  const sy = useSpring(y, { stiffness: 250, damping: 18 });
+  // near-critical damping: eases toward the cursor and settles without overshoot
+  const sx = useSpring(x, { stiffness: 220, damping: 30 });
+  const sy = useSpring(y, { stiffness: 220, damping: 30 });
   return (
     <motion.a
       ref={ref} href={href}

@@ -50,7 +50,7 @@ export function Tilt({ children, className = "", max = 6 }: { children: React.Re
   );
 }
 
-/* ───────── scroll-driven parallax — GPU transform only, reduced-motion safe ───────── */
+/* ───────── scroll-driven parallax - GPU transform only, reduced-motion safe ───────── */
 export function Parallax({
   children, speed = 60, className = "", style, axis = "y", "aria-hidden": ariaHidden,
 }: {
@@ -81,7 +81,7 @@ export function CountUp({
 
   // parse "$11.6B", "540+", "98.2%" → prefix | number | suffix. Ranges ("40–60%") render static.
   const match = /^([^\d-]*)(\d+(?:\.\d+)?)(.*)$/.exec(value);
-  const isRange = /[–—-].*\d/.test(value.replace(/^[^\d]*/, ""));
+  const isRange = /[–-].*\d/.test(value.replace(/^[^\d]*/, ""));
 
   useEffect(() => {
     if (!match || isRange || reduce) { setText(value); return; }
@@ -99,7 +99,7 @@ export function CountUp({
   return <span ref={ref} className={className} style={style}>{text}</span>;
 }
 
-/* cursor-tracked spotlight surface — writes CSS vars directly, zero re-render */
+/* cursor-tracked spotlight surface - writes CSS vars directly, zero re-render */
 export function SpotlightCard({
   children, className = "", style, color = "rgba(44,73,214,0.10)",
 }: { children: React.ReactNode; className?: string; style?: React.CSSProperties; color?: string }) {
@@ -123,7 +123,7 @@ export function SpotlightCard({
   );
 }
 
-/* scroll velocity as a MotionValue (px/frame) — read via .get() in an animation frame.
+/* scroll velocity as a MotionValue (px/frame) - read via .get() in an animation frame.
    Zero React re-renders; caller decays it toward 0 so it settles when scrolling stops. */
 export function useScrollVelocity() {
   const { scrollY } = useScroll();
