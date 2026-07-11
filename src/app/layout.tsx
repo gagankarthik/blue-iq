@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Geist_Mono, Instrument_Serif } from "next/font/google";
 import "@/app/globals.css";
 
 /* Single modern geometric grotesque across the whole site. Rendered behind the
@@ -13,6 +13,14 @@ const phonic = Space_Grotesk({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/* Used for exactly one thing: the italic word inside a headline. */
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif-display",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["italic", "normal"],
 });
 
 const TITLE = "Blue-IQ | Enterprise Document AI Platform";
@@ -106,7 +114,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${phonic.variable} ${geistMono.variable} antialiased`}
+        className={`${phonic.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
       >
         <script
           type="application/ld+json"

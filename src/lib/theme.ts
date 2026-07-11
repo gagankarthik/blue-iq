@@ -97,6 +97,59 @@ export const MZ = {
   code: "#161410",      // dark code / product panel
 } as const;
 
+/* ────────────────────────────────────────────────────────────────
+   SA - the landing-page system. Cool neutral canvas, near-invisible
+   borders, almost no shadow, one deep-blue brand accent. Weight and
+   spacing carry the hierarchy, not colour.
+   ──────────────────────────────────────────────────────────────── */
+export const SA = {
+  bg: "#FFFFFF",       // canvas
+  bg2: "#FAFAFA",      // alternating section
+  bg3: "#F4F4F5",      // card preview wells / inset
+  surface: "#FFFFFF",  // cards
+  line: "#E9E9EC",     // hairline
+  line2: "#DEDEE3",    // border / hover border
+  ink: "#0B0B0F",      // near-black (never #000)
+  sub: "#52525B",      // body
+  faint: "#A1A1AA",    // meta / mono labels
+  accent: "#002181",   // brand deep blue - the single accent
+  accent2: "#2C49D6",  // hover / links
+  accentSoft: "#EFF1FB", // accent tint surface
+  amber: "#B07A08",    // functional: needs review
+  green: "#1F7A54",    // functional: ok
+  red: "#C0492E",      // functional: risk
+} as const;
+
+/* barely-there elevation - a border does most of the work */
+export const SA_SHADOW = "0 1px 2px rgba(11,11,15,0.04)";
+export const SA_SHADOW_HOVER = "0 1px 2px rgba(11,11,15,0.04), 0 12px 28px -12px rgba(11,11,15,0.14)";
+
+/* ────────────────────────────────────────────────────────────────
+   DK - the dark surfaces: the hero and the closing CTA.
+   The brand blue (#002181) is invisible on near-black, so on dark we
+   lift it to the same hue at a usable luminance. Same family, readable.
+   ──────────────────────────────────────────────────────────────── */
+export const DK = {
+  bg: "#07080B",        // near-black canvas (never #000)
+  bg2: "#0C0E14",       // raised surface
+  panel: "rgba(255,255,255,0.045)",       // glass fill
+  panelSolid: "#101319",                  // opaque panel where glass would smear
+  border: "rgba(255,255,255,0.09)",       // glass hairline
+  borderLift: "rgba(255,255,255,0.16)",   // hover / emphasis
+  ink: "#FFFFFF",
+  sub: "rgba(255,255,255,0.60)",
+  faint: "rgba(255,255,255,0.36)",
+  accent: "#5B7CFF",    // brand blue, lifted for dark
+  accentDim: "#2C49D6",
+  accentSoft: "rgba(91,124,255,0.14)",
+  green: "#3DDC97",
+  amber: "#F5B544",
+  red: "#FF6B5A",
+} as const;
+
+/* the inner-edge highlight that makes glass read as a physical surface */
+export const GLASS_EDGE = "inset 0 1px 0 rgba(255,255,255,0.08)";
+
 /* Maze's colorful pastel feature tiles - each card a different tint */
 export const MZ_TINTS = [
   { bg: "#ECEBFF", ink: "#3D3BF5" }, // lilac / accent

@@ -41,7 +41,8 @@
       "WebFetch(domain:grafana.com)",
       "WebFetch(domain:www.affinda.com)",
       "WebFetch(domain:maze.co)",
-      "Bash(taskkill //F //IM node.exe //T)"
+      "Bash(taskkill //F //IM node.exe //T)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3311/ --max-time 45)"
     ]
   }
 }
