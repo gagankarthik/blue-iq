@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# design verification screenshots — scripts/ writes these; they are throwaway
+shots/
+walk/
+walk-m/
+walk-d/
+hover/
+nav/
+ref-full/
+vid/

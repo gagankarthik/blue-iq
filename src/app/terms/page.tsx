@@ -29,8 +29,8 @@ export default function TermsPage() {
   return (
     <LegalPage
       title="Terms & Conditions"
-      updated="May 23, 2026"
-      intro="These Terms set out the rules for using Blue-IQ and our products. Please read them carefully. They form a binding agreement between your organization and Blue-IQ."
+      updated="11 July 2026"
+      intro="The rules for using Blue-IQ and our products, forming a binding agreement between your organization and us. Please read them carefully."
       sections={sections}
     />
   );

@@ -92,7 +92,7 @@ export function Words({
   text: string;
   className?: string;
   style?: React.CSSProperties;
-  as?: "h1" | "h2" | "span";
+  as?: "h1" | "h2" | "p" | "span";
   delay?: number;
   /* an optional trailing phrase, styled differently (the italic serif) */
   accent?: string;

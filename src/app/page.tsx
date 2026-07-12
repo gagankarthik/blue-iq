@@ -1,16 +1,25 @@
 import { SA } from "@/lib/theme";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import ScrollProgress from "@/components/saas/ScrollProgress";
 import Hero from "@/components/saas/Hero";
-import Gallery from "@/components/saas/Gallery";
-import HowItWorks from "@/components/saas/HowItWorks";
-import UseCases from "@/components/saas/UseCases";
+import Suite from "@/components/saas/Suite";
+import Ledger from "@/components/saas/Ledger";
+import Industries from "@/components/saas/Industries";
 import Security from "@/components/saas/Security";
-import Cta from "@/components/saas/Cta";
+import Faq from "@/components/saas/Faq";
 
-/* Server component: each animated section below is its own client leaf, so the
-   page shell itself ships no JS. */
+/* Server component: every animated section below is its own client leaf, so the
+   page shell itself ships no JS.
+
+   The page is light throughout. The rhythm is carried by value *within* the
+   light range — white where the copy is, and the brand tint once, at the close.
+   No dark sections: every dark, grid-lined, glow-washed panel we tried read as
+   machine-made, and the reference is a light site.
+
+   The pinned "how it works" scene is gone. It was 440vh — nearly five screens
+   of scroll — spent scrubbing a drawing of a document through four stages, and
+   the drawing was the same invented mock-up we deleted everywhere else. It cost
+   the reader more than it told them. */
 export default function Home() {
   return (
     <div id="top" style={{ background: SA.bg, color: SA.ink }}>
@@ -22,18 +31,21 @@ export default function Home() {
         Skip to content
       </a>
 
-      <ScrollProgress />
       <SiteNav />
 
       <main id="main">
         <Hero />
-        <Gallery />
-        <HowItWorks />
-        <UseCases />
+        {/* one product per band — the sentence carries it, no card grid */}
+        <Suite />
+        {/* the numbers, as a spec ledger: tiny label, enormous value, ruled */}
+        <Ledger />
+        <Industries />
         <Security />
-        <Cta />
+        <Faq />
       </main>
 
+      {/* the ask and the sitemap are one closing band — the page used to end,
+          and then end again */}
       <SiteFooter />
     </div>
   );

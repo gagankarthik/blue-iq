@@ -1,144 +1,212 @@
 "use client";
 
-import Link from "next/link";
-import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import { motion } from "framer-motion";
-import SiteShell from "@/components/SiteShell";
-import { UI } from "@/lib/theme";
-import { fadeUp, Reveal } from "@/components/motion";
+import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check, Loader2 } from "lucide-react";
+import { SA } from "@/lib/theme";
+import { PageHero, WRAP } from "@/components/page/kit";
+import { SPRING_SOFT } from "@/components/saas/motion";
+import SiteNav from "@/components/SiteNav";
+import SiteFooter from "@/components/SiteFooter";
 
-const field =
-  "w-full rounded-lg border border-[#D9D0BB] bg-white px-4 py-3 font-sans-g text-[14.5px] text-[#1A1712] outline-none transition-shadow placeholder:text-[#948C7C] focus:border-[#002181] focus:ring-2 focus:ring-[#002181]/20";
-const labelCls = "block font-sans-g text-[13px] font-semibold mb-2";
+/* ────────────────────────────────────────────────────────────────
+   /contact
 
-const assurances = [
-  ["A reply within a business day", "Someone who knows your industry gets back to you, not a generic sales queue."],
-  ["A walkthrough, not a pitch", "We run Blue-IQ on your real resumes or contracts before we ever talk pricing."],
-  ["Your data stays yours", "SOC 2 Type II controls throughout, and nothing is used to train shared models."],
-];
+   A contact page is a name, an email, and a sentence about what you want.
+   Everything past that is the page getting in the way of the one thing it
+   exists to do.
+
+   Two things have now been cut from this page for being exactly that:
+   a 592-line version with a five-state machine, and after it a "What's this
+   about?" selector — four options, each with its own hint line — which was
+   twenty words of chrome asking a question the message box already answers.
+   Whoever is writing to us can just say what they want.
+
+   NO BACKEND. `send()` is simulated — nothing leaves the browser. So the
+   success state does NOT claim we received anything, because we didn't: it
+   hands the note back as a mailto, addressed to the one mailbox this site
+   actually publishes. Wire this to a real endpoint and that copy is the first
+   thing that has to change.
+   ──────────────────────────────────────────────────────────────── */
+
+const EMAIL = "hello@blue-iq.com";
+
+type Errors = { name?: string; email?: string; message?: string };
 
 export default function ContactClient() {
+  const reduce = useReducedMotion();
+  const [v, setV] = useState({ name: "", email: "", message: "" });
+  const [errors, setErrors] = useState<Errors>({});
+  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+
+  const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setV((p) => ({ ...p, [k]: e.target.value }));
+    setErrors((p) => (p[k] ? { ...p, [k]: undefined } : p));
+  };
+
+  async function send(e: React.FormEvent) {
+    e.preventDefault();
+    const next: Errors = {};
+    if (!v.name.trim()) next.name = "Please tell us your name.";
+    if (!v.email.trim()) next.email = "We need an email to reply to.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email.trim())) next.email = "That email does not look right.";
+    if (!v.message.trim()) next.message = "Tell us what you are trying to read.";
+
+    setErrors(next);
+    if (Object.keys(next).length) return;
+
+    setState("sending");
+    await new Promise((r) => setTimeout(r, 800));
+    setState("sent");
+  }
+
+  const mailto =
+    `mailto:${EMAIL}?subject=${encodeURIComponent(`Enquiry — ${v.name.trim()}`)}` +
+    `&body=${encodeURIComponent([v.message.trim(), "", "—", v.name.trim(), v.email.trim()].filter(Boolean).join("\n"))}`;
+
+  const inputStyle = (bad?: string) => ({
+    background: SA.surface,
+    border: `1px solid ${bad ? SA.red : SA.line2}`,
+    color: SA.ink,
+  });
+  const inputClass = "w-full rounded-lg px-3.5 py-3 font-sans-g text-[15px] outline-none";
+
   return (
-    <SiteShell>
-      <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 -z-10 pointer-events-none bx-blueprint opacity-[0.5]" />
+    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+      <SiteNav />
 
-        <div className="relative max-w-[1280px] mx-auto px-5 sm:px-8 pt-36 sm:pt-44 pb-20 sm:pb-28">
-          <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-12 lg:gap-20 items-start">
-            {/* intro */}
-            <Reveal>
-              <motion.span
-                variants={fadeUp}
-                className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]"
-                style={{ color: UI.blue }}
-              >
-                Contact
-              </motion.span>
-              <motion.h1
-                variants={fadeUp}
-                custom={1}
-                className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.0]"
-                style={{ fontSize: "clamp(2.4rem, 5vw, 4rem)", color: UI.ink }}
-              >
-                Let&apos;s put Blue-IQ on your documents.
-              </motion.h1>
-              <motion.p
-                variants={fadeUp}
-                custom={2}
-                className="mt-6 font-sans-g text-[17px] leading-relaxed max-w-[46ch]"
-                style={{ color: UI.sub }}
-              >
-                Tell us what your team works with and where it slows down: hiring, contracts, or spend. We&apos;ll scope a
-                short walkthrough on your own resumes, agreements, or invoices, and show you exactly what comes back
-                structured.
-              </motion.p>
+      <main>
+        <PageHero
+          title="Send us the ugliest document you have."
+          lede="The only test worth running is the one on your own files. Tell us what you're trying to read, and we'll show you the fields it returns, the score on each one, and the ones it flags."
+        />
 
-              <motion.ul variants={fadeUp} custom={3} className="mt-10 max-w-md" style={{ borderTop: `1px solid ${UI.line}` }}>
-                {assurances.map(([h, b]) => (
-                  <li key={h} className="py-5" style={{ borderBottom: `1px solid ${UI.line}` }}>
-                    <div className="font-display text-[16px] font-light tracking-[-0.01em]" style={{ color: UI.ink }}>{h}</div>
-                    <div className="font-sans-g text-[14px] leading-relaxed mt-1.5" style={{ color: UI.sub }}>{b}</div>
-                  </li>
-                ))}
-              </motion.ul>
+        <section className={`${WRAP} pb-28 sm:pb-36`}>
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)] gap-y-14 lg:gap-x-24 items-start">
+            <div className="pt-10" style={{ borderTop: `1px solid ${SA.line2}` }}>
+              {state === "sent" ? (
+                <motion.div
+                  initial={reduce ? false : { opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={SPRING_SOFT}
+                >
+                  <Check className="w-7 h-7" strokeWidth={1.5} style={{ color: SA.accent }} aria-hidden />
+                  <h2
+                    className="mt-5 font-display font-normal leading-[1.15]"
+                    style={{ fontSize: "clamp(1.5rem, 2.4vw, 2rem)", letterSpacing: "-0.03em", color: SA.ink }}
+                  >
+                    Your message is written. One click sends it.
+                  </h2>
+                  {/* Straight with the person: there is no mailbox behind this
+                      form yet, and telling them "we got it" would be a lie told
+                      to a real customer on their first contact with us. */}
+                  <p className="mt-4 font-sans-g leading-[1.75] max-w-[48ch]" style={{ fontSize: "1rem", color: SA.sub }}>
+                    This form isn&apos;t wired to a mailbox yet, so nothing left your browser. The button below opens
+                    your own mail app with everything you typed already composed.
+                  </p>
+                  <a
+                    href={mailto}
+                    className="inline-flex items-center gap-2 mt-8 rounded-lg px-6 py-3 font-sans-g text-[15px] font-semibold text-white transition-transform active:translate-y-px"
+                    style={{ background: SA.ink }}
+                  >
+                    Open it in your mail app
+                  </a>
+                </motion.div>
+              ) : (
+                <form onSubmit={send} noValidate className="flex flex-col gap-7">
+                  <div className="grid sm:grid-cols-2 gap-x-5 gap-y-7">
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="name" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
+                        Name
+                      </label>
+                      <input id="name" value={v.name} onChange={set("name")} className={inputClass} style={inputStyle(errors.name)} aria-invalid={!!errors.name} />
+                      {errors.name && (
+                        <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
+                          {errors.name}
+                        </p>
+                      )}
+                    </div>
 
-              <motion.p variants={fadeUp} custom={4} className="mt-8 font-sans-g text-[14px]" style={{ color: UI.sub }}>
-                Prefer email?{" "}
-                <a href="mailto:hello@blue-iq.com" className="font-semibold underline-offset-2 hover:underline" style={{ color: UI.blue2 }}>
-                  hello@blue-iq.com
-                </a>
-              </motion.p>
-            </Reveal>
-
-            {/* form */}
-            <Reveal>
-              <motion.form
-                variants={fadeUp}
-                action="#"
-                method="POST"
-                className="rounded-2xl p-7 sm:p-9"
-                style={{
-                  background: UI.surface,
-                  border: `1px solid ${UI.line2}`,
-                  boxShadow: "0 1px 2px rgba(18,20,26,0.05), 0 24px 60px -30px rgba(18,20,26,0.22)",
-                }}
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  <div>
-                    <label htmlFor="first-name" className={labelCls} style={{ color: UI.ink }}>First name</label>
-                    <input id="first-name" name="first-name" type="text" autoComplete="given-name" className={field} />
-                  </div>
-                  <div>
-                    <label htmlFor="last-name" className={labelCls} style={{ color: UI.ink }}>Last name</label>
-                    <input id="last-name" name="last-name" type="text" autoComplete="family-name" className={field} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label htmlFor="company" className={labelCls} style={{ color: UI.ink }}>Company</label>
-                    <input id="company" name="company" type="text" autoComplete="organization" className={field} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label htmlFor="email" className={labelCls} style={{ color: UI.ink }}>Work email</label>
-                    <input id="email" name="email" type="email" autoComplete="email" className={field} />
-                  </div>
-                  <div className="sm:col-span-2">
-                    <label htmlFor="phone-number" className={labelCls} style={{ color: UI.ink }}>Phone number</label>
-                    <div className="flex rounded-lg overflow-hidden bg-white transition-shadow focus-within:border-[#002181] focus-within:ring-2 focus-within:ring-[#002181]/20" style={{ border: `1px solid ${UI.line2}` }}>
-                      <div className="relative grid shrink-0">
-                        <select id="country" name="country" autoComplete="country" aria-label="Country" className="appearance-none bg-transparent py-3 pr-8 pl-4 font-sans-g text-[14px] outline-none" style={{ color: UI.sub }}>
-                          <option>US</option><option>CA</option><option>EU</option>
-                        </select>
-                        <ChevronDownIcon aria-hidden className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 size-4" style={{ color: UI.faint }} />
-                      </div>
-                      <input id="phone-number" name="phone-number" type="text" placeholder="(312) 847-1928" className="flex-1 min-w-0 bg-transparent py-3 px-2 font-sans-g text-[14.5px] outline-none placeholder:text-[#948C7C]" style={{ color: UI.ink }} />
+                    <div className="flex flex-col gap-2">
+                      <label htmlFor="email" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
+                        Work email
+                      </label>
+                      <input id="email" type="email" value={v.email} onChange={set("email")} className={inputClass} style={inputStyle(errors.email)} aria-invalid={!!errors.email} />
+                      {errors.email && (
+                        <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
+                          {errors.email}
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="sm:col-span-2">
-                    <label htmlFor="message" className={labelCls} style={{ color: UI.ink }}>What documents are you working with?</label>
-                    <textarea id="message" name="message" rows={4} className={field} placeholder="Resumes, contracts, SOWs, invoices, and what you need out of them." defaultValue="" />
-                  </div>
-                  <div className="sm:col-span-2 flex items-start gap-3">
-                    <input id="agree" name="agree" type="checkbox" className="mt-1 w-4 h-4 rounded accent-[#002181] focus:ring-2 focus:ring-[#002181]/30" />
-                    <label htmlFor="agree" className="font-sans-g text-[13px] leading-relaxed" style={{ color: UI.sub }}>
-                      I agree to the{" "}
-                      <Link href="/privacy" className="font-semibold underline-offset-2 hover:underline" style={{ color: UI.blue2 }}>privacy policy</Link>.
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="message" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
+                      What are you trying to read?
                     </label>
+                    <textarea
+                      id="message"
+                      rows={6}
+                      value={v.message}
+                      onChange={set("message")}
+                      placeholder="The documents, roughly how many a month, and anything else you want to ask — pricing, a custom build, a security review."
+                      className={`${inputClass} resize-y`}
+                      style={inputStyle(errors.message)}
+                      aria-invalid={!!errors.message}
+                    />
+                    {errors.message && (
+                      <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
+                        {errors.message}
+                      </p>
+                    )}
                   </div>
-                </div>
-                <button
-                  type="submit"
-                  className="mt-7 w-full inline-flex items-center justify-center gap-2 font-sans-g text-[15px] font-semibold text-white py-3.5 rounded-lg transition-transform active:scale-[0.98]"
-                  style={{ background: UI.blue, boxShadow: `0 16px 34px -18px ${UI.blue}` }}
-                >
-                  Book a walkthrough
-                </button>
-                <p className="mt-4 text-center font-sans-g text-[12.5px]" style={{ color: UI.faint }}>
-                  No spam, no shared inbox. Your note reaches the team building Blue-IQ.
-                </p>
-              </motion.form>
-            </Reveal>
+
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                    <button
+                      type="submit"
+                      disabled={state === "sending"}
+                      className="inline-flex items-center gap-2 rounded-lg px-6 py-3 font-sans-g text-[15px] font-semibold text-white transition-transform active:translate-y-px disabled:opacity-70"
+                      style={{ background: SA.ink }}
+                    >
+                      {state === "sending" && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} aria-hidden />}
+                      {state === "sending" ? "Sending…" : "Send it"}
+                    </button>
+
+                    <p className="font-sans-g text-[14px]" style={{ color: SA.faint }}>
+                      Or email{" "}
+                      <a href={`mailto:${EMAIL}`} className="font-semibold hover:underline underline-offset-4" style={{ color: SA.accent }}>
+                        {EMAIL}
+                      </a>
+                    </p>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Pricing, plainly. There are no published tiers, so there are no
+                Starter/Pro/Enterprise cards here — inventing three would be the
+                easiest lie on the entire site to tell. */}
+            <aside id="pricing" className="pt-10 scroll-mt-28" style={{ borderTop: `1px solid ${SA.line2}` }}>
+              <h2
+                className="font-display font-normal leading-[1.15]"
+                style={{ fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)", letterSpacing: "-0.03em", color: SA.ink }}
+              >
+                What it costs
+              </h2>
+              <p className="mt-5 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
+                We don&apos;t publish plans. A price that ignores what you&apos;re reading and how much of it arrives
+                would be a made-up number — it follows volume and which products are in play.
+              </p>
+              <p className="mt-4 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
+                Tell us the documents and roughly how many a month, and we&apos;ll come back with a real figure.
+              </p>
+            </aside>
           </div>
-        </div>
-      </section>
-    </SiteShell>
+        </section>
+      </main>
+
+      {/* this page IS the call to action — it should not close on another one */}
+      <SiteFooter cta={false} />
+    </div>
   );
 }

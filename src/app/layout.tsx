@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 
-/* Single modern geometric grotesque across the whole site. Rendered behind the
-   "Phonic" family name so a self-hosted Phonic swaps in automatically if added. */
-const phonic = Space_Grotesk({
+/* One neutral geometric grotesque across the whole site.
+
+   Was Space Grotesk, and it was the wrong face for this. Space Grotesk is a
+   *display* grotesque with deliberately mannered letterforms — the splayed t,
+   the hooked y, the flicked r — and those quirks get louder the larger you set
+   it. At the 5rem the hero runs at, the type was doing the talking instead of
+   the words. Geist is the same register as the reference's Roobert: geometric,
+   quiet, and built to hold at display size with tight tracking. */
+const sans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
@@ -15,13 +21,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-/* Used for exactly one thing: the italic word inside a headline. */
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-serif-display",
-  subsets: ["latin"],
-  weight: ["400"],
-  style: ["italic", "normal"],
-});
 
 const TITLE = "Blue-IQ | Enterprise Document AI Platform";
 const DESC =
@@ -114,7 +113,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${phonic.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}
+        className={`${sans.variable} ${geistMono.variable} antialiased`}
       >
         <script
           type="application/ld+json"

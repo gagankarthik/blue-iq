@@ -1,228 +1,225 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { ScanLine, Braces, BadgeCheck, MoveRight, ArrowRight } from "lucide-react";
-import { UI, DEEP } from "@/lib/theme";
-import { fadeUp, Reveal } from "@/components/motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { SA } from "@/lib/theme";
+import { Words, SPRING_SOFT } from "@/components/saas/motion";
+import { SectionHead } from "@/components/saas/parts";
+import { PageHero, Band, Ruled, StatStrip, Cta } from "@/components/page/kit";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import Magnetic from "@/components/Magnetic";
-import CtaBand from "@/components/CtaBand";
-import { SonarVisual } from "@/components/BrandVisuals";
 
-/* the spec-sheet lines in the hero panel */
-const heroSpec = [
-  { k: "Engine", v: "Sonar" },
-  { k: "Reads", v: "Resumes · contracts · invoices" },
-  { k: "Products", v: "ParsingLab · Govern" },
-  { k: "Also", v: "Custom platforms" },
-];
+/* ────────────────────────────────────────────────────────────────
+   /about
 
-/* what we build - editorial divide-y rows */
-const builds = [
+   The old page was the warm-cream system in full: a blueprint grid, a glow
+   blob behind the hero, a mono-caps eyebrow over every heading, icons in
+   tinted squares, a spec-sheet panel, and a CtaBand stacked on top of the
+   footer's own close. It also opened by centring the company on Sonar and
+   then on the product catalogue — an org chart, not an argument.
+
+   This is the same page told as a company would tell it: who we are, the
+   problem we exist for, the one opinion we hold (a read is worthless unless
+   it tells you how far to trust it), and the vehicles that opinion ships in.
+   Every number on the page is one the company already stands behind. Nothing
+   here is invented — no customers, no dates, no uptime figures.
+   ──────────────────────────────────────────────────────────────── */
+
+/* the paperwork, at the three points it actually hurts. Not a product list —
+   these are the documents, before anyone has decided what to buy. */
+const arrives = [
   {
-    eyebrow: "The engine",
-    tag: "Sonar · confidence-scored",
-    h: "One engine reads every document.",
-    b: "Sonar takes in raw files and returns the fields and clauses that matter as structured, schema-validated output. Every value carries a confidence score, so people review the uncertain parts instead of re-reading the whole page.",
-    href: "#sonar",
-    cta: "See how Sonar works",
+    t: "A hire",
+    d: "A resume, a licence, a certification, a reference. A dozen formats from a dozen sources, and a person paid to read them all and turn them into one candidate record.",
   },
   {
-    eyebrow: "The products",
-    tag: "ParsingLab · Govern",
-    h: "Two products, built on the same core.",
-    b: "ParsingLab turns resumes and application files into clean candidate records. Govern reads contracts and statements of work against your own playbook and flags the risk before anyone signs. Both share one engine, so accuracy improves everywhere at once.",
-    href: "/products",
-    cta: "See our products",
+    t: "A contract",
+    d: "A master agreement, an amendment, a statement of work. The obligations that will actually bind you are buried in clauses nobody has time to read twice.",
   },
   {
-    eyebrow: "Custom builds",
-    tag: "Tuned to your paperwork",
-    h: "Platforms shaped to your documents.",
-    b: "When the paperwork is specific to your industry, we build around it. Same engine, tuned to your schema and your review workflow, delivered as a platform your team actually runs day to day.",
-    href: "/solutions",
-    cta: "Explore solutions",
+    t: "An invoice",
+    d: "A PDF, a scan, a photograph of a receipt taken in a car park. The numbers are right there on the page, and they still get re-typed into a system by hand.",
   },
 ];
 
-const sonarPoints = [
-  { Icon: ScanLine, t: "Reads difficult files", d: "Clean PDFs, messy scans, and phone photos all come out the same structured way." },
-  { Icon: Braces, t: "Returns clean data", d: "Schema-validated output your systems can use right away, with no reformatting." },
-  { Icon: BadgeCheck, t: "Scores its own work", d: "Every value carries a confidence score, so people review only what needs it." },
+/* the two halves of the opinion. Kept to two rows on purpose: this is the
+   thing the page is for, and a third row would dilute it. */
+const engine = [
+  {
+    t: "A score on every field",
+    d: "Every value Sonar hands back arrives with a confidence score attached to it. Not a score for the document, or for the batch — one for each field, so your team can spend its attention on the handful that need a human and leave the rest alone.",
+  },
+  {
+    t: "A flag, not a guess",
+    d: "When Sonar cannot read something, it says so. It marks the field for review and moves on. It will not reach for the plausible-looking value to fill the gap, because a filled gap is one nobody goes back to check.",
+  },
 ];
 
-/* how we work - editorial divide-y rows (no shadowed icon cards) */
-const values = [
-  { n: "01", h: "Honest over impressive", b: "If a value isn't in the document, we leave it empty. We would rather flag uncertainty than fake confidence and let a wrong field slip downstream." },
-  { n: "02", h: "Built on real documents", b: "We test against the messy files our clients actually have, the low-resolution scans and inconsistent formats, not a clean demo set that flatters the model." },
-  { n: "03", h: "Depth over breadth", b: "We would rather do a few things with real domain knowledge than a hundred things generically. The engine knows what a credential expiry or a liability cap looks like." },
-  { n: "04", h: "Software you can depend on", b: "We stay on after launch. A product isn't done when it ships. It's done when it runs reliably against next quarter's documents too." },
+const specs = [
+  { v: "200", l: "Documents per API call" },
+  { v: "<1s", l: "Median read" },
+  { v: "Every one", l: "Fields returned with a score" },
+  { v: "Zero", l: "Fields it will guess at" },
 ];
+
+/* delivery vehicles, at the weight they deserve on an umbrella page: the
+   products are how the work ships, not the point of the company. */
+const built = [
+  {
+    t: "ParsingLab",
+    d: "Resumes and credentials, read into clean candidate records. Built for the teams who hire faster than they can read.",
+    href: "https://www.parsinglab.blue-iq.ai/",
+    label: "Open ParsingLab",
+    external: true,
+  },
+  {
+    t: "Govern",
+    d: "Contract review and risk. It reads the agreement, surfaces the clauses that carry consequences, and shows its confidence in each one.",
+    href: "https://govern.blue-iq.ai/",
+    label: "Open Govern",
+    external: true,
+  },
+  {
+    t: "Custom builds",
+    d: "When the paperwork is specific enough that neither product fits it, we build around the documents you actually have. Same engine, your schema, your review workflow.",
+    href: "/contact",
+    label: "Talk to us",
+    external: false,
+  },
+];
+
+/* things that are true and specific. Anything we could not stand behind — a
+   founding story, a headcount, a values poster — was cut rather than invented. */
+const how = [
+  {
+    t: "One engine, not three",
+    d: "ParsingLab, Govern and every custom build are the same engine with a different surface on top. There is no second-tier model behind the cheaper product.",
+  },
+  {
+    t: "An API, or a finished product",
+    d: "A documented API for the teams who want to build on the read themselves, and a product for the teams who would rather not. The choice is yours; the engine underneath is the same one either way.",
+  },
+  {
+    t: "Handled the way your auditors will ask about",
+    d: "Document handling is aligned to SOC 2, HIPAA and GDPR, because the files we read are the ones a business is least able to be casual about.",
+  },
+];
+
+/* the pivot line: the whole argument in one sentence, set as a statement
+   rather than buried in a paragraph. No rule of its own — <Ruled> already
+   closes with one, and a second line 80px under it is just a dead gauge. */
+function Claim() {
+  return (
+    <div className="mt-14 sm:mt-16">
+      <Words
+        as="p"
+        text="A wrong value that looks certain"
+        className="font-display font-normal leading-[1.1] max-w-[22ch]"
+        style={{ fontSize: "clamp(1.7rem, 3.2vw, 2.6rem)", letterSpacing: "-0.032em", color: SA.ink }}
+        accent="costs more than a blank one."
+        accentStyle={{ color: SA.accent }}
+      />
+    </div>
+  );
+}
+
+/* a ruled product row. Same grammar as the kit's <Ruled> — the rule is the
+   only chrome — with room for the link the products need. */
+function BuildRow({
+  row,
+  i,
+}: {
+  row: (typeof built)[number];
+  i: number;
+}) {
+  const reduce = useReducedMotion();
+
+  return (
+    <motion.div
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-8%" }}
+      transition={{ ...SPRING_SOFT, delay: i * 0.05 }}
+      className="grid md:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] gap-y-3 md:gap-x-12 py-7 md:py-8"
+      style={{ borderTop: `1px solid ${SA.line2}` }}
+    >
+      <h3
+        className="font-display font-normal tracking-[-0.025em] leading-[1.2]"
+        style={{ fontSize: "clamp(1.25rem, 2vw, 1.6rem)", color: SA.ink }}
+      >
+        {row.t}
+      </h3>
+      <div>
+        <p className="font-sans-g text-[15.5px] leading-[1.75] max-w-[58ch]" style={{ color: SA.sub }}>
+          {row.d}
+        </p>
+        <div className="mt-4">
+          <Cta href={row.href} label={row.label} external={row.external} />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function AboutClient() {
   return (
-    <div className="overflow-x-clip" style={{ background: UI.bg, color: UI.ink }}>
+    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
       <SiteNav />
+
       <main>
-        {/* ───────── hero (asymmetric, left-aligned) ───────── */}
-        <section className="relative overflow-hidden">
-          <div aria-hidden className="absolute inset-0 -z-10 pointer-events-none bx-blueprint opacity-[0.5]" />
-          <div aria-hidden className="absolute inset-0 -z-10 pointer-events-none">
-            <div className="absolute top-[12%] left-[-6%] w-[34vw] max-w-[440px] aspect-square rounded-full blur-3xl opacity-40"
-              style={{ background: "radial-gradient(circle, rgba(0,33,129,0.10), transparent 66%)" }} />
-          </div>
-
-          <div className="relative max-w-[1280px] mx-auto px-5 sm:px-8 pt-36 sm:pt-44 pb-20 sm:pb-28">
-            <div className="grid lg:grid-cols-[1.08fr_0.92fr] gap-y-12 lg:gap-x-16 items-center">
-              <Reveal>
-                <motion.span variants={fadeUp} className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: UI.blue }}>
-                  About Blue-IQ
-                </motion.span>
-                <motion.h1 variants={fadeUp} custom={1} className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.0]" style={{ fontSize: "clamp(2.4rem, 5vw, 4rem)", color: UI.ink }}>
-                  We&apos;re a document-intelligence company.
-                </motion.h1>
-                <motion.p variants={fadeUp} custom={2} className="mt-6 font-sans-g leading-relaxed max-w-[54ch]" style={{ fontSize: "1.1rem", color: UI.sub }}>
-                  We started Blue-IQ because the documents that run real businesses, from clinical resumes to enterprise contracts, were still being read by hand, or by tools that quietly guessed when they got stuck.
-                </motion.p>
-                <motion.p variants={fadeUp} custom={3} className="mt-5 font-sans-g leading-relaxed max-w-[54ch]" style={{ fontSize: "1.05rem", color: UI.sub }}>
-                  So we built Sonar: an engine that reads with real domain knowledge, and the honesty to say what it isn&apos;t sure of. It now powers two of our own products and a growing set of custom platforms we build for clients.
-                </motion.p>
-                <motion.div variants={fadeUp} custom={4} className="mt-8 flex flex-wrap items-center gap-3">
-                  <Magnetic href="/contact" className="inline-flex items-center gap-2 font-sans-g text-[15px] font-semibold text-white px-6 py-3.5 rounded-lg" style={{ background: UI.blue, boxShadow: `0 16px 34px -16px ${UI.blue}` }}>
-                    Talk to us <MoveRight className="w-4 h-4" strokeWidth={2} />
-                  </Magnetic>
-                  <a href="/products" className="inline-flex items-center gap-2 font-sans-g text-[15px] font-semibold px-6 py-3.5 rounded-lg transition-colors hover:bg-white" style={{ border: `1px solid ${UI.line2}`, color: UI.ink }}>
-                    See our products
-                  </a>
-                </motion.div>
-              </Reveal>
-
-              {/* spec-sheet panel (bordered, no shadow, blueprint motif) */}
-              <Reveal>
-                <motion.div variants={fadeUp} custom={2} className="relative overflow-hidden rounded-2xl p-7 sm:p-9" style={{ background: UI.surface, border: `1px solid ${UI.line2}` }}>
-                  <div aria-hidden className="absolute inset-0 pointer-events-none bx-blueprint-fine opacity-[0.6]" />
-                  <div className="relative">
-                    <div className="flex items-center justify-between">
-                      <span className="font-mono-g text-[12px]" style={{ color: UI.faint }}>SPEC / OVERVIEW</span>
-                      <span className="w-2 h-2 rounded-sm" style={{ background: UI.blue }} />
-                    </div>
-                    <div className="mt-6" style={{ borderTop: `1px solid ${UI.line}` }}>
-                      {heroSpec.map((s) => (
-                        <div key={s.k} className="grid grid-cols-[0.7fr_1.3fr] gap-4 py-4" style={{ borderBottom: `1px solid ${UI.line}` }}>
-                          <div className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.12em]" style={{ color: UI.blue }}>{s.k}</div>
-                          <div className="font-sans-g text-[15px]" style={{ color: UI.ink }}>{s.v}</div>
-                        </div>
-                      ))}
-                    </div>
-                    <p className="mt-6 font-mono-g text-[12px] leading-relaxed" style={{ color: UI.faint }}>
-                      Read → score → deliver as structured data.
-                    </p>
-                  </div>
-                </motion.div>
-              </Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ───────── what we build (editorial divide-y rows) ───────── */}
-        <section className="max-w-[1280px] mx-auto px-5 sm:px-8 py-20 sm:py-28">
-          <Reveal className="max-w-[640px] mb-12 sm:mb-16">
-            <motion.span variants={fadeUp} className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: UI.blue }}>
-              What we build
-            </motion.span>
-            <motion.h2 variants={fadeUp} custom={1} className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.0]" style={{ fontSize: "clamp(2rem, 3.8vw, 3.2rem)", color: UI.ink }}>
-              One engine, three ways to put it to work.
-            </motion.h2>
-          </Reveal>
-          <Reveal>
-            <motion.div variants={fadeUp} style={{ borderTop: `1px solid ${UI.line2}` }}>
-              {builds.map((r) => (
-                <div key={r.eyebrow} className="grid lg:grid-cols-[0.85fr_1.15fr] gap-3 lg:gap-14 py-9 sm:py-11" style={{ borderBottom: `1px solid ${UI.line2}` }}>
-                  <div>
-                    <div className="font-sans-g text-[13px] font-semibold uppercase tracking-[0.12em]" style={{ color: UI.blue }}>{r.eyebrow}</div>
-                    <div className="mt-2.5 font-mono-g text-[12px]" style={{ color: UI.faint }}>{r.tag}</div>
-                  </div>
-                  <div>
-                    <h3 className="font-display font-light tracking-[-0.02em] leading-[1.12]" style={{ fontSize: "clamp(1.4rem, 2.6vw, 2rem)", color: UI.ink }}>{r.h}</h3>
-                    <p className="mt-3.5 font-sans-g leading-relaxed max-w-[56ch]" style={{ fontSize: "1.02rem", color: UI.sub }}>{r.b}</p>
-                    <a href={r.href} className="inline-flex items-center gap-1.5 mt-5 font-sans-g text-[15px] font-semibold group" style={{ color: UI.blue2 }}>
-                      {r.cta} <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </Reveal>
-        </section>
-
-        {/* ───────── Sonar (dark anchor) ───────── */}
-        <section id="sonar" className="scroll-mt-20" style={{ background: DEEP, color: "#fff" }}>
-          <div className="max-w-[1280px] mx-auto px-5 sm:px-8 py-20 sm:py-28">
-            <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-y-12 lg:gap-x-16 items-center">
-              <Reveal>
-                <motion.span variants={fadeUp} className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: UI.blue3 }}>
-                  The Sonar engine
-                </motion.span>
-                <motion.h2 variants={fadeUp} custom={1} className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.0]" style={{ fontSize: "clamp(2rem, 3.8vw, 3.4rem)", color: "#fff" }}>
-                  Sonar is the engine behind everything we build.
-                </motion.h2>
-                <motion.p variants={fadeUp} custom={2} className="mt-6 font-sans-g leading-relaxed max-w-[46ch]" style={{ fontSize: "1.05rem", color: "rgba(255,255,255,0.74)" }}>
-                  It takes in raw documents and data, pulls out the fields or clauses that matter, and returns them as structured output with a confidence score attached to every value.
-                </motion.p>
-                <div className="mt-9 space-y-5">
-                  {sonarPoints.map((s, i) => (
-                    <motion.div key={s.t} variants={fadeUp} custom={3 + i} className="flex items-start gap-4">
-                      <span className="grid place-items-center w-11 h-11 rounded-xl shrink-0" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.16)", color: "#fff" }}>
-                        <s.Icon className="w-5 h-5" strokeWidth={1.6} />
-                      </span>
-                      <div>
-                        <div className="font-sans-g text-[15.5px] font-semibold" style={{ color: "#fff" }}>{s.t}</div>
-                        <div className="font-sans-g text-[13.5px] leading-relaxed mt-0.5" style={{ color: "rgba(255,255,255,0.62)" }}>{s.d}</div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </Reveal>
-              <Reveal><motion.div variants={fadeUp} custom={1}><SonarVisual /></motion.div></Reveal>
-            </div>
-          </div>
-        </section>
-
-        {/* ───────── how we work (editorial divide-y rows) ───────── */}
-        <section className="max-w-[1280px] mx-auto px-5 sm:px-8 py-20 sm:py-28">
-          <Reveal className="max-w-[640px] mb-12 sm:mb-16">
-            <motion.span variants={fadeUp} className="font-sans-g text-[12px] font-semibold uppercase tracking-[0.16em]" style={{ color: UI.blue }}>
-              How we work
-            </motion.span>
-            <motion.h2 variants={fadeUp} custom={1} className="mt-4 font-display font-light tracking-[-0.03em] leading-[1.0]" style={{ fontSize: "clamp(2rem, 3.6vw, 3.2rem)", color: UI.ink }}>
-              The principles the work runs on.
-            </motion.h2>
-          </Reveal>
-          <Reveal>
-            <motion.div variants={fadeUp} style={{ borderTop: `1px solid ${UI.line2}` }}>
-              {values.map((v) => (
-                <div key={v.n} className="grid lg:grid-cols-[0.85fr_1.15fr] gap-3 lg:gap-14 py-9 sm:py-11" style={{ borderBottom: `1px solid ${UI.line2}` }}>
-                  <div>
-                    <div className="font-mono-g text-[12px]" style={{ color: UI.faint }}>{v.n}</div>
-                    <h3 className="mt-2 font-display font-light tracking-[-0.02em] leading-[1.12]" style={{ fontSize: "clamp(1.3rem, 2.3vw, 1.75rem)", color: UI.ink }}>{v.h}</h3>
-                  </div>
-                  <div>
-                    <p className="font-sans-g leading-relaxed max-w-[56ch]" style={{ fontSize: "1.02rem", color: UI.sub }}>{v.b}</p>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </Reveal>
-        </section>
-
-        <CtaBand
-          eyebrow="Work with us"
-          title="Want to see what Sonar can do with your documents?"
-          text="Bring a real file. We'll show you the structured output, and talk through whether a product or a custom build is the right fit."
-          secondary={{ label: "Explore solutions", href: "/solutions" }}
+        <PageHero
+          title="We build software that reads the documents a business runs on."
+          lede="Blue-IQ is a document-intelligence company: our products read the resumes, contracts and invoices your work arrives as, return them as structured data, and tell you how far to trust every field they hand back."
+          meta={["Sonar engine", "ParsingLab · Govern", "Custom builds"]}
         />
+
+        {/* ── the problem, stated at the level a business feels it ── */}
+        <Band tone="grey">
+          <SectionHead
+            title="Every hire, contract and invoice arrives as a file."
+            sub="Somebody opens it, works out what it says, and types it into a system that could have read it in the first place. That work is invisible, it is constant, and it scales with everything good that happens to a company."
+          />
+          <Ruled rows={arrives} />
+        </Band>
+
+        {/* ── the engine. The nav links here: /about#sonar ── */}
+        <Band tone="tint" id="sonar">
+          <SectionHead
+            title="Sonar tells you how far to trust what it read."
+            sub="The engine under everything we build. Most systems hand back an answer and leave you to work out whether to believe it — which means someone re-reads the document anyway, and the machine has saved nobody anything."
+          />
+          <Ruled rows={engine} />
+          <Claim />
+          <StatStrip stats={specs} />
+        </Band>
+
+        {/* ── what the engine ships as ── */}
+        <Band>
+          <SectionHead
+            title="What that ships as."
+            sub="Two products today, and the builds we take on when neither of them is the right shape. They are delivery vehicles for the same read — pick the one that fits the way your team already works."
+          />
+          <div className="mt-14">
+            {built.map((row, i) => (
+              <BuildRow key={row.t} row={row} i={i} />
+            ))}
+            <div style={{ borderTop: `1px solid ${SA.line2}` }} />
+          </div>
+        </Band>
+
+        {/* ── how we work: only what we can actually stand behind ── */}
+        <Band tone="grey">
+          <SectionHead
+            title="How we work."
+            sub="Three things that are true of every engagement, whether you take a product off the shelf or we build the thing around your paperwork."
+          />
+          <Ruled rows={how} />
+
+          <div className="mt-12">
+            <Cta href="/solutions" label="See how teams put it to work" />
+          </div>
+        </Band>
       </main>
+
       <SiteFooter />
     </div>
   );

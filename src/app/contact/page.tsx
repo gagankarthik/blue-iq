@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import ContactClient from "./ContactClient";
 
 export const metadata: Metadata = {
-  title: "Book an Enterprise Document AI Demo",
+  title: "Talk to Blue-IQ",
   description:
-    "Talk to Blue-IQ about document AI for your resumes, contracts, or invoices. Book a walkthrough on your own files or scope a custom solution with our team.",
+    "Tell us what you are trying to read. Send a resume, a contract, an invoice or a photographed scan, and we will show you the fields Sonar returns, the confidence scores, and what it flags. Pricing is scoped to volume and the products in play.",
   alternates: { canonical: "/contact" },
   openGraph: {
     title: "Contact Blue-IQ",
-    description: "Book a walkthrough on your own resumes or contracts, or scope a custom solution with our team.",
+    description:
+      "Send us the document you assume will break it. Ask about pricing, a walkthrough on your own files, or a custom build.",
     url: "https://blue-iq.com/contact",
     type: "website",
   },

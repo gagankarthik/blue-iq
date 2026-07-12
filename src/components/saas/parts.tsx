@@ -4,58 +4,63 @@ import { motion, useReducedMotion } from "framer-motion";
 import { SA } from "@/lib/theme";
 import { Words, child, SPRING_SOFT } from "@/components/saas/motion";
 
-/* The one section header used by every section below the hero, so the rhythm
-   down the page never changes. The headline assembles word by word; the label
-   and the standfirst follow it in. */
+/* Section headers.
+
+   There is no eyebrow. Every section used to open with the same mono-caps
+   kicker behind a little dash — "TRUST", "QUESTIONS", "HOW IT WORKS" — which
+   is a label telling you what you are about to read instead of just letting
+   you read it. The reference has none of them anywhere on its page, and the
+   headline is stronger standing alone.
+
+   The statement is set large and *light* (weight 400, -0.032em), not large
+   and bold: scale carries the hierarchy, weight doesn't need to help. */
 export function SectionHead({
-  eyebrow,
   title,
-  accent,
   sub,
+  align = "split",
 }: {
-  eyebrow: string;
   title: string;
-  /* the italic-serif phrase that closes the headline */
-  accent?: string;
   sub: string;
+  align?: "split" | "center";
 }) {
   const reduce = useReducedMotion();
 
+  const Title = (
+    <Words
+      as="h2"
+      text={title}
+      className="font-display font-normal leading-[1.08]"
+      style={{ fontSize: "clamp(2.2rem, 4.6vw, 3.6rem)", letterSpacing: "-0.032em", color: SA.ink }}
+    />
+  );
+
+  const Sub = (
+    <motion.p
+      variants={child}
+      initial={reduce ? false : "hidden"}
+      whileInView="show"
+      viewport={{ once: true, margin: "-12%" }}
+      transition={{ ...SPRING_SOFT, delay: 0.25 }}
+      className="font-sans-g leading-[1.65] max-w-[48ch]"
+      style={{ fontSize: "1.02rem", color: SA.sub }}
+    >
+      {sub}
+    </motion.p>
+  );
+
+  if (align === "center") {
+    return (
+      <div className="flex flex-col items-center text-center max-w-[680px] mx-auto">
+        {Title}
+        <div className="mt-7">{Sub}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center text-center max-w-[640px] mx-auto">
-      <motion.span
-        variants={child}
-        initial={reduce ? false : "hidden"}
-        whileInView="show"
-        viewport={{ once: true, margin: "-12%" }}
-        className="font-mono-g text-[11px] uppercase tracking-[0.18em] px-2.5 py-1 rounded-full"
-        style={{ background: SA.bg2, border: `1px solid ${SA.line}`, color: SA.faint }}
-      >
-        {eyebrow}
-      </motion.span>
-
-      <Words
-        as="h2"
-        text={title}
-        accent={accent}
-        delay={0.08}
-        className="mt-6 font-display font-normal tracking-[-0.035em] leading-[1.1]"
-        style={{ fontSize: "clamp(1.9rem, 3.8vw, 2.9rem)", color: SA.ink }}
-        accentClassName="font-serif-i"
-        accentStyle={{ fontSize: "1.06em", color: SA.accent }}
-      />
-
-      <motion.p
-        variants={child}
-        initial={reduce ? false : "hidden"}
-        whileInView="show"
-        viewport={{ once: true, margin: "-12%" }}
-        transition={{ ...SPRING_SOFT, delay: 0.3 }}
-        className="mt-5 font-sans-g leading-[1.65] max-w-[52ch]"
-        style={{ fontSize: "1.02rem", color: SA.sub }}
-      >
-        {sub}
-      </motion.p>
+    <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] gap-y-6 lg:gap-x-16 items-end">
+      <div>{Title}</div>
+      <div className="lg:pb-2">{Sub}</div>
     </div>
   );
 }

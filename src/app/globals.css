@@ -190,26 +190,21 @@
   }
 }
 
-/* shared Blue-IQ type utilities (used across all pages) — Phonic, falling back
-   to Space Grotesk (loaded), then system sans */
-.font-display { font-family: "Phonic", var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.02em; }
-.font-sans-g  { font-family: "Phonic", var(--font-geist-sans), system-ui, sans-serif; }
+/* Shared Blue-IQ type utilities (used across all pages).
+
+   The "Phonic" family that used to lead this stack was never loaded anywhere —
+   it was a placeholder for a self-hosted face that never arrived, so every
+   lookup fell straight through it. Removed: one real family, no fiction. */
+.font-display { font-family: var(--font-geist-sans), system-ui, sans-serif; letter-spacing: -0.02em; }
+.font-sans-g  { font-family: var(--font-geist-sans), system-ui, sans-serif; }
 .font-mono-g  { font-family: var(--font-geist-mono), ui-monospace, monospace; }
 
-/* the one editorial note in an otherwise grotesque page: an italic serif word
-   set inside a headline. Optically larger, so it needs its own sizing. */
-.font-serif-i {
-  font-family: var(--font-serif-display), ui-serif, Georgia, serif;
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-}
 
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
 
 /* site-wide base (one theme across every page) */
 html { scroll-behavior: smooth; }
-body { font-family: "Phonic", var(--font-geist-sans), system-ui, sans-serif; background: oklch(96.7% 0.005 95.1); color: #1A1712; }
+body { font-family: var(--font-geist-sans), system-ui, sans-serif; background: oklch(96.7% 0.005 95.1); color: #1A1712; }
 ::selection { background: #002181; color: #fff; }
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: oklch(96.7% 0.005 95.1); }
@@ -218,8 +213,11 @@ body { font-family: "Phonic", var(--font-geist-sans), system-ui, sans-serif; bac
 a:focus-visible, button:focus-visible { outline: 2px solid #002181; outline-offset: 3px; border-radius: 8px; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
-/* prevent any horizontal scroll on small screens */
-html, body { max-width: 100%; overflow-x: hidden; }
+/* Prevent horizontal scroll on small screens.
+   `clip`, NOT `hidden`: overflow-x:hidden makes the body a scroll container,
+   which silently breaks `position: sticky` for every descendant on the page.
+   `clip` cuts the overflow without creating a scroll container. */
+html, body { max-width: 100%; overflow-x: clip; }
 
 /* cursor-tracked spotlight surface (driven by --mx/--my/--spot from SpotlightCard) */
 .spotlight { position: relative; isolation: isolate; }
@@ -344,6 +342,30 @@ html, body { max-width: 100%; overflow-x: hidden; }
   background-size: 56px 56px;
   mask-image: radial-gradient(ellipse 100% 62% at 50% 30%, #000 20%, transparent 78%);
   -webkit-mask-image: radial-gradient(ellipse 100% 62% at 50% 30%, #000 20%, transparent 78%);
+}
+
+/* Cursor-proximity border light (GlowBorder). The glow lives on a ::before that
+   is masked to the 1px rim, so it lights the *edge* — it is not a neon halo, and
+   it is not a thick coloured side-border (see DESIGN.md §10). */
+.glow-border {
+  position: relative;
+  isolation: isolate;
+}
+.glow-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(240px circle at var(--gx, 50%) var(--gy, 50%), var(--glow), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: var(--go, 0);
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* the same grid, inverted for the dark hero */
