@@ -116,7 +116,7 @@ export default function Ledger() {
             style={{ fontSize: "1.05rem", color: SA.sub }}
           >
             Most systems hand back an answer and leave you to work out whether to believe it. Ours hands back the answer
-            and how sure it is — so your team spends its attention on the handful of fields that need a human, not on
+            and how sure it is so your team spends its attention on the handful of fields that need a human, not on
             re-checking the ones that do not.
           </motion.p>
         </div>

@@ -44,7 +44,7 @@ const integration: { t: string; d: string }[] = [
   },
   {
     t: "Custom builds",
-    d: "If the shape of your workflow does not fit ParsingLab or Govern, we build the one that does — same engine, engineered and supported by us.",
+    d: "If the shape of your workflow does not fit Capture, Spend or Govern, we build the one that does — same engine, engineered and supported by us.",
   },
 ];
 
@@ -113,7 +113,7 @@ export default function ResourcesClient() {
             transition={{ ...SPRING_SOFT, delay: 0.1 }}
             className="mt-10 flex flex-col sm:flex-row sm:items-center gap-x-10 gap-y-4"
           >
-            <Cta href="https://www.parsinglab.blue-iq.ai/" label="ParsingLab" external />
+            <Cta href="https://www.parsinglab.blue-iq.ai/" label="Capture" external />
             <Cta href="https://govern.blue-iq.ai/" label="Govern" external />
             <p className="font-sans-g text-[14.5px] leading-[1.6] sm:ml-auto max-w-[42ch]" style={{ color: SA.faint }}>
               There is no public docs portal yet. The API reference goes out with your keys — ask us and we will send

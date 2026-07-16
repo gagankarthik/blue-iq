@@ -65,24 +65,31 @@ const specs = [
    products are how the work ships, not the point of the company. */
 const built = [
   {
-    t: "ParsingLab",
-    d: "Resumes and credentials, read into clean candidate records. Built for the teams who hire faster than they can read.",
+    t: "Capture",
+    d: "The foundation. Any document — resumes, contracts, invoices, licences, grants — read into structured, confidence-scored data. Everything below is built on it.",
     href: "https://www.parsinglab.blue-iq.ai/",
-    label: "Open ParsingLab",
+    label: "Open Capture",
     external: true,
   },
   {
+    t: "Spend",
+    d: "Spend and entitlement intelligence. It reconciles invoices, purchase orders and contracts against each other, and flags the money leaking between them.",
+    href: "/products#spend",
+    label: "See Spend",
+    external: false,
+  },
+  {
     t: "Govern",
-    d: "Contract review and risk. It reads the agreement, surfaces the clauses that carry consequences, and shows its confidence in each one.",
+    d: "Contract and compliance intelligence. It reads the agreement, surfaces the clauses that carry consequences, and shows its confidence in each one.",
     href: "https://govern.blue-iq.ai/",
     label: "Open Govern",
     external: true,
   },
   {
-    t: "Custom builds",
-    d: "When the paperwork is specific enough that neither product fits it, we build around the documents you actually have. Same engine, your schema, your review workflow.",
-    href: "/contact",
-    label: "Talk to us",
+    t: "Editions & custom builds",
+    d: "Campus and Workforce package all three for an industry. And when the paperwork fits none of them, we build around the documents you actually have — same engine, your schema, your review workflow.",
+    href: "/products#editions",
+    label: "See the editions",
     external: false,
   },
 ];
@@ -91,8 +98,8 @@ const built = [
    founding story, a headcount, a values poster — was cut rather than invented. */
 const how = [
   {
-    t: "One engine, not three",
-    d: "ParsingLab, Govern and every custom build are the same engine with a different surface on top. There is no second-tier model behind the cheaper product.",
+    t: "One engine, one foundation",
+    d: "Capture, Spend, Govern and every edition are the same engine with a different surface on top. There is no second-tier model behind the cheaper product.",
   },
   {
     t: "An API, or a finished product",
@@ -169,7 +176,7 @@ export default function AboutClient() {
         <PageHero
           title="We build software that reads the documents a business runs on."
           lede="Blue-IQ is a document-intelligence company: our products read the resumes, contracts and invoices your work arrives as, return them as structured data, and tell you how far to trust every field they hand back."
-          meta={["Sonar engine", "ParsingLab · Govern", "Custom builds"]}
+          meta={["Sonar engine", "Capture foundation", "Spend · Govern", "Campus · Workforce"]}
         />
 
         {/* ── the problem, stated at the level a business feels it ── */}
@@ -196,7 +203,7 @@ export default function AboutClient() {
         <Band>
           <SectionHead
             title="What that ships as."
-            sub="Two products today, and the builds we take on when neither of them is the right shape. They are delivery vehicles for the same read — pick the one that fits the way your team already works."
+            sub="A foundation, two applications built on it, the editions that bundle them, and the builds we take on when none of them is the right shape. Every one is a delivery vehicle for the same read — pick the one that fits how your team already works."
           />
           <div className="mt-14">
             {built.map((row, i) => (

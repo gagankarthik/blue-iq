@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: "Contact Blue-IQ",
     description:
       "Send us the document you assume will break it. Ask about pricing, a walkthrough on your own files, or a custom build.",
-    url: "https://blue-iq.com/contact",
+    url: "https://blue-iq.ai/contact",
     type: "website",
   },
 };

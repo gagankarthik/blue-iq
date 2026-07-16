@@ -9,8 +9,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "About Blue-IQ",
     description:
-      "The company, and the Sonar engine behind ParsingLab, Govern and the platforms we build to order.",
-    url: "https://blue-iq.com/about",
+      "The company, and the Sonar engine behind Capture, Spend, Govern and the editions built on them.",
+    url: "https://blue-iq.ai/about",
     type: "website",
   },
 };

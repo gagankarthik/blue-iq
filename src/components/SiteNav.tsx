@@ -37,7 +37,7 @@ type Menu = {
   id: string;
   label: string;
   href: string;
-  featured: { title: string; blurb: string; cta: string; geo: string; tint: string };
+  featured?: { title: string; blurb: string; cta: string; geo: string; tint: string };
   groups: Group[];
 };
 
@@ -48,7 +48,7 @@ const menus: Menu[] = [
     href: "/products",
     featured: {
       title: "The Sonar platform",
-      blurb: "Two products, plus custom builds, one engine.",
+      blurb: "One engine, one foundation, applications and editions on top.",
       cta: "Explore the platform",
       geo: "Geometric-Line-04.svg",
       tint: "#EAF0FF",
@@ -58,24 +58,24 @@ const menus: Menu[] = [
         header: "Products",
         items: [
           { label: "All products", href: "/products" },
-          { label: "ParsingLab", href: "https://www.parsinglab.blue-iq.ai/", external: true },
+          { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true },
+          { label: "Spend", href: "/products#spend" },
           { label: "Govern", href: "https://govern.blue-iq.ai/", external: true },
+        ],
+      },
+      {
+        header: "Editions",
+        items: [
+          { label: "Campus", href: "/products#editions" },
+          { label: "Workforce", href: "/products#editions" },
         ],
       },
       {
         header: "Engine",
         items: [
           { label: "Sonar engine", href: "/about#sonar" },
-          { label: "How it works", href: "/about#sonar" },
           { label: "Confidence scoring", href: "/about#sonar" },
-        ],
-      },
-      {
-        header: "Build",
-        items: [
-          { label: "How the API works", href: "/resources#api" },
-          { label: "Formats it reads", href: "/resources#formats" },
-          { label: "Integrations", href: "/solutions#integrations" },
+          { label: "How it works", href: "/about#sonar" },
         ],
       },
     ],
@@ -103,9 +103,12 @@ const menus: Menu[] = [
       {
         header: "Industries",
         items: [
-          { label: "Healthcare staffing", href: "/solutions#industries" },
-          { label: "Legal & contracts", href: "/solutions#industries" },
-          { label: "Procurement & finance", href: "/solutions#industries" },
+          { label: "IT sector", href: "/solutions#it" },
+          { label: "Education", href: "/solutions#education" },
+          { label: "Workforce", href: "/solutions#workforce" },
+          { label: "Healthcare staffing", href: "/solutions#healthcare" },
+          { label: "Legal & contracts", href: "/solutions#legal" },
+          { label: "Procurement & finance", href: "/solutions#procurement" },
         ],
       },
       /* The "Roles" group is gone. Operations / Legal teams / Engineering all
@@ -124,9 +127,9 @@ const menus: Menu[] = [
     label: "Resources",
     href: "/resources",
     featured: {
-      title: "Docs & guides",
-      blurb: "Everything you need to integrate Blue-IQ.",
-      cta: "Browse the library",
+      title: "How Sonar works",
+      blurb: "The formats it reads, the API, and how we handle your data.",
+      cta: "See the resources",
       geo: "Geometric-Line-14.svg",
       tint: "#EAF0FF",
     },
@@ -161,7 +164,7 @@ const menus: Menu[] = [
     href: "/contact#pricing",
     featured: {
       title: "Scoped to what you read",
-      blurb: "Tell us the documents and we'll give you a number.",
+      blurb: "Tell us the documents and the volume, and we price it to that.",
       cta: "Get a price",
       geo: "Geometric-Line-06.svg",
       tint: "#EAF0FF",
@@ -178,12 +181,20 @@ const menus: Menu[] = [
           { label: "Talk to sales", href: "/contact" },
         ],
       },
+      {
+        header: "Before you commit",
+        items: [
+          { label: "Book a demo", href: "/contact" },
+          { label: "Formats it reads", href: "/resources#formats" },
+          { label: "Security & privacy", href: "/privacy" },
+        ],
+      },
     ],
   },
 ];
 
 const loginItems: Item[] = [
-  { label: "ParsingLab", href: "https://www.parsinglab.blue-iq.ai/", external: true },
+  { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true },
   { label: "Govern", href: "https://govern.blue-iq.ai/", external: true },
 ];
 
@@ -213,12 +224,12 @@ function LinkRow({ it, onClick }: { it: Item; onClick?: () => void }) {
   );
 }
 
-/* Each product says what you are actually logging in to, because "ParsingLab"
+/* Each product says what you are actually logging in to, because "Capture"
    and "Govern" mean nothing to a first-time visitor who has landed on the nav
    by accident. */
 const loginBlurb: Record<string, string> = {
-  ParsingLab: "Resume and credential parsing",
-  Govern: "Contract review and risk",
+  Capture: "Any document into structured data",
+  Govern: "Contract and compliance review",
 };
 
 function LoginMenu({ dark }: { dark: boolean }) {
@@ -248,62 +259,69 @@ function LoginMenu({ dark }: { dark: boolean }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={FADE}
-            className="absolute right-0 top-full pt-3 w-[320px]"
+            className="absolute right-0 top-full pt-3"
           >
+            {/* compact and content-sized: two products and a way in for the
+                people who have no login. Tight rows, one label, no oversized
+                slab. */}
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl p-2 w-[244px]"
               style={{
                 background: MZ.surface,
                 border: `1px solid ${MZ.line2}`,
                 boxShadow: "0 26px 54px -24px rgba(20,18,10,0.3)",
               }}
             >
-              {/* The icon-in-a-tinted-rounded-square chip is gone. It is the same
-                  tell this page bans everywhere else, and it was carrying no
-                  information — a generic document glyph next to the word
-                  "ParsingLab" tells you nothing the word did not. The product
-                  name at proper size, and a line saying what it is, does. */}
+              <p
+                className="px-2.5 pt-1.5 pb-1.5 font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em]"
+                style={{ color: MZ.faint }}
+              >
+                Log in to
+              </p>
               {loginItems.map((it) => (
                 <a
                   key={it.label}
                   href={it.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-[var(--hov)]"
-                  style={{ "--hov": MZ.bg2, borderBottom: `1px solid ${MZ.line}` } as React.CSSProperties}
+                  className="group flex items-center justify-between gap-4 rounded-xl px-2.5 py-2 transition-colors hover:bg-[var(--hov)]"
+                  style={{ "--hov": MZ.bg2 } as React.CSSProperties}
                 >
-                  <span className="flex-1 min-w-0">
+                  <span className="min-w-0">
                     <span
-                      className="block font-display text-[16px] leading-tight tracking-[-0.015em] transition-colors group-hover:text-[var(--acc)]"
+                      className="block font-sans-g text-[14.5px] font-semibold leading-tight transition-colors group-hover:text-[var(--acc)]"
                       style={{ color: MZ.ink, "--acc": MZ.accent } as React.CSSProperties}
                     >
                       {it.label}
                     </span>
-                    <span className="block mt-0.5 font-sans-g text-[12.5px]" style={{ color: MZ.sub }}>
+                    <span className="block mt-0.5 font-sans-g text-[12px] leading-tight" style={{ color: MZ.faint }}>
                       {loginBlurb[it.label]}
                     </span>
                   </span>
                   <ArrowUpRight
-                    className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                     strokeWidth={2}
                     style={{ color: MZ.faint }}
                   />
                 </a>
               ))}
 
-              {/* the other half of a login menu: the people who do not have one */}
-              <a
-                href="/contact"
-                className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-[var(--hov)]"
-                style={{ "--hov": MZ.bg2, background: MZ.bg2 } as React.CSSProperties}
+              <div
+                className="mt-1.5 pt-2 px-2.5 pb-0.5 flex items-center justify-between gap-4"
+                style={{ borderTop: `1px solid ${MZ.line}` }}
               >
                 <span className="font-sans-g text-[12.5px]" style={{ color: MZ.sub }}>
-                  No account yet?
+                  No account?
                 </span>
-                <span className="font-sans-g text-[12.5px] font-semibold" style={{ color: MZ.accent }}>
-                  Talk to us
-                </span>
-              </a>
+                <a
+                  href="/contact"
+                  className="group inline-flex items-center gap-1 font-sans-g text-[12.5px] font-semibold"
+                  style={{ color: MZ.accent }}
+                >
+                  Talk to sales
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
+                </a>
+              </div>
             </div>
           </motion.div>
         )}
@@ -327,7 +345,11 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
     setSection(null);
   };
 
-  const dark = overDark && !scrolled && !open && !mobile;
+  /* Over the full-bleed hero the bar stays light (transparent, white text)
+     whether or not a menu is open — a menu opening no longer flips it to dark
+     text on a transparent bar, which was unreadable over the film. It only
+     leaves this mode once you scroll, where it becomes glass. */
+  const dark = overDark && !scrolled && !mobile;
 
   /* At rest: nothing — no white slab, no rule, no shadow.
      On scroll: glass, and glass properly — blurred AND saturated, so colour
@@ -351,10 +373,13 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
       className="fixed top-0 inset-x-0 z-[60]"
       style={{
         background: mobile ? "#FFFFFF" : glass ? "rgba(255,255,255,0.60)" : "transparent",
-        backdropFilter: glass ? "blur(20px) saturate(180%)" : dark ? "blur(6px)" : "none",
-        WebkitBackdropFilter: glass ? "blur(20px) saturate(180%)" : dark ? "blur(6px)" : "none",
+        /* Over the hero the bar is completely transparent — no wash, no blur, no
+           rule — at rest and while a dropdown is open. Only scrolling past the
+           hero turns it to glass. */
+        backdropFilter: glass ? "blur(20px) saturate(180%)" : "none",
+        WebkitBackdropFilter: glass ? "blur(20px) saturate(180%)" : "none",
         borderBottom: `1px solid ${
-          mobile ? MZ.line2 : glass ? "rgba(11,11,15,0.07)" : dark ? "rgba(255,255,255,0.08)" : "transparent"
+          mobile ? MZ.line2 : glass ? "rgba(11,11,15,0.07)" : "transparent"
         }`,
         boxShadow: glass ? "inset 0 1px 0 rgba(255,255,255,0.70), 0 10px 32px -20px rgba(11,11,15,0.22)" : "none",
         transition: "background .3s ease, border-color .3s ease, box-shadow .3s ease",
@@ -458,53 +483,57 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
             transition={FADE}
             className="hidden lg:block absolute inset-x-0 top-full px-5 sm:px-8"
           >
-            <div className="max-w-[1080px] mx-auto mt-3">
+            {/* the panel is sized to its content and centred, so a menu with one
+                small group is a small dropdown and a menu with a featured card
+                and three groups is a wide one — the width follows the content,
+                it is not a fixed slab every menu has to fill. */}
+            <div className="mt-3 flex justify-center">
               <div
-                className="rounded-3xl p-4 grid grid-cols-[300px_1fr] gap-4"
+                className="rounded-3xl p-3 flex gap-3"
                 style={{
                   background: MZ.surface,
                   border: `1px solid ${MZ.line2}`,
                   boxShadow: "0 32px 72px -30px rgba(20,18,10,0.32)",
+                  maxWidth: "calc(100vw - 2rem)",
                 }}
               >
-                <a
-                  href={active.href}
-                  className="group relative rounded-2xl p-6 overflow-hidden flex flex-col justify-between"
-                  style={{ background: active.featured.tint, minHeight: 230 }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`/Geometrics/${active.featured.geo}`}
-                    alt=""
-                    aria-hidden
-                    className="absolute -top-3 -right-3 w-24 h-24 object-contain opacity-90 transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="relative">
-                    <h3
-                      className="font-display font-medium text-[22px] leading-tight tracking-[-0.02em] max-w-[10ch]"
-                      style={{ color: MZ.ink }}
-                    >
-                      {active.featured.title}
-                    </h3>
-                    <p className="mt-2 font-sans-g text-[13px] leading-snug max-w-[22ch]" style={{ color: MZ.sub }}>
-                      {active.featured.blurb}
-                    </p>
-                  </div>
-                  <span
-                    className="relative inline-flex items-center gap-1.5 font-sans-g text-[13.5px] font-semibold"
-                    style={{ color: MZ.accent }}
+                {active.featured && (
+                  <a
+                    href={active.href}
+                    className="group relative rounded-2xl p-6 overflow-hidden flex flex-col justify-between w-[268px] shrink-0"
+                    style={{ background: active.featured.tint, minHeight: 216 }}
                   >
-                    {active.featured.cta}
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-                  </span>
-                </a>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/Geometrics/${active.featured.geo}`}
+                      alt=""
+                      aria-hidden
+                      className="absolute -top-3 -right-3 w-24 h-24 object-contain opacity-90 transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="relative">
+                      <h3
+                        className="font-display font-medium text-[22px] leading-tight tracking-[-0.02em] max-w-[10ch]"
+                        style={{ color: MZ.ink }}
+                      >
+                        {active.featured.title}
+                      </h3>
+                      <p className="mt-2 font-sans-g text-[13px] leading-snug max-w-[22ch]" style={{ color: MZ.sub }}>
+                        {active.featured.blurb}
+                      </p>
+                    </div>
+                    <span
+                      className="relative inline-flex items-center gap-1.5 font-sans-g text-[13.5px] font-semibold"
+                      style={{ color: MZ.accent }}
+                    >
+                      {active.featured.cta}
+                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
+                    </span>
+                  </a>
+                )}
 
-                <div
-                  className="grid gap-6 px-4 py-2"
-                  style={{ gridTemplateColumns: `repeat(${active.groups.length}, minmax(0, 1fr))` }}
-                >
+                <div className="flex gap-8 px-4 py-2">
                   {active.groups.map((g) => (
-                    <div key={g.header}>
+                    <div key={g.header} className="min-w-[164px]">
                       <p
                         className="font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em] mb-2"
                         style={{ color: MZ.faint }}
@@ -528,7 +557,7 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
       {/* mobile sheet */}
       {mobile && (
         <div className="lg:hidden" style={{ background: "#FFFFFF", borderBottom: `1px solid ${MZ.line2}` }}>
-          <div className="max-w-[1560px] mx-auto px-3 sm:px-5 pb-6 flex flex-col max-h-[80vh] overflow-y-auto overscroll-contain">
+          <div className="max-w-[1560px] mx-auto px-3 sm:px-5 pb-6 flex flex-col max-h-[80dvh] overflow-y-auto overscroll-contain">
             {menus.map((m) => {
               const exp = section === m.id;
               return (

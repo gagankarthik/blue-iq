@@ -214,11 +214,11 @@ export default function LegalPage({
               >
                 Questions about this document? Write to{" "}
                 <a
-                  href="mailto:hello@blue-iq.com"
+                  href="mailto:hello@blue-iq.ai"
                   className="underline underline-offset-4 decoration-1 transition-colors"
                   style={{ color: SA.accent, textDecorationColor: SA.line2 }}
                 >
-                  hello@blue-iq.com
+                  hello@blue-iq.ai
                 </a>
                 .
               </p>

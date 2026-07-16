@@ -29,7 +29,7 @@ import { Words, SPRING_SOFT } from "@/components/saas/motion";
 
 const routes: { label: string; href: string; note: string }[] = [
   { label: "What we do", href: "/", note: "The short version, from the top" },
-  { label: "The products", href: "/products", note: "ParsingLab, Govern, and custom builds" },
+  { label: "The products", href: "/products", note: "Capture, Spend, Govern, and the editions" },
   { label: "Solutions", href: "/solutions", note: "Custom work, integrations, and the industries we read for" },
   { label: "Talk to us", href: "/contact", note: "Send us the ugliest document you have" },
 ];

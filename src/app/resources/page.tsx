@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     title: "Blue-IQ Resources",
     description:
       "The API, the formats Sonar reads, how it scores and flags every field, and how your documents are handled.",
-    url: "https://blue-iq.com/resources",
+    url: "https://blue-iq.ai/resources",
     type: "website",
   },
 };

@@ -22,9 +22,9 @@ const geistMono = Geist_Mono({
 });
 
 
-const TITLE = "Blue-IQ | Enterprise Document AI Platform";
+const TITLE = "Blue-IQ | The Document Intelligence Platform";
 const DESC =
-  "Enterprise document AI that turns resumes, contracts, and invoices into structured, confidence-scored data. Powered by the Blue-IQ Sonar engine. SOC 2, HIPAA and GDPR aligned.";
+  "The document intelligence platform. Blue-IQ's Sonar engine reads any document and scores its confidence; Capture turns it into structured, trusted data, with Spend and Govern for invoices and contracts, packaged as the Campus and Workforce editions. SOC 2, HIPAA and GDPR aligned.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blue-iq.ai"),
@@ -37,9 +37,11 @@ export const metadata: Metadata = {
   keywords: [
     "document AI", "enterprise document AI", "intelligent document processing", "IDP software",
     "document data extraction", "AI contract review software", "contract intelligence", "clause extraction",
-    "resume parsing API", "healthcare resume parser", "candidate data extraction", "confidence scoring",
+    "candidate data extraction", "credential parsing", "confidence scoring", "spend intelligence",
+    "entitlement reconciliation", "invoice reconciliation", "contract compliance", "SAM license reconciliation",
     "enterprise document automation", "legacy parser migration", "document AI integrations", "schema-validated JSON",
-    "SOC 2", "HIPAA", "GDPR", "ParsingLab", "Blue-IQ Govern", "Sonar engine",
+    "SOC 2", "HIPAA", "GDPR", "Blue-IQ Capture", "Blue-IQ Spend", "Blue-IQ Govern", "Sonar engine",
+    "Campus edition", "Workforce edition",
   ],
   authors: [{ name: "Blue-IQ" }],
   creator: "Blue-IQ",
@@ -54,7 +56,7 @@ export const metadata: Metadata = {
     description: DESC,
     url: "https://blue-iq.ai",
     siteName: "Blue-IQ",
-    images: [{ url: "/logo.svg", width: 1200, height: 630, alt: "Blue-IQ, enterprise software company" }],
+    /* og:image comes from app/opengraph-image.tsx (a real 1200×630 raster) */
     locale: "en_US",
     type: "website",
   },
@@ -62,7 +64,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: TITLE,
     description: DESC,
-    images: ["/logo.svg"],
+    /* twitter:image also comes from app/opengraph-image.tsx */
   },
   category: "technology",
 };
@@ -93,12 +95,13 @@ const jsonLd = {
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       description: DESC,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "ParsingLab API and Govern via scoped demo; custom solutions scoped on request" },
+      offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Capture, Spend and Govern via scoped demo; Campus and Workforce editions and custom solutions scoped on request" },
       featureList: [
-        "Resume parsing to schema-validated JSON with confidence scoring (ParsingLab)",
-        "Contract clause extraction and playbook risk scoring (Govern)",
-        "Custom document and data product development",
-        "Enterprise legacy-system migrations and integrations",
+        "Any document into structured, confidence-scored data (Capture)",
+        "Spend and entitlement reconciliation across invoices, POs and contracts (Spend)",
+        "Contract and compliance intelligence against your own playbook (Govern)",
+        "Campus and Workforce editions packaging Capture, Spend and Govern by industry",
+        "Enterprise legacy-parser migrations and integrations",
       ],
       publisher: { "@id": "https://blue-iq.ai/#org" },
     },

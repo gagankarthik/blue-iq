@@ -3,6 +3,7 @@ import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import Hero from "@/components/saas/Hero";
 import Suite from "@/components/saas/Suite";
+import Sonar from "@/components/saas/Sonar";
 import Ledger from "@/components/saas/Ledger";
 import Industries from "@/components/saas/Industries";
 import Security from "@/components/saas/Security";
@@ -31,16 +32,22 @@ export default function Home() {
         Skip to content
       </a>
 
-      <SiteNav />
+      {/* overDark: the bar floats over the full-bleed hero film, light, and
+          turns to glass once you scroll past it */}
+      <SiteNav overDark />
 
       <main id="main">
         <Hero />
         {/* one product per band — the sentence carries it, no card grid */}
         <Suite />
+        {/* the engine underneath: one reader, Sonar, drawn as a chip with the
+            signal tracing through it — and the "send us a document" offer */}
+        <Sonar />
         {/* the numbers, as a spec ledger: tiny label, enormous value, ruled */}
         <Ledger />
-        <Industries />
         <Security />
+        <Industries />
+        
         <Faq />
       </main>
 

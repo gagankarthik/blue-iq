@@ -29,7 +29,7 @@ import SiteFooter from "@/components/SiteFooter";
    thing that has to change.
    ──────────────────────────────────────────────────────────────── */
 
-const EMAIL = "hello@blue-iq.com";
+const EMAIL = "hello@blue-iq.ai";
 
 type Errors = { name?: string; email?: string; message?: string };
 
@@ -194,8 +194,8 @@ export default function ContactClient() {
                 What it costs
               </h2>
               <p className="mt-5 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
-                We don&apos;t publish plans. A price that ignores what you&apos;re reading and how much of it arrives
-                would be a made-up number — it follows volume and which products are in play.
+                We don&apos;t publish plans. A price that ignored what you&apos;re reading and how much of it arrives
+                would be a made-up number. What you pay follows the volume and which products are in play.
               </p>
               <p className="mt-4 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
                 Tell us the documents and roughly how many a month, and we&apos;ll come back with a real figure.
@@ -205,8 +205,7 @@ export default function ContactClient() {
         </section>
       </main>
 
-      {/* this page IS the call to action — it should not close on another one */}
-      <SiteFooter cta={false} />
+      <SiteFooter />
     </div>
   );
 }

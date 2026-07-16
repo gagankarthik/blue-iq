@@ -412,3 +412,50 @@ html, body { max-width: 100%; overflow-x: clip; }
   .sa-sweep, .sa-caret, .sa-aurora-a, .sa-aurora-b, .sa-shine { animation: none; }
 }
 
+
+/* ── Sonar engine (CpuArchitecture): a glow travelling each trace ──
+   Each circle rides its path via CSS motion-path; its own <mask> clips it to
+   the trace, so what you see is a light moving down a wire. offset-distance is
+   animated 0→100% with a fade at both ends; durations and delays are staggered
+   so the traces don't pulse in lockstep. */
+.cpu-architecture {
+  offset-anchor: 0px 0px;
+  animation: cpu-line-travel var(--cpu-dur, 5s) var(--cpu-delay, 0s) linear infinite;
+  will-change: offset-distance, opacity;
+}
+@keyframes cpu-line-travel {
+  0%   { offset-distance: 0%;   opacity: 0; }
+  8%   { opacity: 1; }
+  92%  { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+.cpu-line-1 { offset-path: path("M 10 20 h 79.5 q 5 0 5 5 v 24"); --cpu-dur: 5s; --cpu-delay: 0.8s; }
+.cpu-line-2 { offset-path: path("M 180 10 h -69.7 q -5 0 -5 5 v 24"); --cpu-dur: 5s; --cpu-delay: 3.6s; }
+.cpu-line-3 { offset-path: path("M 130 20 v 21.8 q 0 5 -5 5 h -10"); --cpu-dur: 3.4s; --cpu-delay: 2s; }
+.cpu-line-4 { offset-path: path("M 170 80 v -21.8 q 0 -5 -5 -5 h -50"); --cpu-dur: 3.4s; --cpu-delay: 1s; }
+.cpu-line-5 { offset-path: path("M 135 65 h 15 q 5 0 5 5 v 10 q 0 5 -5 5 h -39.8 q -5 0 -5 -5 v -20"); --cpu-dur: 4.4s; --cpu-delay: 2.8s; }
+.cpu-line-6 { offset-path: path("M 94.8 95 v -36"); --cpu-dur: 4s; --cpu-delay: 0.4s; }
+.cpu-line-7 { offset-path: path("M 88 88 v -15 q 0 -5 -5 -5 h -10 q -5 0 -5 -5 v -5 q 0 -5 5 -5 h 14"); --cpu-dur: 4.2s; --cpu-delay: 2.4s; }
+.cpu-line-8 { offset-path: path("M 30 30 h 25 q 5 0 5 5 v 6.5 q 0 5 5 5 h 20"); --cpu-dur: 4.2s; --cpu-delay: 1.4s; }
+@media (prefers-reduced-motion: reduce) {
+  .cpu-architecture { animation: none; opacity: 0; }
+}
+
+/* ── Industries accordion, mobile ──
+   The desktop layout is a flex-grow row: one panel opens wide, the rest sit
+   collapsed. That math can't give the open panel enough height on a phone, so
+   below sm every panel opens and sizes to its own copy instead. These override
+   framer's inline styles (hence !important) only under the media query. */
+@media (max-width: 639px) {
+  .ind-panel { flex: 0 0 auto !important; min-height: 0 !important; }
+  .ind-photo { opacity: 1 !important; }
+  .ind-collapsed { display: none !important; }
+  .ind-open {
+    position: relative !important; /* in flow so it sizes the panel, and painted above the absolute photo/scrim */
+    z-index: 1;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    min-height: 300px; /* a floor so short-copy panels still read as full cards */
+  }
+}

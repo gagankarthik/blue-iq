@@ -3,12 +3,12 @@ import LegalPage, { type LegalSection } from "@/components/LegalPage";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
-  description: "The terms and conditions governing use of the Blue-IQ platform and its products, ParsingLab and Govern.",
+  description: "The terms and conditions governing use of the Blue-IQ platform and its products, Capture, Spend and Govern.",
   alternates: { canonical: "/terms" },
 };
 
 const sections: LegalSection[] = [
-  { h: "Agreement to terms", body: ["These Terms & Conditions (the “Terms”) govern your access to and use of the Blue-IQ platform, websites, and products, including ParsingLab and Govern (together, the “Service”). By accessing or using the Service, you agree to be bound by these Terms on behalf of yourself and the organization you represent.", "If you do not agree to these Terms, do not access or use the Service."] },
+  { h: "Agreement to terms", body: ["These Terms & Conditions (the “Terms”) govern your access to and use of the Blue-IQ platform, websites, and products, including Capture, Spend and Govern (together, the “Service”). By accessing or using the Service, you agree to be bound by these Terms on behalf of yourself and the organization you represent.", "If you do not agree to these Terms, do not access or use the Service."] },
   { h: "The service", body: ["Blue-IQ provides document-intelligence software that extracts and structures data from resumes, contracts, and related documents. Specific features, limits, and support levels are described in your order form or subscription plan. We may update, add, or remove features over time; material changes will be communicated to account administrators."] },
   { h: "Accounts and eligibility", body: ["You must provide accurate account information and are responsible for activity that occurs under your credentials. You must be at least 18 years old and authorized to bind your organization. Keep your credentials confidential and notify us promptly of any unauthorized use."] },
   { h: "Subscriptions, fees, and billing", body: ["Paid plans are billed in advance on the cycle stated in your order form and renew automatically unless cancelled before the renewal date. Fees are exclusive of taxes, which you are responsible for. Except where required by law, payments are non-refundable. We may revise pricing with reasonable notice effective at your next renewal."] },
@@ -22,7 +22,7 @@ const sections: LegalSection[] = [
   { h: "Term and termination", body: ["These Terms remain in effect while you use the Service. Either party may terminate for material breach not cured within 30 days of notice. On termination, your right to use the Service ends and we will make Customer Data available for export for 30 days, after which it may be deleted."] },
   { h: "Governing law and disputes", body: ["These Terms are governed by the laws of the State of Delaware, without regard to its conflict-of-laws rules. The parties will attempt to resolve disputes in good faith before pursuing formal proceedings in the courts located in Delaware, unless a binding arbitration agreement applies to your account."] },
   { h: "Changes to these terms", body: ["We may update these Terms from time to time. When we make material changes, we will notify account administrators and update the “Last updated” date above. Continued use of the Service after changes take effect constitutes acceptance."] },
-  { h: "Contact", body: ["Questions about these Terms can be sent to hello@blue-iq.com."] },
+  { h: "Contact", body: ["Questions about these Terms can be sent to hello@blue-iq.ai."] },
 ];
 
 export default function TermsPage() {

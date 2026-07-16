@@ -185,7 +185,7 @@ export function Cta({
       href={href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className="group inline-flex items-center gap-1.5 font-sans-g text-[15px] font-semibold"
+      className="group inline-flex items-center gap-1.5 py-2.5 -my-2.5 font-sans-g text-[15px] font-semibold"
       style={{ color: SA.accent }}
     >
       {label}

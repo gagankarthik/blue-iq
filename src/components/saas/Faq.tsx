@@ -1,14 +1,16 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { SA } from "@/lib/theme";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { SectionHead } from "@/components/saas/parts";
-import { SPRING_SOFT } from "@/components/saas/motion";
+import { Words, SPRING_SOFT } from "@/components/saas/motion";
 
 /* Real questions an enterprise buyer asks before a pilot. Answers stay inside
-   what the company already claims — no invented numbers, no invented customers. */
+   what the company already claims — no invented numbers, no invented customers.
+
+   Layout: the heading and the invitation sit together on one side, the
+   questions on the other — so the ask ("send us a document") reads as the
+   frame around the answers rather than a card wedged beside them. */
 const faqs: [string, string][] = [
   [
     "What happens when Sonar cannot read a field?",
@@ -45,71 +47,50 @@ export default function Faq() {
       style={{ background: SA.bg2, borderTop: `1px solid ${SA.line}` }}
       aria-labelledby="faq-h"
     >
-      <div className="max-w-[1180px] mx-auto">
-        <div id="faq-h">
-          <SectionHead
-            title="The things buyers actually ask us"
-            sub="If your question is not here, it is probably the interesting one — send it over."
-          />
-        </div>
+      <div className="max-w-[1180px] mx-auto grid lg:grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)] gap-x-16 gap-y-12 items-start">
+        {/* ── one side: the heading and the invitation, sticky ── */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={SPRING_SOFT}
+          className="lg:sticky lg:top-28"
+        >
+          <div id="faq-h">
+            <Words
+              as="h2"
+              text="The things buyers actually ask us"
+              className="font-display font-normal leading-[1.08] max-w-[16ch]"
+              style={{ fontSize: "clamp(1.9rem, 3.2vw, 2.7rem)", letterSpacing: "-0.032em", color: SA.ink }}
+            />
+          </div>
+          <p className="mt-6 font-sans-g leading-[1.65] max-w-[42ch]" style={{ fontSize: "1.02rem", color: SA.sub }}>
+            If your question is not here, it is probably the interesting one — send it over.
+          </p>
+        </motion.div>
 
-        <div className="mt-14 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.42fr)] gap-y-10 lg:gap-x-16 items-start">
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={SPRING_SOFT}
-          >
-            <Accordion type="single" collapsible className="w-full" defaultValue="q0">
-              {faqs.map(([q, a], i) => (
-                <AccordionItem
-                  key={q}
-                  value={`q${i}`}
-                  className="border-b-0"
-                  style={{ borderTop: `1px solid ${SA.line2}` }}
-                >
-                  <AccordionTrigger
-                    className="hover:opacity-70"
-                    style={{ color: SA.ink }}
-                  >
-                    {q}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="font-sans-g text-[15px] leading-[1.7] max-w-[62ch] pr-8" style={{ color: SA.sub }}>
-                      {a}
-                    </p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
-
-          {/* the ask, sitting beside the answers rather than under them */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-10%" }}
-            transition={{ ...SPRING_SOFT, delay: 0.1 }}
-            className="rounded-2xl p-6 lg:sticky lg:top-32"
-            style={{ background: SA.surface, border: `1px solid ${SA.line}` }}
-          >
-            <h3 className="font-display font-medium tracking-[-0.02em] text-[1.25rem]" style={{ color: SA.ink }}>
-              Still deciding?
-            </h3>
-            <p className="mt-3 font-sans-g text-[14px] leading-relaxed" style={{ color: SA.sub }}>
-              Send us a document from your own pipeline. We will read it with Sonar and show you the fields, the scores,
-              and the ones it flags.
-            </p>
-            <a
-              href="/contact"
-              className="group inline-flex items-center gap-1.5 mt-5 font-sans-g text-[14.5px] font-semibold"
-              style={{ color: SA.accent }}
-            >
-              Talk to us
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-            </a>
-          </motion.div>
-        </div>
+        {/* ── the other side: the questions ── */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-10%" }}
+          transition={{ ...SPRING_SOFT, delay: 0.1 }}
+        >
+          <Accordion type="single" collapsible className="w-full" defaultValue="q0">
+            {faqs.map(([q, a], i) => (
+              <AccordionItem key={q} value={`q${i}`} className="border-b-0" style={{ borderTop: `1px solid ${SA.line2}` }}>
+                <AccordionTrigger className="hover:opacity-70" style={{ color: SA.ink }}>
+                  {q}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="font-sans-g text-[15px] leading-[1.7] max-w-[62ch] pr-8" style={{ color: SA.sub }}>
+                    {a}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </motion.div>
       </div>
     </section>
   );

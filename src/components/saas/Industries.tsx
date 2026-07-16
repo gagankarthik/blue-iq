@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Stethoscope, Scale, Receipt } from "lucide-react";
+import { ArrowRight, Network, GraduationCap, Users, Stethoscope, Scale, Receipt } from "lucide-react";
 import { SA, DK } from "@/lib/theme";
 import { SectionHead } from "@/components/saas/parts";
 import PaperImage from "@/components/saas/PaperImage";
@@ -39,10 +39,11 @@ import PaperImage from "@/components/saas/PaperImage";
    playbook is checked against, the pile of forms someone has to reconcile. */
 type Case = {
   k: string;
-  Icon: typeof Scale;
+  Icon: typeof Users;
   reads: string;
   h: string;
   d: string;
+  cta: string;
   image: string;
   seed: number;
 };
@@ -52,13 +53,44 @@ const Q = "?w=1400&q=75&auto=format&fit=crop";
 
 const cases: Case[] = [
   {
+    k: "IT sector",
+    Icon: Network,
+    reads: "MSAs · SOWs · vendor invoices",
+    h: "Read every vendor contract before it hits the budget.",
+    d: "Master agreements, statements of work, and vendor invoices come back as structured records — renewal dates, liability caps, licence counts, and the line items that drift from what was agreed. Every field is scored, so your team reviews the exposure, not the boilerplate.",
+    cta: "What Sonar reads for IT",
+    image: `${U}1558494949-ef010cbdcc31${Q}`,
+    seed: 5.8,
+  },
+  {
+    k: "Education",
+    Icon: GraduationCap,
+    reads: "Applications · transcripts · agreements",
+    h: "Turn a stack of applications into structured records.",
+    d: "Applications, transcripts, and supplier agreements are read into clean, scored data your student and finance systems can use — course histories, credentials, contract terms. Admissions and procurement spend their time on the records the engine flagged, not on data entry.",
+    cta: "What Sonar reads on campus",
+    image: `${U}1524178232363-1fb2b075b655${Q}`,
+    seed: 19.4,
+  },
+  {
+    k: "Workforce",
+    Icon: Users,
+    reads: "Resumes · licences · compliance files",
+    h: "Onboard a candidate in the time it takes to read one page.",
+    d: "Resumes, licences, and compliance files become structured candidate records — skills, credentials, and expiry dates, ready for your ATS. Every field comes back scored, so recruiters open only the ones Sonar was unsure of.",
+    cta: "What Sonar reads for staffing",
+    image: `${U}1521737604893-d14cc237f11d${Q}`,
+    seed: 33.1,
+  },
+  {
     k: "Healthcare staffing",
     Icon: Stethoscope,
     reads: "Resumes · licences · compliance files",
     h: "Credential a clinician in seconds, not an afternoon.",
     d: "Clinical resumes, licences, and compliance files become structured records — specialties, credentials, and expiry dates, ready for your ATS. Each field is scored, so recruiters open only the ones the engine was unsure of.",
+    cta: "What Sonar reads for healthcare",
     image: `${U}1579684385127-1ef15d508118${Q}`,
-    seed: 5.8,
+    seed: 12.2,
   },
   {
     k: "Legal & contracts",
@@ -66,8 +98,9 @@ const cases: Case[] = [
     reads: "SOWs · agreements · playbooks",
     h: "Know the risk before the signature.",
     d: "Agreements are read against your own playbook, and whatever deviates comes back with a risk rating attached: the auto-renewal, the liability cap, the termination term. Legal reviews the exposure, not the boilerplate.",
+    cta: "What Sonar reads in contracts",
     image: `${U}1568667256549-094345857637${Q}`,
-    seed: 19.4,
+    seed: 26.7,
   },
   {
     k: "Procurement & finance",
@@ -75,8 +108,9 @@ const cases: Case[] = [
     reads: "Invoices · POs · reconciliation",
     h: "Reconcile spend without the manual pass.",
     d: "Match invoices to contracts and purchase orders, catch the line items that drift from what was agreed, and flag spend leakage as it happens rather than at quarter close.",
+    cta: "What Sonar reads in finance",
     image: `${U}1554224155-6726b3ff858f${Q}`,
-    seed: 33.1,
+    seed: 41.5,
   },
 ];
 
@@ -94,7 +128,7 @@ function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
       onMouseEnter={open}
       onFocus={open}
       onClick={open}
-      className="group relative overflow-hidden rounded-[20px] sm:rounded-[24px] text-left min-w-0 min-h-0"
+      className="ind-panel group relative overflow-hidden rounded-[20px] sm:rounded-[24px] text-left min-w-0 min-h-0"
       style={{
         flexBasis: 0,
         flexGrow: on ? 3.4 : 1,
@@ -107,7 +141,7 @@ function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
           doing the same job the type colour was, one layer down. */}
       <motion.span
         aria-hidden
-        className="absolute inset-0"
+        className="ind-photo absolute inset-0"
         initial={false}
         animate={{ opacity: on ? 1 : 0.42 }}
         transition={{ duration: reduce ? 0 : 0.7, ease: [0.25, 1, 0.5, 1] }}
@@ -151,7 +185,7 @@ function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
              is wide and short, so it just stays horizontal. ── */}
       <motion.span
         aria-hidden
-        className="absolute inset-0 flex sm:flex-col items-center justify-center gap-3 px-4"
+        className="ind-collapsed absolute inset-0 flex sm:flex-col items-center justify-center gap-3 px-4"
         initial={false}
         animate={{ opacity: on ? 0 : 1 }}
         transition={{ duration: reduce ? 0 : 0.35 }}
@@ -169,7 +203,7 @@ function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
 
       {/* ── open: the argument ── */}
       <motion.span
-        className="absolute inset-0 flex flex-col justify-end p-7 sm:p-10"
+        className="ind-open absolute inset-0 flex flex-col justify-end p-7 sm:p-10"
         initial={false}
         animate={{ opacity: on ? 1 : 0, y: on ? 0 : 14 }}
         transition={{ duration: reduce ? 0 : 0.4, delay: on && !reduce ? 0.18 : 0, ease: [0.16, 1, 0.3, 1] }}
@@ -199,7 +233,7 @@ function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
           className="inline-flex items-center gap-1.5 mt-7 font-sans-g text-[15px] font-semibold w-fit"
           style={{ color: DK.accent }}
         >
-          Explore this industry
+          {c.cta}
           <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
         </span>
       </motion.span>
@@ -215,8 +249,8 @@ export default function Industries() {
       <div className="max-w-[1180px] mx-auto">
         <div id="uc-h">
           <SectionHead
-            title="Built for the documents that run your business"
-            sub="The same engine, tuned to the paperwork of your industry. Pick the one you live in."
+            title="Built for the sectors that live in documents"
+            sub="One engine, tuned to the paperwork of your world. Pick the one you work in."
           />
         </div>
 
@@ -225,7 +259,7 @@ export default function Industries() {
         <div
           role="tablist"
           aria-label="Industries"
-          className="mt-14 sm:mt-20 flex flex-col sm:flex-row gap-2.5 sm:gap-3 h-[640px] sm:h-[560px]"
+          className="mt-14 sm:mt-20 flex flex-col sm:flex-row gap-2.5 sm:gap-3 sm:h-[560px]"
         >
           {cases.map((c, i) => (
             <Panel key={c.k} c={c} on={i === active} open={() => setActive(i)} />
@@ -236,11 +270,11 @@ export default function Industries() {
             inside a button is invalid markup and Safari drops the click */}
         <div className="mt-8 flex justify-end">
           <a
-            href="/solutions#industries"
+            href="/products#editions"
             className="group inline-flex items-center gap-1.5 font-sans-g text-[15px] font-semibold"
             style={{ color: SA.accent }}
           >
-            See every industry we read for
+            See the editions built for these
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
           </a>
         </div>

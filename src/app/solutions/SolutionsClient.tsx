@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Stethoscope, Scale, Receipt } from "lucide-react";
+import { Stethoscope, Scale, Receipt, Network, GraduationCap, Users } from "lucide-react";
 import { SA } from "@/lib/theme";
 import { SPRING_SOFT } from "@/components/saas/motion";
 import { SectionHead } from "@/components/saas/parts";
@@ -35,7 +35,7 @@ const custom = [
   },
   {
     t: "We engineer it, and we stay on it",
-    d: "It ships as an API, an interface, or both, on the same Sonar engine that runs ParsingLab and Govern. Your documents will change; we stay on it when they do.",
+    d: "It ships as an API, an interface, or both, on the same Sonar engine that runs Capture, Spend and Govern. Your documents will change; we stay on it when they do.",
   },
 ];
 
@@ -66,6 +66,16 @@ const migrations = [
       when a machine fills a gap with its best guess. The last column is the
       whole argument for confidence scoring, stated three different ways by
       three different kinds of damage. ── */
+/* per-industry anchor slugs, so the nav and footer can deep-link to a row */
+const ANCHOR: Record<string, string> = {
+  "IT sector": "it",
+  Education: "education",
+  Workforce: "workforce",
+  "Healthcare staffing": "healthcare",
+  "Legal & contracts": "legal",
+  "Procurement & finance": "procurement",
+};
+
 const sectors: {
   k: string;
   Icon: typeof Scale;
@@ -73,6 +83,27 @@ const sectors: {
   returns: string;
   cost: string;
 }[] = [
+  {
+    k: "IT sector",
+    Icon: Network,
+    arrives: "MSAs, statements of work, renewal notices, and the vendor invoices that arrive in a dozen different layouts.",
+    returns: "Renewal dates, liability caps, licence counts, and the line items that drift from what the contract said — each one scored.",
+    cost: "A renewal that slips through is a year of spend nobody re-approved; a licence miscount is a true-up bill at audit. A flagged field the team checks beats a confident wrong one that reaches the ledger.",
+  },
+  {
+    k: "Education",
+    Icon: GraduationCap,
+    arrives: "Applications, transcripts, and the supplier agreements the institution signs — often scanned, often photographed.",
+    returns: "Course histories, credentials, and contract terms as clean records your student and finance systems can take without re-keying.",
+    cost: "A transcript keyed wrong stalls an admission; a term missed in a supplier agreement is money the department never budgeted. The engine flags what it cannot read rather than guessing a grade or a date.",
+  },
+  {
+    k: "Workforce",
+    Icon: Users,
+    arrives: "Resumes, state licences, and compliance files — the paperwork every placement generates, at the volume a staffing desk runs.",
+    returns: "Skills, credentials, and expiry dates as structured candidate records, ready for the ATS, each field carrying its own score.",
+    cost: "An expiry read wrong puts an unlicensed contractor on an assignment. That is a compliance failure, not a typo — which is why a date it could not read comes back flagged, not filled in.",
+  },
   {
     k: "Healthcare staffing",
     Icon: Stethoscope,
@@ -100,22 +131,28 @@ const sectors: {
       but each row ends somewhere. ── */
 const routes: { t: string; d: string; href: string; label: string; external?: boolean }[] = [
   {
-    t: "ParsingLab",
-    d: "Resumes and documents in, structured and scored records out. The product to reach for when the shape of the paperwork is already common.",
+    t: "Capture",
+    d: "Any document in, structured and scored records out. The foundation to reach for when you just need the paperwork read into data you can trust.",
     href: "https://www.parsinglab.blue-iq.ai/",
-    label: "Open ParsingLab",
+    label: "Open Capture",
     external: true,
   },
   {
+    t: "Spend",
+    d: "Invoices, purchase orders and contracts reconciled against each other, with the money leaking between them flagged as it arrives. The application for the numbers.",
+    href: "/products#spend",
+    label: "See Spend",
+  },
+  {
     t: "Govern",
-    d: "Contracts and agreements read against a playbook, with what deviates flagged. Built for the review that happens before a signature.",
+    d: "Contracts and agreements read against a playbook, with what deviates flagged. The application for the review that happens before a signature.",
     href: "https://govern.blue-iq.ai/",
     label: "Open Govern",
     external: true,
   },
   {
     t: "A custom build",
-    d: "Neither one fits, or the fit is close but not close enough. Tell us what arrives and what you need out of it, and we will tell you honestly whether it is a fit.",
+    d: "None of them fits, or the fit is close but not close enough. Tell us what arrives and what you need out of it, and we will tell you honestly whether it is a fit.",
     href: "/contact",
     label: "Start a conversation",
   },
@@ -130,8 +167,8 @@ export default function SolutionsClient() {
 
       <main>
         <PageHero
-          title="Two products, and everything they don't cover."
-          lede="ParsingLab and Govern handle the paperwork that most companies share; when your documents, your systems or your obligations don't fit either one, we design, engineer and support the thing that does — on the same Sonar engine underneath."
+          title="The platform covers most of it. We build the rest."
+          lede="Capture, Spend and Govern handle the paperwork most companies share; when your documents, your systems or your obligations fit none of them, we design, engineer and support the application that does — on the same Sonar engine underneath."
           meta={["Custom development", "Enterprise migrations", "Integrations", "Industries"]}
         />
 
@@ -227,11 +264,12 @@ export default function SolutionsClient() {
             {sectors.map((s, i) => (
               <motion.div
                 key={s.k}
+                id={ANCHOR[s.k]}
                 initial={reduce ? false : { opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-8%" }}
                 transition={{ ...SPRING_SOFT, delay: i * 0.06 }}
-                className="grid lg:grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)] gap-y-5 lg:gap-x-16 py-10"
+                className="grid lg:grid-cols-[minmax(0,0.5fr)_minmax(0,1fr)] gap-y-5 lg:gap-x-16 py-10 scroll-mt-28"
                 style={{ borderTop: `1px solid ${SA.line2}` }}
               >
                 <div className="flex items-start gap-3">
@@ -283,8 +321,8 @@ export default function SolutionsClient() {
         {/* ── where this starts ── */}
         <Band>
           <SectionHead
-            title="Three ways in."
-            sub="Two of them you can open right now. The third starts with a conversation about what lands in your inbox every morning."
+            title="Four ways in."
+            sub="Two you can open right now, one is a demo away, and the last starts with a conversation about what lands in your inbox every morning."
           />
 
           <div className="mt-14">
