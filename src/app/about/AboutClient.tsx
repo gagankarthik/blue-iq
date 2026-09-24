@@ -1,169 +1,67 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { useInView, useReducedMotion } from "framer-motion";
 import { SA } from "@/lib/theme";
-import { Words, SPRING_SOFT } from "@/components/saas/motion";
-import { SectionHead } from "@/components/saas/parts";
-import { PageHero, Band, Ruled, StatStrip, Cta } from "@/components/page/kit";
+import { SectionHead, Reveal } from "@/components/saas/parts";
+import { PageHero, HeroButton, WRAP } from "@/components/page/kit";
+import { CpuArchitecture } from "@/components/saas/CpuArchitecture";
+import { type BqIcon, IconWorkforce, IconGovern, IconReceipt, IconScore, IconFlag, IconDocs, IconCustom, IconShield } from "@/components/icons/BqIcons";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 /* ────────────────────────────────────────────────────────────────
-   /about
+   /about — who we are, in three beats.
 
-   The old page was the warm-cream system in full: a blueprint grid, a glow
-   blob behind the hero, a mono-caps eyebrow over every heading, icons in
-   tinted squares, a spec-sheet panel, and a CtaBand stacked on top of the
-   footer's own close. It also opened by centring the company on Sonar and
-   then on the product catalogue — an org chart, not an argument.
-
-   This is the same page told as a company would tell it: who we are, the
-   problem we exist for, the one opinion we hold (a read is worthless unless
-   it tells you how far to trust it), and the vehicles that opinion ships in.
-   Every number on the page is one the company already stands behind. Nothing
-   here is invented — no customers, no dates, no uptime figures.
+   1. The problem: three documents every business re-types.
+   2. Meet Sonar (the nav links here as /about#sonar): the drawing, its two
+      rules, and the four facts, counting up as they arrive.
+   3. How we work: three commitments.
+   No founding myth, no invented customers or headcount.
    ──────────────────────────────────────────────────────────────── */
 
-/* the paperwork, at the three points it actually hurts. Not a product list —
-   these are the documents, before anyone has decided what to buy. */
-const arrives = [
-  {
-    t: "A hire",
-    d: "A resume, a licence, a certification, a reference. A dozen formats from a dozen sources, and a person paid to read them all and turn them into one candidate record.",
-  },
-  {
-    t: "A contract",
-    d: "A master agreement, an amendment, a statement of work. The obligations that will actually bind you are buried in clauses nobody has time to read twice.",
-  },
-  {
-    t: "An invoice",
-    d: "A PDF, a scan, a photograph of a receipt taken in a car park. The numbers are right there on the page, and they still get re-typed into a system by hand.",
-  },
+const PAIN: { Icon: BqIcon; t: string; d: string }[] = [
+  { Icon: IconWorkforce, t: "A new hire", d: "Resumes, licences and references, re-typed into your ATS." },
+  { Icon: IconGovern, t: "A contract", d: "Obligations buried in clauses nobody has time to read twice." },
+  { Icon: IconReceipt, t: "An invoice", d: "Numbers already on the page, keyed in again by hand." },
 ];
 
-/* the two halves of the opinion. Kept to two rows on purpose: this is the
-   thing the page is for, and a third row would dilute it. */
-const engine = [
-  {
-    t: "A score on every field",
-    d: "Every value Sonar hands back arrives with a confidence score attached to it. Not a score for the document, or for the batch — one for each field, so your team can spend its attention on the handful that need a human and leave the rest alone.",
-  },
-  {
-    t: "A flag, not a guess",
-    d: "When Sonar cannot read something, it says so. It marks the field for review and moves on. It will not reach for the plausible-looking value to fill the gap, because a filled gap is one nobody goes back to check.",
-  },
+const RULES: { Icon: BqIcon; t: string; d: string }[] = [
+  { Icon: IconScore, t: "A score on every field", d: "Not one number per file. One per value." },
+  { Icon: IconFlag, t: "A flag, never a guess", d: "If Sonar cannot read it, it says so." },
 ];
 
-const specs = [
-  { v: "200", l: "Documents per API call" },
-  { v: "<1s", l: "Median read" },
-  { v: "Every one", l: "Fields returned with a score" },
-  { v: "Zero", l: "Fields it will guess at" },
+const WORK: { Icon: BqIcon; t: string; d: string }[] = [
+  { Icon: IconDocs, t: "We start from your files", d: "Real documents, not a demo set." },
+  { Icon: IconCustom, t: "We build what fits", d: "A product, an edition, or something new." },
+  { Icon: IconShield, t: "We treat data as sensitive", d: "Aligned to SOC 2, HIPAA and GDPR." },
 ];
 
-/* delivery vehicles, at the weight they deserve on an umbrella page: the
-   products are how the work ships, not the point of the company. */
-const built = [
-  {
-    t: "Capture",
-    d: "The foundation. Any document — resumes, contracts, invoices, licences, grants — read into structured, confidence-scored data. Everything below is built on it.",
-    href: "https://www.parsinglab.blue-iq.ai/",
-    label: "Open Capture",
-    external: true,
-  },
-  {
-    t: "Spend",
-    d: "Spend and entitlement intelligence. It reconciles invoices, purchase orders and contracts against each other, and flags the money leaking between them.",
-    href: "/products#spend",
-    label: "See Spend",
-    external: false,
-  },
-  {
-    t: "Govern",
-    d: "Contract and compliance intelligence. It reads the agreement, surfaces the clauses that carry consequences, and shows its confidence in each one.",
-    href: "https://govern.blue-iq.ai/",
-    label: "Open Govern",
-    external: true,
-  },
-  {
-    t: "Editions & custom builds",
-    d: "Campus and Workforce package all three for an industry. And when the paperwork fits none of them, we build around the documents you actually have — same engine, your schema, your review workflow.",
-    href: "/products#editions",
-    label: "See the editions",
-    external: false,
-  },
-];
-
-/* things that are true and specific. Anything we could not stand behind — a
-   founding story, a headcount, a values poster — was cut rather than invented. */
-const how = [
-  {
-    t: "One engine, one foundation",
-    d: "Capture, Spend, Govern and every edition are the same engine with a different surface on top. There is no second-tier model behind the cheaper product.",
-  },
-  {
-    t: "An API, or a finished product",
-    d: "A documented API for the teams who want to build on the read themselves, and a product for the teams who would rather not. The choice is yours; the engine underneath is the same one either way.",
-  },
-  {
-    t: "Handled the way your auditors will ask about",
-    d: "Document handling is aligned to SOC 2, HIPAA and GDPR, because the files we read are the ones a business is least able to be casual about.",
-  },
-];
-
-/* the pivot line: the whole argument in one sentence, set as a statement
-   rather than buried in a paragraph. No rule of its own — <Ruled> already
-   closes with one, and a second line 80px under it is just a dead gauge. */
-function Claim() {
-  return (
-    <div className="mt-14 sm:mt-16">
-      <Words
-        as="p"
-        text="A wrong value that looks certain"
-        className="font-display font-normal leading-[1.1] max-w-[22ch]"
-        style={{ fontSize: "clamp(1.7rem, 3.2vw, 2.6rem)", letterSpacing: "-0.032em", color: SA.ink }}
-        accent="costs more than a blank one."
-        accentStyle={{ color: SA.accent }}
-      />
-    </div>
-  );
-}
-
-/* a ruled product row. Same grammar as the kit's <Ruled> — the rule is the
-   only chrome — with room for the link the products need. */
-function BuildRow({
-  row,
-  i,
-}: {
-  row: (typeof built)[number];
-  i: number;
-}) {
+function Count({ to, prefix = "", suffix = "" }: { to: number; prefix?: string; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-10%" });
   const reduce = useReducedMotion();
+  const [n, setN] = useState(reduce ? to : 0);
+
+  useEffect(() => {
+    if (!inView || reduce) return;
+    const t0 = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - t0) / 1100);
+      setN(Math.round(to * (1 - Math.pow(1 - t, 3))));
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, reduce, to]);
 
   return (
-    <motion.div
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-8%" }}
-      transition={{ ...SPRING_SOFT, delay: i * 0.05 }}
-      className="grid md:grid-cols-[minmax(0,0.55fr)_minmax(0,1fr)] gap-y-3 md:gap-x-12 py-7 md:py-8"
-      style={{ borderTop: `1px solid ${SA.line2}` }}
-    >
-      <h3
-        className="font-display font-normal tracking-[-0.025em] leading-[1.2]"
-        style={{ fontSize: "clamp(1.25rem, 2vw, 1.6rem)", color: SA.ink }}
-      >
-        {row.t}
-      </h3>
-      <div>
-        <p className="font-sans-g text-[15.5px] leading-[1.75] max-w-[58ch]" style={{ color: SA.sub }}>
-          {row.d}
-        </p>
-        <div className="mt-4">
-          <Cta href={row.href} label={row.label} external={row.external} />
-        </div>
-      </div>
-    </motion.div>
+    <span ref={ref} className="tabular-nums">
+      {prefix}
+      {n}
+      {suffix}
+    </span>
   );
 }
 
@@ -171,62 +69,100 @@ export default function AboutClient() {
   return (
     <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
       <SiteNav />
-
       <main>
-        <PageHero
-          title="We build software that reads the documents a business runs on."
-          lede="Blue-IQ is a document-intelligence company: our products read the resumes, contracts and invoices your work arrives as, return them as structured data, and tell you how far to trust every field they hand back."
-          meta={["Sonar engine", "Capture foundation", "Spend · Govern", "Campus · Workforce"]}
-        />
+        <PageHero label="About Blue-IQ" title="We build the AI that reads business documents" lede="Blue-IQ is a document AI company. Our products turn the files your business runs on into data you can trust, and every one runs on Sonar.">
+          <HeroButton href="#sonar">Meet Sonar</HeroButton>
+          <HeroButton href="/contact" ghost>
+            Talk to us
+          </HeroButton>
+        </PageHero>
 
-        {/* ── the problem, stated at the level a business feels it ── */}
-        <Band tone="grey">
-          <SectionHead
-            title="Every hire, contract and invoice arrives as a file."
-            sub="Somebody opens it, works out what it says, and types it into a system that could have read it in the first place. That work is invisible, it is constant, and it scales with everything good that happens to a company."
-          />
-          <Ruled rows={arrives} />
-        </Band>
-
-        {/* ── the engine. The nav links here: /about#sonar ── */}
-        <Band tone="tint" id="sonar">
-          <SectionHead
-            title="Sonar tells you how far to trust what it read."
-            sub="The engine under everything we build. Most systems hand back an answer and leave you to work out whether to believe it — which means someone re-reads the document anyway, and the machine has saved nobody anything."
-          />
-          <Ruled rows={engine} />
-          <Claim />
-          <StatStrip stats={specs} />
-        </Band>
-
-        {/* ── what the engine ships as ── */}
-        <Band>
-          <SectionHead
-            title="What that ships as."
-            sub="A foundation, two applications built on it, the editions that bundle them, and the builds we take on when none of them is the right shape. Every one is a delivery vehicle for the same read — pick the one that fits how your team already works."
-          />
-          <div className="mt-14">
-            {built.map((row, i) => (
-              <BuildRow key={row.t} row={row} i={i} />
-            ))}
-            <div style={{ borderTop: `1px solid ${SA.line2}` }} />
+        {/* the problem */}
+        <section className="py-16 sm:py-24" style={{ background: SA.bg }}>
+          <div className={WRAP}>
+            <SectionHead title="Every business runs on documents someone re-types" sub="We started Blue-IQ to end that manual work." />
+            <Reveal as="ul" className="mt-10 sm:mt-12 grid md:grid-cols-3 gap-5">
+              {PAIN.map((p, k) => (
+                <li key={p.t} className="group rounded-[24px] p-7 sm:p-8 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-30px_rgba(10,18,48,0.35)]" style={{ background: k === 1 ? SA.navy : SA.bg2, border: `1px solid ${k === 1 ? SA.navy : SA.line}` }}>
+                  <span className="grid place-items-center w-14 h-14 rounded-2xl" style={{ background: k === 1 ? "rgba(106,163,255,0.16)" : SA.surface, color: k === 1 ? "#8EC2FF" : SA.accent, border: k === 1 ? "none" : `1px solid ${SA.line}` }}>
+                    <p.Icon size={28} />
+                  </span>
+                  <h3 className="mt-8 font-display font-semibold text-[1.4rem] tracking-[-0.025em]" style={{ color: k === 1 ? "#fff" : SA.ink }}>
+                    {p.t}
+                  </h3>
+                  <p className="mt-2 font-sans-g text-[15.5px] leading-[1.55]" style={{ color: k === 1 ? "rgba(255,255,255,0.74)" : SA.sub }}>
+                    {p.d}
+                  </p>
+                </li>
+              ))}
+            </Reveal>
           </div>
-        </Band>
+        </section>
 
-        {/* ── how we work: only what we can actually stand behind ── */}
-        <Band tone="grey">
-          <SectionHead
-            title="How we work."
-            sub="Three things that are true of every engagement, whether you take a product off the shelf or we build the thing around your paperwork."
-          />
-          <Ruled rows={how} />
-
-          <div className="mt-12">
-            <Cta href="/solutions" label="See how teams put it to work" />
+        {/* Sonar */}
+        <section id="sonar" className="py-16 sm:py-24 scroll-mt-20" style={{ background: SA.bg2 }}>
+          <div className={`${WRAP} grid lg:grid-cols-2 gap-10 lg:gap-16 items-center`}>
+            <Reveal className="w-full aspect-[2/1]">
+              <CpuArchitecture className="text-[#1D5BF0]/35" text="SONAR" />
+            </Reveal>
+            <div>
+              <SectionHead align="stack" title="Meet Sonar" sub="Our document AI. It reads like a person, scores every field, and flags what it cannot read." />
+              <Reveal as="ul" className="mt-8 space-y-3">
+                {RULES.map((r) => (
+                  <li key={r.t} className="flex items-center gap-4 rounded-2xl p-5" style={{ background: SA.surface, border: `1px solid ${SA.line}` }}>
+                    <r.Icon size={26} className="shrink-0" style={{ color: SA.accent }} />
+                    <span>
+                      <span className="block font-sans-g text-[16px] font-semibold" style={{ color: SA.ink }}>
+                        {r.t}
+                      </span>
+                      <span className="block font-sans-g text-[14.5px]" style={{ color: SA.sub }}>
+                        {r.d}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </Reveal>
+              <Reveal as="ul" className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6">
+                {[
+                  { v: <Count to={200} />, l: "documents per API call" },
+                  { v: <Count to={1} prefix="<" suffix="s" />, l: "median read time" },
+                  { v: "Every", l: "field scored" },
+                  { v: <Count to={0} />, l: "fields guessed" },
+                ].map((s) => (
+                  <li key={s.l} className="pt-4" style={{ borderTop: `1px solid ${SA.line2}` }}>
+                    <span className="block font-display font-semibold text-[2rem] leading-none tracking-[-0.035em]" style={{ color: SA.ink }}>
+                      {s.v}
+                    </span>
+                    <span className="block mt-2 font-sans-g text-[14px]" style={{ color: SA.sub }}>
+                      {s.l}
+                    </span>
+                  </li>
+                ))}
+              </Reveal>
+            </div>
           </div>
-        </Band>
+        </section>
+
+        {/* how we work */}
+        <section className="py-16 sm:py-24" style={{ background: SA.bg }}>
+          <div className={WRAP}>
+            <SectionHead title="How we work" />
+            <Reveal as="ul" className="mt-10 sm:mt-12 grid md:grid-cols-3 gap-px rounded-[24px] overflow-hidden" style={{ background: SA.line, border: `1px solid ${SA.line}` }}>
+              {WORK.map((w) => (
+                <li key={w.t} className="p-8 bg-white transition-colors hover:bg-[#F6F8FC]">
+                  <w.Icon size={28} style={{ color: SA.accent }} />
+                  <h3 className="mt-6 font-display font-semibold text-[1.2rem] tracking-[-0.02em]" style={{ color: SA.ink }}>
+                    {w.t}
+                  </h3>
+                  <p className="mt-1.5 font-sans-g text-[15px]" style={{ color: SA.sub }}>
+                    {w.d}
+                  </p>
+                </li>
+              ))}
+            </Reveal>
+          </div>
+        </section>
       </main>
-
       <SiteFooter />
     </div>
   );

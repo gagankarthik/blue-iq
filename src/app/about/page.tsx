@@ -1,20 +1,18 @@
-import type { Metadata } from "next";
 import AboutClient from "./AboutClient";
+import { pageMetadata, breadcrumbLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About | Document Intelligence Company",
+export const metadata = pageMetadata({
+  title: "About Blue-IQ: The Company Behind Sonar AI",
   description:
-    "Blue-IQ builds software that reads the documents a business runs on. The Sonar engine returns every field with a confidence score, and flags what it cannot read instead of guessing.",
-  alternates: { canonical: "/about" },
-  openGraph: {
-    title: "About Blue-IQ",
-    description:
-      "The company, and the Sonar engine behind Capture, Spend, Govern and the editions built on them.",
-    url: "https://blue-iq.ai/about",
-    type: "website",
-  },
-};
+    "Blue-IQ builds the AI that reads business documents. Sonar scores every field it extracts and flags what it can't read, instead of guessing.",
+  path: "/about",
+});
 
 export default function Page() {
-  return <AboutClient />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd("About", "/about")) }} />
+      <AboutClient />
+    </>
+  );
 }

@@ -1,336 +1,179 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { FileText, ShieldCheck, ArrowUpRight, MoveRight, ArrowRight, Menu, X, ChevronDown } from "lucide-react";
-import { MZ } from "@/lib/theme";
-import Magnetic from "@/components/Magnetic";
+import { SA } from "@/lib/theme";
+import { CaptureArt, SpendArt, GovernArt, CustomArt } from "@/components/art/ProductArt";
+import { SonarArt } from "@/components/art/StepArt";
+import {
+  type BqIcon,
+  IconSonar,
+  IconCustom,
+  IconApi,
+  IconCapture,
+  IconSpend,
+  IconGovern,
+  IconCampus,
+  IconWorkforce,
+  IconNetwork,
+  IconHealth,
+  IconScale,
+  IconReceipt,
+  IconDocs,
+  IconShield,
+  IconArrow,
+  IconArrowUpRight,
+} from "@/components/icons/BqIcons";
 
 /* ────────────────────────────────────────────────────────────────
    The navbar.
 
-   The dropdowns stay. What is gone is the *sliding*: nothing translates any
-   more. The bar used to drop in from -84px on every page load, and each
-   panel flew up from -10px under the cursor — so a bar moved when you were
-   not touching it, and a panel lunged at you when you happened to pass over
-   a word. Panels now resolve in place on opacity alone. Same menus, same
-   links, no motion toward the reader.
+   Three columns — logo, links, actions — so the links sit on the true centre
+   of the page. Every page opens on a navy header, so by default the bar is
+   transparent with white text over it (pass overDark={false} otherwise);
+   the moment the page scrolls or a menu opens it turns white.
 
-   Everything else here is spacing and cost:
-
-   · One gap scale. 4px inside a link, 8px between links, 24px between
-     groups. The bar's height (76px) and gutter match the page container, so
-     the logo sits on the same left edge as the content beneath it.
-   · Only the active panel is mounted — the other four are not built, not
-     held in memory, and not paying for a re-render.
-   · The only reactive value on scroll is one boolean ("has the page moved"),
-     which is all the glass needs.
+   Each menu is a centred panel sized to its content, led by illustrated
+   cards on light wells, so there is never a slab of empty white beside the
+   links. Only the open panel is mounted.
    ──────────────────────────────────────────────────────────────── */
 
-/* opacity only — a cut, not a slide */
-const FADE = { duration: 0.16, ease: [0.16, 1, 0.3, 1] as const };
-
-type Item = { label: string; href: string; external?: boolean; badge?: string };
-type Group = { header: string; items: Item[] };
-type Menu = {
-  id: string;
-  label: string;
-  href: string;
-  featured?: { title: string; blurb: string; cta: string; geo: string; tint: string };
-  groups: Group[];
-};
+type Link = { label: string; href: string; external?: boolean; Icon?: BqIcon; blurb?: string };
+type Card = { title: string; blurb: string; href: string; external?: boolean; Art: React.ComponentType };
+type Menu = { id: string; label: string; cards: Card[]; side: { header: string; links: Link[] }; foot: { t: string; href: string } };
 
 const menus: Menu[] = [
   {
     id: "platform",
     label: "Platform",
-    href: "/products",
-    featured: {
-      title: "The Sonar platform",
-      blurb: "One engine, one foundation, applications and editions on top.",
-      cta: "Explore the platform",
-      geo: "Geometric-Line-04.svg",
-      tint: "#EAF0FF",
-    },
-    groups: [
-      {
-        header: "Products",
-        items: [
-          { label: "All products", href: "/products" },
-          { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true },
-          { label: "Spend", href: "/products#spend" },
-          { label: "Govern", href: "https://govern.blue-iq.ai/", external: true },
-        ],
-      },
-      {
-        header: "Editions",
-        items: [
-          { label: "Campus", href: "/products#editions" },
-          { label: "Workforce", href: "/products#editions" },
-        ],
-      },
-      {
-        header: "Engine",
-        items: [
-          { label: "Sonar engine", href: "/about#sonar" },
-          { label: "Confidence scoring", href: "/about#sonar" },
-          { label: "How it works", href: "/about#sonar" },
-        ],
-      },
+    cards: [
+      { title: "Capture", blurb: "Any document into scored, structured data.", href: "https://www.parsinglab.blue-iq.ai/", external: true, Art: CaptureArt },
+      { title: "Spend", blurb: "Invoices and contracts reconciled line by line.", href: "/products#spend", Art: SpendArt },
+      { title: "Govern", blurb: "Agreements checked against your playbook.", href: "https://govern.blue-iq.ai/", external: true, Art: GovernArt },
     ],
+    side: {
+      header: "Editions and AI",
+      links: [
+        { label: "Sonar AI", href: "/about#sonar", Icon: IconSonar, blurb: "The engine under every product" },
+        { label: "Campus", href: "/products#editions", Icon: IconCampus, blurb: "For universities and colleges" },
+        { label: "Workforce", href: "/products#editions", Icon: IconWorkforce, blurb: "For staffing and healthcare" },
+      ],
+    },
+    foot: { t: "Explore the platform", href: "/products" },
   },
   {
     id: "solutions",
     label: "Solutions",
-    href: "/solutions",
-    featured: {
-      title: "Custom builds",
-      blurb: "A product shaped around your workflow.",
-      cta: "Start a project",
-      geo: "Geometric-Line-08.svg",
-      tint: "#EAF7F0",
+    cards: [{ title: "Custom builds", blurb: "When no product fits, we build the one that does, on Sonar.", href: "/solutions#custom", Art: CustomArt }],
+    side: {
+      header: "Industries",
+      links: [
+        { label: "IT sector", href: "/solutions#it", Icon: IconNetwork },
+        { label: "Education", href: "/solutions#education", Icon: IconCampus },
+        { label: "Workforce", href: "/solutions#workforce", Icon: IconWorkforce },
+        { label: "Healthcare staffing", href: "/solutions#healthcare", Icon: IconHealth },
+        { label: "Legal and contracts", href: "/solutions#legal", Icon: IconScale },
+        { label: "Procurement and finance", href: "/solutions#procurement", Icon: IconReceipt },
+        { label: "Enterprise migrations", href: "/solutions#migrations", Icon: IconDocs },
+        { label: "Integrations", href: "/solutions#integrations", Icon: IconApi },
+      ],
     },
-    groups: [
-      {
-        header: "Use cases",
-        items: [
-          { label: "Custom development", href: "/solutions#custom" },
-          { label: "Enterprise migrations", href: "/solutions#migrations" },
-          { label: "Integrations", href: "/solutions#integrations" },
-        ],
-      },
-      {
-        header: "Industries",
-        items: [
-          { label: "IT sector", href: "/solutions#it" },
-          { label: "Education", href: "/solutions#education" },
-          { label: "Workforce", href: "/solutions#workforce" },
-          { label: "Healthcare staffing", href: "/solutions#healthcare" },
-          { label: "Legal & contracts", href: "/solutions#legal" },
-          { label: "Procurement & finance", href: "/solutions#procurement" },
-        ],
-      },
-      /* The "Roles" group is gone. Operations / Legal teams / Engineering all
-         pointed at bare /solutions — three links that looked like three pages
-         and were one page you were already being sent to. */
-    ],
+    foot: { t: "All solutions", href: "/solutions" },
   },
-  /* The "Customers" menu is gone, and the "Proof" groups with it.
-     They promised Customer stories, Results & ROI, and Webinars & events —
-     none of which exist, and none of which we are willing to invent. A nav
-     that links to a page we cannot honestly write is a nav that lies before
-     the visitor has even clicked. Every item below now resolves to something
-     that is actually on the site. */
   {
     id: "resources",
     label: "Resources",
-    href: "/resources",
-    featured: {
-      title: "How Sonar works",
-      blurb: "The formats it reads, the API, and how we handle your data.",
-      cta: "See the resources",
-      geo: "Geometric-Line-14.svg",
-      tint: "#EAF0FF",
+    cards: [{ title: "How Sonar works", blurb: "How the AI reads, scores and flags a document.", href: "/about#sonar", Art: SonarArt }],
+    side: {
+      header: "Build and learn",
+      links: [
+        { label: "How the API works", href: "/resources#api", Icon: IconApi, blurb: "REST, JSON and signed webhooks" },
+        { label: "Formats Sonar reads", href: "/resources#formats", Icon: IconDocs, blurb: "PDF, DOCX, scans and photos" },
+        { label: "Working with scores", href: "/resources#confidence", Icon: IconSonar, blurb: "Build on confidence, not guesses" },
+        { label: "Security and privacy", href: "/privacy", Icon: IconShield, blurb: "How your documents are handled" },
+      ],
     },
-    groups: [
-      {
-        header: "Build",
-        items: [
-          { label: "How the API works", href: "/resources#api" },
-          { label: "Formats it reads", href: "/resources#formats" },
-          { label: "Writing code against a score", href: "/resources#confidence" },
-        ],
-      },
-      {
-        header: "Engine",
-        items: [
-          { label: "Confidence scoring", href: "/about#sonar" },
-          { label: "The Sonar engine", href: "/about#sonar" },
-        ],
-      },
-      {
-        header: "Support",
-        items: [
-          { label: "Security & privacy", href: "/privacy" },
-          { label: "Contact us", href: "/contact" },
-        ],
-      },
-    ],
-  },
-  {
-    id: "pricing",
-    label: "Pricing",
-    href: "/contact#pricing",
-    featured: {
-      title: "Scoped to what you read",
-      blurb: "Tell us the documents and the volume, and we price it to that.",
-      cta: "Get a price",
-      geo: "Geometric-Line-06.svg",
-      tint: "#EAF0FF",
-    },
-    groups: [
-      {
-        header: "Pricing",
-        items: [
-          /* No "Plans overview": there are no published plans and no tiers.
-             Inventing Starter/Pro/Enterprise cards would be the easiest lie on
-             the whole site to tell, so the menu asks for a conversation. */
-          { label: "How pricing works", href: "/contact#pricing" },
-          { label: "Compare the products", href: "/products" },
-          { label: "Talk to sales", href: "/contact" },
-        ],
-      },
-      {
-        header: "Before you commit",
-        items: [
-          { label: "Book a demo", href: "/contact" },
-          { label: "Formats it reads", href: "/resources#formats" },
-          { label: "Security & privacy", href: "/privacy" },
-        ],
-      },
-    ],
+    foot: { t: "All resources", href: "/resources" },
   },
 ];
 
-const loginItems: Item[] = [
-  { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true },
-  { label: "Govern", href: "https://govern.blue-iq.ai/", external: true },
+const loginItems: Link[] = [
+  { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true, Icon: IconCapture, blurb: "Document to data" },
+  { label: "Govern", href: "https://govern.blue-iq.ai/", external: true, Icon: IconGovern, blurb: "Contract review" },
 ];
 
-function LinkRow({ it, onClick }: { it: Item; onClick?: () => void }) {
+function Row({ it, onClick, compact }: { it: Link; onClick?: () => void; compact?: boolean }) {
+  const Icon = it.Icon;
   return (
     <a
       href={it.href}
       target={it.external ? "_blank" : undefined}
       rel={it.external ? "noopener noreferrer" : undefined}
       onClick={onClick}
-      className="group inline-flex items-center gap-1.5 font-sans-g text-[15px] font-medium py-2 transition-colors"
-      style={{ color: MZ.ink }}
-      onMouseOver={(e) => (e.currentTarget.style.color = MZ.accent)}
-      onMouseOut={(e) => (e.currentTarget.style.color = MZ.ink)}
+      className={`group flex items-center gap-3 rounded-xl px-3 ${compact ? "py-2" : "py-2.5"} transition-colors hover:bg-[#F2F6FD]`}
     >
-      {it.label}
-      {it.external && <ArrowUpRight className="w-3.5 h-3.5 opacity-40" strokeWidth={2} />}
-      {it.badge && (
-        <span
-          className="font-sans-g text-[10px] font-semibold px-1.5 py-0.5 rounded"
-          style={{ background: MZ.soft, color: MZ.accent }}
-        >
-          {it.badge}
+      {Icon && (
+        <span className="shrink-0 grid place-items-center w-9 h-9 rounded-lg transition-colors group-hover:bg-[#1D5BF0] group-hover:text-white" style={{ background: SA.accentSoft, color: SA.accent }}>
+          <Icon size={19} />
         </span>
       )}
+      <span className="min-w-0">
+        <span className="flex items-center gap-1 font-sans-g text-[14.5px] font-medium leading-tight" style={{ color: SA.ink }}>
+          {it.label}
+          {it.external && <IconArrowUpRight size={13} style={{ color: SA.faint }} />}
+        </span>
+        {it.blurb && (
+          <span className="block mt-0.5 font-sans-g text-[12.5px] leading-snug" style={{ color: SA.sub }}>
+            {it.blurb}
+          </span>
+        )}
+      </span>
     </a>
   );
 }
 
-/* Each product says what you are actually logging in to, because "Capture"
-   and "Govern" mean nothing to a first-time visitor who has landed on the nav
-   by accident. */
-const loginBlurb: Record<string, string> = {
-  Capture: "Any document into structured data",
-  Govern: "Contract and compliance review",
-};
-
-function LoginMenu({ dark }: { dark: boolean }) {
-  const [open, setOpen] = useState(false);
-  const idle = dark ? "rgba(255,255,255,0.86)" : MZ.ink;
-
+function CardTile({ c, wide }: { c: Card; wide?: boolean }) {
   return (
-    <div className="hidden md:block relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-      <button
-        className="inline-flex items-center gap-1 px-3 py-2 rounded-lg font-sans-g text-[14.5px] font-semibold transition-colors"
-        style={{ color: open ? MZ.accent : idle }}
-        aria-expanded={open}
+    <a
+      href={c.href}
+      target={c.external ? "_blank" : undefined}
+      rel={c.external ? "noopener noreferrer" : undefined}
+      className={`group flex flex-col rounded-2xl overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-0.5 ${wide ? "w-[300px]" : "w-[228px]"}`}
+      style={{ border: `1px solid ${SA.line}` }}
+    >
+      <div
+        className="h-[132px] flex items-center justify-center px-4 py-3 [&_svg]:h-full [&_svg]:w-full transition-colors group-hover:bg-[#EAF1FD]"
+        style={{ background: "linear-gradient(180deg, #F4F7FD, #EDF2FB)" }}
       >
-        Log in
-        <ChevronDown
-          className="w-3.5 h-3.5 transition-transform duration-200"
-          strokeWidth={2}
-          style={{ transform: open ? "rotate(180deg)" : "none" }}
-        />
-      </button>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            /* opacity only: no y, no scale — it resolves, it does not lunge */
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={FADE}
-            className="absolute right-0 top-full pt-3"
-          >
-            {/* compact and content-sized: two products and a way in for the
-                people who have no login. Tight rows, one label, no oversized
-                slab. */}
-            <div
-              className="rounded-2xl p-2 w-[244px]"
-              style={{
-                background: MZ.surface,
-                border: `1px solid ${MZ.line2}`,
-                boxShadow: "0 26px 54px -24px rgba(20,18,10,0.3)",
-              }}
-            >
-              <p
-                className="px-2.5 pt-1.5 pb-1.5 font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em]"
-                style={{ color: MZ.faint }}
-              >
-                Log in to
-              </p>
-              {loginItems.map((it) => (
-                <a
-                  key={it.label}
-                  href={it.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex items-center justify-between gap-4 rounded-xl px-2.5 py-2 transition-colors hover:bg-[var(--hov)]"
-                  style={{ "--hov": MZ.bg2 } as React.CSSProperties}
-                >
-                  <span className="min-w-0">
-                    <span
-                      className="block font-sans-g text-[14.5px] font-semibold leading-tight transition-colors group-hover:text-[var(--acc)]"
-                      style={{ color: MZ.ink, "--acc": MZ.accent } as React.CSSProperties}
-                    >
-                      {it.label}
-                    </span>
-                    <span className="block mt-0.5 font-sans-g text-[12px] leading-tight" style={{ color: MZ.faint }}>
-                      {loginBlurb[it.label]}
-                    </span>
-                  </span>
-                  <ArrowUpRight
-                    className="w-3.5 h-3.5 shrink-0 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-                    strokeWidth={2}
-                    style={{ color: MZ.faint }}
-                  />
-                </a>
-              ))}
-
-              <div
-                className="mt-1.5 pt-2 px-2.5 pb-0.5 flex items-center justify-between gap-4"
-                style={{ borderTop: `1px solid ${MZ.line}` }}
-              >
-                <span className="font-sans-g text-[12.5px]" style={{ color: MZ.sub }}>
-                  No account?
-                </span>
-                <a
-                  href="/contact"
-                  className="group inline-flex items-center gap-1 font-sans-g text-[12.5px] font-semibold"
-                  style={{ color: MZ.accent }}
-                >
-                  Talk to sales
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+        <c.Art />
+      </div>
+      <div className="p-4 bg-white">
+        <span className="flex items-center gap-1 font-sans-g text-[15px] font-semibold" style={{ color: SA.ink }}>
+          {c.title}
+          {c.external ? (
+            <IconArrowUpRight size={13} style={{ color: SA.faint }} />
+          ) : (
+            <IconArrow size={14} className="opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" style={{ color: SA.accent }} />
+          )}
+        </span>
+        <span className="block mt-1 font-sans-g text-[13px] leading-snug" style={{ color: SA.sub }}>
+          {c.blurb}
+        </span>
+      </div>
+    </a>
   );
 }
 
-function SiteNav({ overDark = false }: { overDark?: boolean }) {
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden className="transition-transform duration-200" style={{ transform: open ? "rotate(180deg)" : "none" }}>
+      <path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SiteNav({ overDark = true }: { overDark?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
@@ -339,215 +182,159 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
   const { scrollY } = useScroll();
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 8));
 
+  useEffect(() => {
+    document.documentElement.style.overflow = mobile ? "hidden" : "";
+    return () => {
+      document.documentElement.style.overflow = "";
+    };
+  }, [mobile]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const active = menus.find((m) => m.id === open);
   const closeMobile = () => {
     setMobile(false);
     setSection(null);
   };
-
-  /* Over the full-bleed hero the bar stays light (transparent, white text)
-     whether or not a menu is open — a menu opening no longer flips it to dark
-     text on a transparent bar, which was unreadable over the film. It only
-     leaves this mode once you scroll, where it becomes glass. */
-  const dark = overDark && !scrolled && !mobile;
-
-  /* At rest: nothing — no white slab, no rule, no shadow.
-     On scroll: glass, and glass properly — blurred AND saturated, so colour
-     passing underneath stays alive instead of going milky, with a 1px inner
-     highlight along the top edge and a diffuse shadow.
-     Mobile sheet: opaque, because a tall list of links over blurred content is
-     unreadable and legibility outranks the effect.
-
-     Scroll is the ONLY trigger. Opening a dropdown used to switch the glass on
-     too, which meant hovering a nav link at the top of the page slammed a white
-     bar in behind it. The panel brings its own surface; the bar does not need
-     to change state to host it. */
-  const glass = !dark && scrolled && !mobile;
-
-  const idle = dark ? "rgba(255,255,255,0.66)" : MZ.sub;
-  const on = dark ? "#FFFFFF" : MZ.ink;
+  const solid = scrolled || mobile || !!open || !overDark;
+  const light = !solid; // white text over the navy hero
+  const idle = light ? "rgba(255,255,255,0.8)" : SA.sub;
+  const hover = light ? "hover:text-white" : "hover:text-[#0A1230]";
 
   return (
     <header
       onMouseLeave={() => setOpen(null)}
       className="fixed top-0 inset-x-0 z-[60]"
       style={{
-        background: mobile ? "#FFFFFF" : glass ? "rgba(255,255,255,0.60)" : "transparent",
-        /* Over the hero the bar is completely transparent — no wash, no blur, no
-           rule — at rest and while a dropdown is open. Only scrolling past the
-           hero turns it to glass. */
-        backdropFilter: glass ? "blur(20px) saturate(180%)" : "none",
-        WebkitBackdropFilter: glass ? "blur(20px) saturate(180%)" : "none",
-        borderBottom: `1px solid ${
-          mobile ? MZ.line2 : glass ? "rgba(11,11,15,0.07)" : "transparent"
-        }`,
-        boxShadow: glass ? "inset 0 1px 0 rgba(255,255,255,0.70), 0 10px 32px -20px rgba(11,11,15,0.22)" : "none",
-        transition: "background .3s ease, border-color .3s ease, box-shadow .3s ease",
+        background: solid ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0)",
+        borderBottom: `1px solid ${solid && (scrolled || open || mobile) ? SA.line : "transparent"}`,
+        boxShadow: scrolled && !open ? "0 6px 20px -16px rgba(10,18,48,0.3)" : "none",
+        transition: "background .25s ease, border-color .25s ease, box-shadow .25s ease",
       }}
     >
-      {/* the same container as the hero plate (max-w-[1560px], px-3/px-5), so
-          the logo starts on the plate's left edge and "Contact sales" ends on
-          its right one. The nav is now measured against the page's largest
-          object rather than floating on its own width. */}
-      <div className="max-w-[1560px] mx-auto px-3 sm:px-5">
-        <div className="h-[76px] flex items-center gap-6">
-          <a
-            href="/"
-            aria-label="Blue-IQ home"
-            className="flex items-center shrink-0"
-            onMouseEnter={() => setOpen(null)}
-          >
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
+        <div className="h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
+          <a href="/" aria-label="Blue-IQ home" className="flex items-center justify-self-start" onMouseEnter={() => setOpen(null)}>
             <Image
               src="/logo.svg"
               alt="Blue-IQ"
-              width={112}
-              height={36}
+              width={108}
+              height={34}
               priority
-              style={{ filter: dark ? "brightness(0) invert(1)" : "none", transition: "filter .3s ease" }}
+              style={{ filter: light ? "brightness(0) invert(1)" : "none", transition: "filter .25s ease" }}
             />
           </a>
 
-          <nav className="hidden lg:flex items-center gap-2 mx-auto" aria-label="Primary">
+          <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Primary">
             {menus.map((m) => {
               const isOn = open === m.id;
               return (
-                <div key={m.id} onMouseEnter={() => setOpen(m.id)}>
-                  <a
-                    href={m.href}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg font-sans-g text-[14.5px] font-medium transition-colors"
-                    style={{ color: isOn ? on : idle }}
-                    onMouseOver={(e) => {
-                      if (!isOn) e.currentTarget.style.color = on;
-                    }}
-                    onMouseOut={(e) => {
-                      if (!isOn) e.currentTarget.style.color = idle;
-                    }}
-                    aria-expanded={isOn}
-                  >
-                    {m.label}
-                    <ChevronDown
-                      className="w-3.5 h-3.5 transition-transform duration-200"
-                      strokeWidth={2}
-                      style={{
-                        transform: isOn ? "rotate(180deg)" : "none",
-                        color: dark ? "rgba(255,255,255,0.42)" : MZ.faint,
-                      }}
-                    />
-                  </a>
-                </div>
+                <button
+                  key={m.id}
+                  type="button"
+                  onMouseEnter={() => setOpen(m.id)}
+                  onClick={() => setOpen(isOn ? null : m.id)}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
+                  style={{ color: isOn ? SA.ink : idle, background: isOn ? SA.bg2 : "transparent" }}
+                  aria-expanded={isOn}
+                  aria-haspopup="true"
+                >
+                  {m.label}
+                  <Chevron open={isOn} />
+                </button>
               );
             })}
+            <a
+              href="/contact#pricing"
+              onMouseEnter={() => setOpen(null)}
+              className={`px-3.5 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
+              style={{ color: idle }}
+            >
+              Pricing
+            </a>
           </nav>
 
-          {/* Entering the right-hand controls dismisses any open mega panel.
-
-              Without this, the panel only closed on leaving the *header* — so
-              sliding sideways from "Platform" to "Log in" left the mega panel
-              stranded open behind the login dropdown, two panels deep. */}
-          <div
-            className="flex items-center gap-3 shrink-0 ml-auto lg:ml-0"
-            onMouseEnter={() => setOpen(null)}
-          >
-            <LoginMenu dark={dark} />
-            <Magnetic
+          <div className="flex items-center justify-self-end gap-2" onMouseEnter={() => setOpen(null)}>
+            <div className="hidden md:block relative group/login">
+              <button
+                type="button"
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
+                style={{ color: idle }}
+                aria-haspopup="true"
+              >
+                Log in <Chevron open={false} />
+              </button>
+              <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none transition-opacity duration-150 group-hover/login:opacity-100 group-hover/login:pointer-events-auto group-focus-within/login:opacity-100 group-focus-within/login:pointer-events-auto">
+                <div className="w-[240px] rounded-2xl p-2 bg-white" style={{ border: `1px solid ${SA.line}`, boxShadow: "0 24px 48px -24px rgba(10,18,48,0.3)" }}>
+                  {loginItems.map((it) => (
+                    <Row key={it.label} it={it} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <a
               href="/contact"
-              className="hidden sm:inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.97]"
-              style={{
-                background: dark ? "#FFFFFF" : MZ.ink2,
-                color: dark ? "#0B0B0F" : "#FFFFFF",
-                transition: "background .3s ease, color .3s ease",
-              }}
+              className="hidden sm:inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold px-5 py-2.5 rounded-full transition-colors active:scale-[0.98]"
+              style={{ background: light ? "#fff" : SA.ink, color: light ? SA.ink : "#fff" }}
             >
-              Contact sales <MoveRight className="w-4 h-4" strokeWidth={2} />
-            </Magnetic>
+              Book a demo
+            </a>
             <button
-              className="lg:hidden w-10 h-10 grid place-items-center -mr-2"
+              className="lg:hidden w-11 h-11 grid place-items-center -mr-2 rounded-lg"
               onClick={() => (mobile ? closeMobile() : setMobile(true))}
               aria-label={mobile ? "Close menu" : "Open menu"}
               aria-expanded={mobile}
-              style={{ color: on }}
+              style={{ color: light ? "#fff" : SA.ink }}
             >
-              {mobile ? <X className="w-5 h-5" strokeWidth={2} /> : <Menu className="w-5 h-5" strokeWidth={2} />}
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
+                {mobile ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 8h16M4 16h16" />}
+              </svg>
             </button>
           </div>
         </div>
       </div>
 
-      {/* the mega panel — only the active one is ever mounted */}
+      {/* the mega panel: centred, sized to its content */}
       <AnimatePresence>
         {active && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={FADE}
-            className="hidden lg:block absolute inset-x-0 top-full px-5 sm:px-8"
+            key={active.id}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="hidden lg:flex absolute left-0 right-0 top-full justify-center px-5 pt-2"
           >
-            {/* the panel is sized to its content and centred, so a menu with one
-                small group is a small dropdown and a menu with a featured card
-                and three groups is a wide one — the width follows the content,
-                it is not a fixed slab every menu has to fill. */}
-            <div className="mt-3 flex justify-center">
-              <div
-                className="rounded-3xl p-3 flex gap-3"
-                style={{
-                  background: MZ.surface,
-                  border: `1px solid ${MZ.line2}`,
-                  boxShadow: "0 32px 72px -30px rgba(20,18,10,0.32)",
-                  maxWidth: "calc(100vw - 2rem)",
-                }}
-              >
-                {active.featured && (
-                  <a
-                    href={active.href}
-                    className="group relative rounded-2xl p-6 overflow-hidden flex flex-col justify-between w-[268px] shrink-0"
-                    style={{ background: active.featured.tint, minHeight: 216 }}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={`/Geometrics/${active.featured.geo}`}
-                      alt=""
-                      aria-hidden
-                      className="absolute -top-3 -right-3 w-24 h-24 object-contain opacity-90 transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="relative">
-                      <h3
-                        className="font-display font-medium text-[22px] leading-tight tracking-[-0.02em] max-w-[10ch]"
-                        style={{ color: MZ.ink }}
-                      >
-                        {active.featured.title}
-                      </h3>
-                      <p className="mt-2 font-sans-g text-[13px] leading-snug max-w-[22ch]" style={{ color: MZ.sub }}>
-                        {active.featured.blurb}
-                      </p>
-                    </div>
-                    <span
-                      className="relative inline-flex items-center gap-1.5 font-sans-g text-[13.5px] font-semibold"
-                      style={{ color: MZ.accent }}
-                    >
-                      {active.featured.cta}
-                      <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-                    </span>
-                  </a>
-                )}
-
-                <div className="flex gap-8 px-4 py-2">
-                  {active.groups.map((g) => (
-                    <div key={g.header} className="min-w-[164px]">
-                      <p
-                        className="font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em] mb-2"
-                        style={{ color: MZ.faint }}
-                      >
-                        {g.header}
-                      </p>
-                      <div className="flex flex-col">
-                        {g.items.map((it) => (
-                          <LinkRow key={it.label} it={it} />
-                        ))}
-                      </div>
-                    </div>
+            <div
+              className="rounded-3xl bg-white p-3 flex gap-3"
+              style={{ border: `1px solid ${SA.line}`, boxShadow: "0 40px 80px -36px rgba(10,18,48,0.35)" }}
+            >
+              <div className="flex gap-3">
+                {active.cards.map((c) => (
+                  <CardTile key={c.title} c={c} wide={active.cards.length === 1} />
+                ))}
+              </div>
+              <div className={`flex flex-col px-2 py-2 ${active.side.links.length > 4 ? "w-[440px]" : "w-[280px]"}`}>
+                <p className="px-3 pb-1.5 font-sans-g text-[12.5px] font-semibold" style={{ color: SA.faint }}>
+                  {active.side.header}
+                </p>
+                <div className={active.side.links.length > 4 ? "grid grid-cols-2" : "flex flex-col"}>
+                  {active.side.links.map((l) => (
+                    <Row key={l.label} it={l} compact={active.side.links.length > 4} />
                   ))}
                 </div>
+                <a
+                  href={active.foot.href}
+                  className="group mt-auto mx-3 pt-3 inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold"
+                  style={{ color: SA.accent, borderTop: `1px solid ${SA.line}` }}
+                >
+                  {active.foot.t}
+                  <IconArrow size={15} className="transition-transform group-hover:translate-x-0.5" />
+                </a>
               </div>
             </div>
           </motion.div>
@@ -556,99 +343,52 @@ function SiteNav({ overDark = false }: { overDark?: boolean }) {
 
       {/* mobile sheet */}
       {mobile && (
-        <div className="lg:hidden" style={{ background: "#FFFFFF", borderBottom: `1px solid ${MZ.line2}` }}>
-          <div className="max-w-[1560px] mx-auto px-3 sm:px-5 pb-6 flex flex-col max-h-[80dvh] overflow-y-auto overscroll-contain">
+        <div className="lg:hidden h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain bg-white">
+          <div className="px-5 sm:px-8 pb-10 flex flex-col">
             {menus.map((m) => {
               const exp = section === m.id;
               return (
-                <div key={m.id} style={{ borderTop: `1px solid ${MZ.line}` }}>
+                <div key={m.id} style={{ borderBottom: `1px solid ${SA.line}` }}>
                   <button
                     onClick={() => setSection(exp ? null : m.id)}
                     aria-expanded={exp}
-                    className="w-full flex items-center justify-between py-4 text-left"
+                    className="w-full flex items-center justify-between py-4 text-left font-sans-g text-[17px] font-medium"
+                    style={{ color: SA.ink }}
                   >
-                    <span className="font-sans-g text-[17px] font-medium" style={{ color: exp ? MZ.accent : MZ.ink }}>
-                      {m.label}
-                    </span>
-                    <ChevronDown
-                      className="w-5 h-5 transition-transform duration-200 shrink-0"
-                      strokeWidth={2}
-                      style={{ transform: exp ? "rotate(180deg)" : "none", color: MZ.faint }}
-                    />
+                    {m.label}
+                    <Chevron open={exp} />
                   </button>
-
                   {exp && (
-                    <div className="pb-5 flex flex-col gap-4">
-                      <a
-                        href={m.href}
-                        onClick={closeMobile}
-                        className="inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold"
-                        style={{ color: MZ.accent }}
-                      >
-                        View {m.label} <ArrowRight className="w-4 h-4" strokeWidth={2} />
-                      </a>
-                      {m.groups.map((g) => (
-                        <div key={g.header}>
-                          <p
-                            className="font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em] mb-0.5"
-                            style={{ color: MZ.faint }}
-                          >
-                            {g.header}
-                          </p>
-                          <div className="flex flex-col">
-                            {g.items.map((it) => (
-                              <a
-                                key={it.label}
-                                href={it.href}
-                                target={it.external ? "_blank" : undefined}
-                                rel={it.external ? "noopener noreferrer" : undefined}
-                                onClick={closeMobile}
-                                className="flex items-center gap-2 py-2 font-sans-g text-[15px]"
-                                style={{ color: MZ.sub }}
-                              >
-                                {it.label}
-                                {it.external && <ArrowUpRight className="w-3.5 h-3.5 opacity-50" strokeWidth={2} />}
-                              </a>
-                            ))}
-                          </div>
-                        </div>
+                    <div className="pb-4 -mx-3">
+                      {m.cards.map((c) => (
+                        <Row key={c.title} it={{ label: c.title, href: c.href, external: c.external, blurb: c.blurb, Icon: c.title === "Capture" ? IconCapture : c.title === "Spend" ? IconSpend : c.title === "Govern" ? IconGovern : c.title === "Custom builds" ? IconCustom : IconSonar }} onClick={closeMobile} />
+                      ))}
+                      {m.side.links.map((l) => (
+                        <Row key={l.label} it={l} onClick={closeMobile} />
                       ))}
                     </div>
                   )}
                 </div>
               );
             })}
-
-            <div className="pt-5 mt-1" style={{ borderTop: `1px solid ${MZ.line}` }}>
-              <p
-                className="font-mono-g text-[10px] font-semibold uppercase tracking-[0.16em] pb-1"
-                style={{ color: MZ.faint }}
-              >
-                Log in
+            <a href="/contact#pricing" onClick={closeMobile} className="py-4 font-sans-g text-[17px] font-medium" style={{ color: SA.ink, borderBottom: `1px solid ${SA.line}` }}>
+              Pricing
+            </a>
+            <div className="pt-5 -mx-3">
+              <p className="px-3 pb-1 font-sans-g text-[13px]" style={{ color: SA.faint }}>
+                Log in to
               </p>
               {loginItems.map((it) => (
-                <a
-                  key={it.label}
-                  href={it.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={closeMobile}
-                  className="flex items-center gap-2 py-2.5 font-sans-g text-[15px] font-medium"
-                  style={{ color: MZ.ink }}
-                >
-                  <span className="flex-1">{it.label}</span>
-                  <ArrowUpRight className="w-4 h-4 opacity-50" strokeWidth={2} />
-                </a>
+                <Row key={it.label} it={it} onClick={closeMobile} />
               ))}
             </div>
-
             <a
               href="/contact"
               onClick={closeMobile}
-              className="mt-6 inline-flex items-center justify-center gap-1.5 font-sans-g text-[15px] font-semibold text-white py-3.5 rounded-full"
-              style={{ background: MZ.ink2 }}
+              className="mt-6 inline-flex items-center justify-center gap-2 font-sans-g text-[15px] font-semibold text-white py-3.5 rounded-full"
+              style={{ background: SA.ink }}
             >
-              Contact sales <MoveRight className="w-4 h-4" strokeWidth={2} />
+              Book a demo <IconArrow size={16} />
             </a>
           </div>
         </div>

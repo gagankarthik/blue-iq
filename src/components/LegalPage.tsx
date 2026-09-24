@@ -95,10 +95,10 @@ export default function LegalPage({
       <SiteNav />
 
       <main>
-        <PageHero title={title} lede={intro} meta={[`Last updated ${updated}`]} />
+        <PageHero label={`Legal · Last updated ${updated}`} title={title} lede={intro} />
 
         <section className={WRAP}>
-          <div className="pb-28 sm:pb-36 lg:grid lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
+          <div className="pt-14 sm:pt-20 pb-28 sm:pb-36 lg:grid lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
             {/* ── the index, inline. Below lg this is all the contents list gets
                   to be, and it is enough: thirteen links, wrapped, on a rule. ── */}
             <nav
@@ -106,7 +106,7 @@ export default function LegalPage({
               className="lg:hidden py-6 mb-14"
               style={{ borderTop: `1px solid ${SA.line2}`, borderBottom: `1px solid ${SA.line2}` }}
             >
-              <p className="font-mono-g text-[10px] uppercase tracking-[0.2em]" style={{ color: SA.faint }}>
+              <p className="font-sans-g text-[13px] font-semibold" style={{ color: SA.faint }}>
                 Contents
               </p>
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
@@ -129,7 +129,7 @@ export default function LegalPage({
             <nav aria-label="Contents" className="hidden lg:block">
               <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain">
                 <p
-                  className="font-mono-g text-[10px] uppercase tracking-[0.2em] pb-4"
+                  className="font-sans-g text-[13px] font-semibold pb-4"
                   style={{ color: SA.faint, borderBottom: `1px solid ${SA.line}` }}
                 >
                   Contents
@@ -184,7 +184,7 @@ export default function LegalPage({
                 >
                   <h2
                     id={ids[i]}
-                    className="scroll-mt-24 font-display font-normal leading-[1.2]"
+                    className="scroll-mt-24 font-display font-semibold leading-[1.2]"
                     style={{
                       fontSize: "clamp(1.5rem, 2.4vw, 1.9rem)",
                       letterSpacing: "-0.03em",

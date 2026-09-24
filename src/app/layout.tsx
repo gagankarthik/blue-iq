@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 
@@ -13,18 +13,27 @@ import "@/app/globals.css";
 const sans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
   weight: ["300", "400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
 });
 
 
-const TITLE = "Blue-IQ | The Document Intelligence Platform";
+const TITLE = "Blue-IQ | Document AI Platform Powered by Sonar";
 const DESC =
-  "The document intelligence platform. Blue-IQ's Sonar engine reads any document and scores its confidence; Capture turns it into structured, trusted data, with Spend and Govern for invoices and contracts, packaged as the Campus and Workforce editions. SOC 2, HIPAA and GDPR aligned.";
+  "Blue-IQ is a document AI platform. Extract data, reconcile invoices and review contracts with Sonar, the AI that scores every field and flags what it can't read.";
+
+export const viewport: Viewport = {
+  themeColor: "#FFFFFF",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://blue-iq.ai"),
@@ -40,7 +49,7 @@ export const metadata: Metadata = {
     "candidate data extraction", "credential parsing", "confidence scoring", "spend intelligence",
     "entitlement reconciliation", "invoice reconciliation", "contract compliance", "SAM license reconciliation",
     "enterprise document automation", "legacy parser migration", "document AI integrations", "schema-validated JSON",
-    "SOC 2", "HIPAA", "GDPR", "Blue-IQ Capture", "Blue-IQ Spend", "Blue-IQ Govern", "Sonar engine",
+    "SOC 2", "HIPAA", "GDPR", "Blue-IQ Capture", "Blue-IQ Spend", "Blue-IQ Govern", "Sonar AI", "Sonar engine", "document AI platform",
     "Campus edition", "Workforce edition",
   ],
   authors: [{ name: "Blue-IQ" }],

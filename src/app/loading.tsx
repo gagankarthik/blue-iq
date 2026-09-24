@@ -1,87 +1,60 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { SA } from "@/lib/theme";
 
 /* ────────────────────────────────────────────────────────────────
-   The loading state.
+   The loading state: a skeleton of the page that is about to arrive.
 
-   Not a spinner. A spinner says "something is happening" and nothing else —
-   it is the same animation every site on the internet uses, and it tells the
-   reader nothing about where they are.
+   A full-screen wordmark with a scan line hid the site on every navigation
+   and made each click feel slower than it was. This keeps the real nav in
+   place, draws the shape of the content in neutral blocks with a slow sheen,
+   and runs a thin indeterminate bar along the top. No fake percentage — we
+   do not know the duration. Reduced motion gets the same layout, still.
 
-   This is a scan: a hairline of accent travelling down the wordmark, which is
-   the one gesture the whole company is about. The engine reads a page top to
-   bottom and reports what it found. The loader does the same thing to our own
-   name.
-
-   Under reduced motion it holds still and simply says the word. A person who
-   has asked the OS to stop moving things should not be shown a travelling
-   line, and a static loader is a perfectly good loader.
+   Server component, CSS-only motion: it paints before any JS arrives.
    ──────────────────────────────────────────────────────────────── */
+
+function Bone({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+  return <div className={`bq-bone rounded-lg ${className}`} style={style} />;
+}
+
 export default function Loading() {
-  const reduce = useReducedMotion();
-
   return (
-    <div
-      className="fixed inset-0 z-[80] grid place-items-center"
-      style={{ background: SA.bg }}
-      role="status"
-      aria-live="polite"
-    >
-      <span className="sr-only">Loading</span>
+    <div className="min-h-[100dvh]" style={{ background: SA.bg }} role="status" aria-live="polite" aria-busy="true">
+      <span className="sr-only">Loading page</span>
 
-      <div className="relative">
-        <div
-          className="font-display font-normal select-none"
-          style={{
-            fontSize: "clamp(2.2rem, 7vw, 4rem)",
-            letterSpacing: "-0.045em",
-            color: SA.ink,
-          }}
-        >
-          Blue-IQ
-        </div>
-
-        {/* the scan line. It overshoots the wordmark on both sides so it reads
-            as passing THROUGH the word rather than being contained by it. */}
-        {!reduce && (
-          <motion.span
-            aria-hidden
-            className="absolute left-[-12%] w-[124%] h-px"
-            style={{
-              background: `linear-gradient(90deg, transparent, ${SA.accent}, transparent)`,
-            }}
-            initial={{ top: "0%", opacity: 0 }}
-            animate={{ top: ["0%", "100%"], opacity: [0, 1, 1, 0] }}
-            transition={{
-              duration: 1.4,
-              ease: [0.16, 1, 0.3, 1],
-              repeat: Infinity,
-              repeatDelay: 0.25,
-              times: [0, 0.15, 0.85, 1],
-            }}
-          />
-        )}
+      <div aria-hidden className="fixed top-0 inset-x-0 z-[70] h-[2px] overflow-hidden" style={{ background: SA.accentSoft }}>
+        <div className="bq-progress h-full w-1/3" style={{ background: SA.accent }} />
       </div>
 
-      {/* a hairline progress rule under the mark — an indeterminate bar that
-          travels rather than fills, because we do not know the duration and a
-          fake percentage is a lie */}
-      {!reduce && (
-        <div
-          aria-hidden
-          className="absolute bottom-0 left-0 right-0 h-px overflow-hidden"
-          style={{ background: SA.line }}
-        >
-          <motion.span
-            className="block h-px w-1/3"
-            style={{ background: SA.accent }}
-            animate={{ x: ["-100%", "300%"] }}
-            transition={{ duration: 1.6, ease: "easeInOut", repeat: Infinity }}
-          />
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 h-[72px] flex items-center gap-8" style={{ borderBottom: `1px solid ${SA.line}` }}>
+        <Image src="/logo.svg" alt="" width={108} height={34} priority />
+        <div className="hidden lg:flex gap-6">
+          <Bone className="h-3 w-16" />
+          <Bone className="h-3 w-16" />
+          <Bone className="h-3 w-16" />
         </div>
-      )}
+        <Bone className="ml-auto h-10 w-32 rounded-full" />
+      </div>
+
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 pt-20 sm:pt-28 grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+          <Bone className="h-12 sm:h-14 w-[88%]" />
+          <Bone className="mt-4 h-12 sm:h-14 w-[64%]" />
+          <Bone className="mt-9 h-4 w-[92%]" />
+          <Bone className="mt-3 h-4 w-[84%]" />
+          <Bone className="mt-3 h-4 w-[70%]" />
+          <div className="mt-10 flex gap-3">
+            <Bone className="h-12 w-36 rounded-full" />
+            <Bone className="h-12 w-44 rounded-full" />
+          </div>
+        </div>
+        <Bone className="w-full aspect-[16/11] rounded-[24px]" />
+      </div>
+
+      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 mt-24 grid grid-cols-1 lg:grid-cols-6 gap-5">
+        <Bone className="lg:col-span-4 h-64 rounded-[20px]" />
+        <Bone className="lg:col-span-2 h-64 rounded-[20px]" />
+      </div>
     </div>
   );
 }

@@ -1,283 +1,225 @@
 "use client";
 
 import { useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, Network, GraduationCap, Users, Stethoscope, Scale, Receipt } from "lucide-react";
-import { SA, DK } from "@/lib/theme";
-import { SectionHead } from "@/components/saas/parts";
-import PaperImage from "@/components/saas/PaperImage";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { SA } from "@/lib/theme";
+import { SectionHead, Reveal } from "@/components/saas/parts";
+import { EASE } from "@/components/saas/motion";
+import {
+  type BqIcon,
+  IconNetwork,
+  IconCampus,
+  IconWorkforce,
+  IconHealth,
+  IconScale,
+  IconReceipt,
+  IconDocs,
+  IconArrow,
+} from "@/components/icons/BqIcons";
 
 /* ────────────────────────────────────────────────────────────────
-   Where it works — hover-expand panels.
+   Where it works — six sectors, one engine.
 
-   The interaction is lifted from vengenceui's staggered-grid: three panels
-   in a row, one open wide, the others collapsed to an icon and a name set on
-   its side. Hover or tap to open one. What is NOT lifted is the 21-tile image
-   grid it sat inside — that needs 21 images we do not have, ships hardcoded
-   GitHub/Slack/Twitter tiles when they are missing, and scales itself 1.5x at
-   z-index 1000, which would put it straight over the nav.
-
-   Rebuilt on framer-motion rather than ported: the original runs GSAP +
-   ScrollTrigger + imagesloaded, and a second animation runtime for one
-   section is a bad trade.
-
-   The grow is a CSS transition on flex-grow, not a framer animation. It is a
-   layout property either way — three nodes is fine, and CSS keeps it off the
-   main thread's animation loop. flex-grow (not width) so the same code gives
-   a row on desktop and a stacked accordion on a phone with no media query.
-
-   `image` is optional and currently unset. With one, the panel is a
-   photograph under a scrim. Without, it is the deep ink panel — which is a
-   real design, not a placeholder, so the section stands up today and only
-   gets better when the stills land.
+   The stock photographs under a paper shader are gone: a nurse, a lecture
+   hall and a server room tell a buyer nothing they did not already know. The
+   panel now shows what the engine reads in that sector and what comes back.
+   Tabs on the left (a real tablist, arrow-key navigable), detail on the right.
    ──────────────────────────────────────────────────────────────── */
 
-/* Each photograph was chosen by looking at it, and several were thrown out for
-   being the cliché rather than the subject: a gavel (Govern reads contracts,
-   it does not litigate), a handshake, a piggy bank. What is left is the actual
-   work — the clinicians who get credentialed, the sheer volume of text a
-   playbook is checked against, the pile of forms someone has to reconcile. */
-type Case = {
-  k: string;
-  Icon: typeof Users;
-  reads: string;
-  h: string;
-  d: string;
-  cta: string;
-  image: string;
-  seed: number;
-};
+type Case = { id: string; k: string; Icon: BqIcon; reads: string[]; h: string; d: string; out: string[] };
 
-const U = "https://images.unsplash.com/photo-";
-const Q = "?w=1400&q=75&auto=format&fit=crop";
-
-const cases: Case[] = [
+const CASES: Case[] = [
   {
+    id: "it",
     k: "IT sector",
-    Icon: Network,
-    reads: "MSAs · SOWs · vendor invoices",
-    h: "Read every vendor contract before it hits the budget.",
-    d: "Master agreements, statements of work, and vendor invoices come back as structured records — renewal dates, liability caps, licence counts, and the line items that drift from what was agreed. Every field is scored, so your team reviews the exposure, not the boilerplate.",
-    cta: "What Sonar reads for IT",
-    image: `${U}1558494949-ef010cbdcc31${Q}`,
-    seed: 5.8,
+    Icon: IconNetwork,
+    reads: ["Master service agreements", "Statements of work", "Vendor invoices", "Software entitlements"],
+    h: "Vendor contract and licence management, automated.",
+    d: "Renewal dates, liability caps and licence counts extracted from every MSA and SOW.",
+    out: ["Renewal calendar", "Licence counts", "Rate drift"],
   },
   {
+    id: "education",
     k: "Education",
-    Icon: GraduationCap,
-    reads: "Applications · transcripts · agreements",
-    h: "Turn a stack of applications into structured records.",
-    d: "Applications, transcripts, and supplier agreements are read into clean, scored data your student and finance systems can use — course histories, credentials, contract terms. Admissions and procurement spend their time on the records the engine flagged, not on data entry.",
-    cta: "What Sonar reads on campus",
-    image: `${U}1524178232363-1fb2b075b655${Q}`,
-    seed: 19.4,
+    Icon: IconCampus,
+    reads: ["Admissions applications", "Transcripts", "Supplier agreements", "Grant paperwork"],
+    h: "Admissions and transcript processing without data entry.",
+    d: "Applications and transcripts read into records your student information system can use.",
+    out: ["Student records", "Course histories", "Supplier terms"],
   },
   {
+    id: "workforce",
     k: "Workforce",
-    Icon: Users,
-    reads: "Resumes · licences · compliance files",
-    h: "Onboard a candidate in the time it takes to read one page.",
-    d: "Resumes, licences, and compliance files become structured candidate records — skills, credentials, and expiry dates, ready for your ATS. Every field comes back scored, so recruiters open only the ones Sonar was unsure of.",
-    cta: "What Sonar reads for staffing",
-    image: `${U}1521737604893-d14cc237f11d${Q}`,
-    seed: 33.1,
+    Icon: IconWorkforce,
+    reads: ["Resumes", "Certifications", "Right-to-work documents", "Compliance files"],
+    h: "Resume parsing and candidate onboarding in minutes.",
+    d: "Skills, certifications and expiry dates extracted straight into your ATS.",
+    out: ["Candidate profiles", "Credential expiries", "ATS-ready records"],
   },
   {
+    id: "healthcare",
     k: "Healthcare staffing",
-    Icon: Stethoscope,
-    reads: "Resumes · licences · compliance files",
-    h: "Credential a clinician in seconds, not an afternoon.",
-    d: "Clinical resumes, licences, and compliance files become structured records — specialties, credentials, and expiry dates, ready for your ATS. Each field is scored, so recruiters open only the ones the engine was unsure of.",
-    cta: "What Sonar reads for healthcare",
-    image: `${U}1579684385127-1ef15d508118${Q}`,
-    seed: 12.2,
+    Icon: IconHealth,
+    reads: ["Clinical resumes", "Nursing licences", "Immunisation records", "Compliance files"],
+    h: "Faster clinician credentialing.",
+    d: "Licence numbers, issuing boards and expiry dates extracted and scored. Smudged stamps are flagged.",
+    out: ["Licence checks", "Expiry tracking", "Compliance status"],
   },
   {
-    k: "Legal & contracts",
-    Icon: Scale,
-    reads: "SOWs · agreements · playbooks",
-    h: "Know the risk before the signature.",
-    d: "Agreements are read against your own playbook, and whatever deviates comes back with a risk rating attached: the auto-renewal, the liability cap, the termination term. Legal reviews the exposure, not the boilerplate.",
-    cta: "What Sonar reads in contracts",
-    image: `${U}1568667256549-094345857637${Q}`,
-    seed: 26.7,
+    id: "legal",
+    k: "Legal and contracts",
+    Icon: IconScale,
+    reads: ["Agreements", "Amendments", "NDAs", "Your playbook"],
+    h: "AI contract review before signature.",
+    d: "Every deviation from your playbook comes back with a risk rating.",
+    out: ["Clause risk ratings", "Playbook deviations", "Obligation dates"],
   },
   {
-    k: "Procurement & finance",
-    Icon: Receipt,
-    reads: "Invoices · POs · reconciliation",
-    h: "Reconcile spend without the manual pass.",
-    d: "Match invoices to contracts and purchase orders, catch the line items that drift from what was agreed, and flag spend leakage as it happens rather than at quarter close.",
-    cta: "What Sonar reads in finance",
-    image: `${U}1554224155-6726b3ff858f${Q}`,
-    seed: 41.5,
+    id: "procurement",
+    k: "Procurement and finance",
+    Icon: IconReceipt,
+    reads: ["Invoices", "Purchase orders", "Contracts", "Receipts"],
+    h: "Automated invoice reconciliation.",
+    d: "Invoices matched to contracts and POs, with overbilling flagged as it is billed.",
+    out: ["Three-way match", "Leakage alerts", "Entitlement checks"],
   },
 ];
 
-const EASE = "cubic-bezier(0.25, 1, 0.5, 1)";
-
-function Panel({ c, on, open }: { c: Case; on: boolean; open: () => void }) {
-  const reduce = useReducedMotion();
-
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={on}
-      aria-label={c.k}
-      onMouseEnter={open}
-      onFocus={open}
-      onClick={open}
-      className="ind-panel group relative overflow-hidden rounded-[20px] sm:rounded-[24px] text-left min-w-0 min-h-0"
-      style={{
-        flexBasis: 0,
-        flexGrow: on ? 3.4 : 1,
-        transition: reduce ? "none" : `flex-grow 700ms ${EASE}`,
-        background: DK.bg,
-      }}
-    >
-      {/* the photograph, creased by the paper shader. It sinks back when the
-          panel is closed so the open one is the only thing lit — the image is
-          doing the same job the type colour was, one layer down. */}
-      <motion.span
-        aria-hidden
-        className="ind-photo absolute inset-0"
-        initial={false}
-        animate={{ opacity: on ? 1 : 0.42 }}
-        transition={{ duration: reduce ? 0 : 0.7, ease: [0.25, 1, 0.5, 1] }}
-      >
-        <PaperImage src={c.image} seed={c.seed} />
-      </motion.span>
-
-      {/* the scrim. White type over a photograph is unreadable without one, and
-          it has to be heaviest at the foot, which is where the copy sits. */}
-      <motion.span
-        aria-hidden
-        className="absolute inset-0"
-        initial={false}
-        animate={{ opacity: on ? 1 : 0.86 }}
-        transition={{ duration: reduce ? 0 : 0.7 }}
-        style={{
-          background:
-            "linear-gradient(to top, rgba(7,8,11,0.94) 0%, rgba(7,8,11,0.74) 38%, rgba(7,8,11,0.42) 70%, rgba(7,8,11,0.34) 100%)",
-        }}
-      />
-
-      {/* light gathers in the open panel and drains from the closed ones */}
-      <motion.span
-        aria-hidden
-        className="absolute inset-0"
-        initial={false}
-        animate={{ opacity: on ? 1 : 0 }}
-        transition={{ duration: 0.6 }}
-        style={{
-          background: `radial-gradient(120% 90% at 50% 100%, ${DK.accent}2E, transparent 62%)`,
-        }}
-      />
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-[20px] sm:rounded-[24px] pointer-events-none"
-        style={{ boxShadow: `inset 0 0 0 1px ${on ? DK.borderLift : DK.border}` }}
-      />
-
-      {/* ── collapsed: the name turned on its side, so a 90px-wide panel still
-             says what it is. Sideways on desktop only; a stacked phone panel
-             is wide and short, so it just stays horizontal. ── */}
-      <motion.span
-        aria-hidden
-        className="ind-collapsed absolute inset-0 flex sm:flex-col items-center justify-center gap-3 px-4"
-        initial={false}
-        animate={{ opacity: on ? 0 : 1 }}
-        transition={{ duration: reduce ? 0 : 0.35 }}
-        style={{ pointerEvents: on ? "none" : "auto" }}
-      >
-        <c.Icon className="w-6 h-6 shrink-0 transition-colors duration-300" strokeWidth={1.4} style={{ color: DK.faint }} />
-        <span
-          className="font-display text-[15px] tracking-[-0.01em] whitespace-nowrap transition-colors duration-300 group-hover:text-white"
-          style={{ color: DK.sub, writingMode: "horizontal-tb" }}
-        >
-          <span className="hidden sm:inline [writing-mode:vertical-rl] [text-orientation:mixed]">{c.k}</span>
-          <span className="sm:hidden">{c.k}</span>
-        </span>
-      </motion.span>
-
-      {/* ── open: the argument ── */}
-      <motion.span
-        className="ind-open absolute inset-0 flex flex-col justify-end p-7 sm:p-10"
-        initial={false}
-        animate={{ opacity: on ? 1 : 0, y: on ? 0 : 14 }}
-        transition={{ duration: reduce ? 0 : 0.4, delay: on && !reduce ? 0.18 : 0, ease: [0.16, 1, 0.3, 1] }}
-        style={{ pointerEvents: on ? "auto" : "none" }}
-        aria-hidden={!on}
-      >
-        <span className="flex items-center gap-3 mb-auto">
-          <c.Icon className="w-6 h-6" strokeWidth={1.4} style={{ color: DK.accent }} />
-        </span>
-
-        <span className="block font-mono-g text-[10.5px] uppercase tracking-[0.18em]" style={{ color: DK.faint }}>
-          {c.reads}
-        </span>
-        <span
-          className="block mt-4 font-display font-normal leading-[1.08] max-w-[16ch]"
-          style={{ fontSize: "clamp(1.7rem, 2.6vw, 2.6rem)", letterSpacing: "-0.032em", color: DK.ink }}
-        >
-          {c.h}
-        </span>
-        <span
-          className="block mt-5 font-sans-g leading-[1.7] max-w-[48ch]"
-          style={{ fontSize: "0.98rem", color: DK.sub }}
-        >
-          {c.d}
-        </span>
-        <span
-          className="inline-flex items-center gap-1.5 mt-7 font-sans-g text-[15px] font-semibold w-fit"
-          style={{ color: DK.accent }}
-        >
-          {c.cta}
-          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-        </span>
-      </motion.span>
-    </button>
-  );
-}
-
 export default function Industries() {
   const [active, setActive] = useState(0);
+  const reduce = useReducedMotion();
+  const c = CASES[active];
+
+  const onKey = (e: React.KeyboardEvent) => {
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp" && e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+    e.preventDefault();
+    const dir = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : -1;
+    const next = (active + dir + CASES.length) % CASES.length;
+    setActive(next);
+    document.getElementById(`ind-tab-${CASES[next].id}`)?.focus();
+  };
 
   return (
-    <section className="relative px-5 sm:px-8 py-24 sm:py-36" style={{ background: SA.bg2 }} aria-labelledby="uc-h">
-      <div className="max-w-[1180px] mx-auto">
-        <div id="uc-h">
-          <SectionHead
-            title="Built for the sectors that live in documents"
-            sub="One engine, tuned to the paperwork of your world. Pick the one you work in."
-          />
-        </div>
+    <section id="industries" className="relative px-5 sm:px-8 py-16 sm:py-24 scroll-mt-20" style={{ background: SA.bg }} aria-labelledby="ind-h">
+      <div className="max-w-[1240px] mx-auto">
+        <SectionHead
+          id="ind-h"
+          title="Document AI for your industry"
+          sub="Choose your sector to see what Sonar reads and what you get back."
+        />
 
-        {/* flex-grow does the work in both axes: a row of panels on desktop,
-            a stacked accordion on a phone, from the same three nodes. */}
-        <div
-          role="tablist"
-          aria-label="Industries"
-          className="mt-14 sm:mt-20 flex flex-col sm:flex-row gap-2.5 sm:gap-3 sm:h-[560px]"
-        >
-          {cases.map((c, i) => (
-            <Panel key={c.k} c={c} on={i === active} open={() => setActive(i)} />
-          ))}
-        </div>
+        <Reveal className="mt-10 sm:mt-12 grid lg:grid-cols-[300px_minmax(0,1fr)] gap-5">
+          <div role="tablist" aria-label="Industries" aria-orientation="vertical" onKeyDown={onKey} className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-visible -mx-5 px-5 lg:mx-0 lg:px-0 pb-1 snap-x">
+            {CASES.map((x, i) => {
+              const on = i === active;
+              return (
+                <button
+                  key={x.id}
+                  id={`ind-tab-${x.id}`}
+                  role="tab"
+                  type="button"
+                  aria-selected={on}
+                  aria-controls="ind-panel"
+                  tabIndex={on ? 0 : -1}
+                  onClick={() => setActive(i)}
+                  className="relative shrink-0 snap-start flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors"
+                  style={{ color: on ? SA.ink : SA.sub }}
+                >
+                  {on && (
+                    <motion.span
+                      layoutId="ind-pill"
+                      className="absolute inset-0 rounded-2xl"
+                      style={{ background: SA.bg2, border: `1px solid ${SA.line2}` }}
+                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  <span
+                    className="relative grid place-items-center w-10 h-10 rounded-xl transition-colors"
+                    style={{ background: on ? SA.accent : SA.accentSoft, color: on ? "#fff" : SA.accent, ["--duo-o" as string]: on ? "0.25" : "0.14" }}
+                  >
+                    <x.Icon size={22} />
+                  </span>
+                  <span className="relative font-sans-g text-[15px] font-medium whitespace-nowrap">{x.k}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* the panel is a button, so the real link lives outside it — a link
-            inside a button is invalid markup and Safari drops the click */}
-        <div className="mt-8 flex justify-end">
-          <a
-            href="/products#editions"
-            className="group inline-flex items-center gap-1.5 font-sans-g text-[15px] font-semibold"
-            style={{ color: SA.accent }}
+          <div
+            id="ind-panel"
+            role="tabpanel"
+            aria-labelledby={`ind-tab-${c.id}`}
+            className="relative overflow-hidden rounded-[24px] p-7 sm:p-10 lg:p-12 min-h-[400px]"
+            style={{ background: SA.bg2, border: `1px solid ${SA.line}` }}
           >
-            See the editions built for these
-            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" strokeWidth={2} />
-          </a>
-        </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={c.id}
+                initial={reduce ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduce ? undefined : { opacity: 0, y: -6 }}
+                transition={{ duration: 0.35, ease: EASE }}
+                className="relative"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="grid place-items-center w-12 h-12 rounded-2xl" style={{ background: SA.surface, border: `1px solid ${SA.line}`, color: SA.accent }}>
+                    <c.Icon size={26} />
+                  </span>
+                  <p className="font-sans-g text-[14.5px] font-semibold" style={{ color: SA.accent }}>
+                    {c.k}
+                  </p>
+                </div>
+                <h3
+                  className="mt-6 font-display font-semibold leading-[1.12]"
+                  style={{ fontSize: "clamp(1.6rem, 2.8vw, 2.25rem)", letterSpacing: "-0.03em", color: SA.ink, maxWidth: "26ch" }}
+                >
+                  {c.h}
+                </h3>
+                <p className="mt-5 font-sans-g text-[16px] leading-[1.7]" style={{ color: SA.sub, maxWidth: "58ch" }}>
+                  {c.d}
+                </p>
+
+                <div className="mt-9 grid sm:grid-cols-2 gap-8">
+                  <div>
+                    <p className="font-sans-g text-[13px] font-semibold" style={{ color: SA.ink }}>
+                      What it reads
+                    </p>
+                    <ul className="mt-3 space-y-2.5">
+                      {c.reads.map((r) => (
+                        <li key={r} className="flex items-center gap-2.5 font-sans-g text-[14.5px]" style={{ color: SA.sub }}>
+                          <IconDocs size={18} className="shrink-0" style={{ color: SA.accent }} />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-sans-g text-[13px] font-semibold" style={{ color: SA.ink }}>
+                      What comes back
+                    </p>
+                    <ul className="mt-3 space-y-2.5">
+                      {c.out.map((r) => (
+                        <li key={r} className="flex items-center gap-2.5 font-sans-g text-[14.5px]" style={{ color: SA.sub }}>
+                          <span className="w-[18px] h-[18px] shrink-0 grid place-items-center rounded-full" style={{ background: SA.accent }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <path d="m5 12.5 4.5 4.5L19 7.5" />
+                            </svg>
+                          </span>
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <a href={`/solutions#${c.id}`} className="group mt-10 inline-flex items-center gap-1.5 font-sans-g text-[15px] font-semibold" style={{ color: SA.accent }}>
+                  Explore {c.k}
+                  <IconArrow size={15} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+                </a>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

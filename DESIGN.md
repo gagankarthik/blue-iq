@@ -3,6 +3,41 @@
 The single source of truth for how Blue-IQ looks, reads, and moves.
 If the code and this document disagree, **this document wins** — fix the code.
 
+> ## 2026-09 redesign — read this first
+>
+> This block overrides anything below it that disagrees.
+>
+> - **Palette** (`SA` in `src/lib/theme.ts`): cool slate neutrals, deep navy ink `#0A1230`,
+>   one accent taken from the logo — `#1D5BF0` for text/buttons (AA on white), `#297AFF` and
+>   cyan `#34C2FF` for illustration only. Dark bands are navy `#08102B`, never black.
+>   `faint` is `#667089` so even meta text passes AA.
+> - **Type**: Geist, headings **semibold** and tight. No mono-caps eyebrows.
+> - **Icons**: the custom set in `src/components/icons/BqIcons.tsx` (24px, 1.5 stroke, one
+>   soft "duo" plane). No lucide in new work.
+> - **Illustrations**: isometric objects built from `src/components/art/iso.tsx`
+>   (floor, box, sheet, cylinder on one 30° grid). **Never UI mock-ups** — no fake screens,
+>   fake JSON, tiny fake text. The user rejected mock-up visuals outright. No stock photos.
+> - **Removed as AI-template tells**: pill badge over the hero headline, glow blobs, static dot/grid
+>   washes, word-by-word blur reveals, magnetic buttons, marquees,
+>   glowing "CPU chip" graphics, paper-shader photos, neumorphic footer, glassmorphism nav.
+> - **Motion**: one reveal (rise 16px + fade, once). Loops only inside illustrations
+>   (a scan, a pulse, a float), all off under reduced motion.
+> - **Loading**: `app/loading.tsx` is a layout skeleton + indeterminate top bar, not a
+>   full-screen logo.
+> - **Sonar is "our AI"**: name it as the AI inside every product (hero, nav, copy).
+> - **Live background**: `art/SonarField.tsx` (canvas dot grid, pulses from the cursor/tap,
+>   pauses off screen, static under reduced motion). Used by the home hero, every page
+>   header (`PageHero` in `page/kit.tsx`) and the closing `CtaBand`.
+> - **Home order**: centred navy hero (rotating word) → Platform bento → How Sonar works
+>   (auto-playing step tabs + drawing) → Confidence (self-moving review line) → Industries
+>   (tabs) → Security → FAQ → CtaBand (email field → /contact?email=) + footer.
+> - **Nav**: logo | links on the true centre | actions. Dropdowns are centred,
+>   content-sized panels led by illustrated cards — never a wide slab of empty white.
+> - **Copy**: one line per idea. Each page has its own job and layout:
+>   Products = switcher + editions table; Solutions = industry grid + service rows +
+>   project steps; Resources = jump cards + formats + scoring rules; About = problem +
+>   Meet Sonar (count-ups) + how we work; Contact = form card with topic chips.
+
 ---
 
 ## 1. Brand
@@ -369,7 +404,7 @@ invisible in the code.
 
 ```bash
 npm run dev
-node scripts/shot.mjs ./shots http://localhost:3000/
+# screenshot with puppeteer-core against http://127.0.0.1:3000 (see memory notes)
 ```
 
 Check the hero at 1440px, every scroll position, and mobile at 390px. Look for:

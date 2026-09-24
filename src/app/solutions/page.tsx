@@ -1,20 +1,18 @@
-import type { Metadata } from "next";
 import SolutionsClient from "./SolutionsClient";
+import { pageMetadata, breadcrumbLd } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Custom Development, Migrations & Integrations",
+export const metadata = pageMetadata({
+  title: "Document AI Solutions by Industry",
   description:
-    "Custom document builds, legacy parser migrations, and integrations into the systems you already run — engineered on the Blue-IQ Sonar engine, for healthcare staffing, legal, and procurement.",
-  alternates: { canonical: "/solutions" },
-  openGraph: {
-    title: "Blue-IQ Solutions",
-    description:
-      "Custom builds, enterprise migrations, and integrations, on the same Sonar engine that runs Capture, Spend and Govern.",
-    url: "https://blue-iq.ai/solutions",
-    type: "website",
-  },
-};
+    "Document AI for IT, education, staffing, healthcare credentialing, legal and procurement teams, plus custom builds, parser migrations and integrations.",
+  path: "/solutions",
+});
 
 export default function Page() {
-  return <SolutionsClient />;
+  return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd("Solutions", "/solutions")) }} />
+      <SolutionsClient />
+    </>
+  );
 }

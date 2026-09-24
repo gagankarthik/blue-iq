@@ -1,178 +1,188 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Loader2 } from "lucide-react";
 import { SA } from "@/lib/theme";
+import { EASE } from "@/components/saas/motion";
 import { PageHero, WRAP } from "@/components/page/kit";
-import { SPRING_SOFT } from "@/components/saas/motion";
+import { IconCheck, IconArrow } from "@/components/icons/BqIcons";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 /* ────────────────────────────────────────────────────────────────
-   /contact
+   /contact — the form is the page.
 
-   A contact page is a name, an email, and a sentence about what you want.
-   Everything past that is the page getting in the way of the one thing it
-   exists to do.
-
-   Two things have now been cut from this page for being exactly that:
-   a 592-line version with a five-state machine, and after it a "What's this
-   about?" selector — four options, each with its own hint line — which was
-   twenty words of chrome asking a question the message box already answers.
-   Whoever is writing to us can just say what they want.
-
-   NO BACKEND. `send()` is simulated — nothing leaves the browser. So the
-   success state does NOT claim we received anything, because we didn't: it
-   hands the note back as a mailto, addressed to the one mailbox this site
-   actually publishes. Wire this to a real endpoint and that copy is the first
-   thing that has to change.
+   The card sits over the header's edge so it is on screen immediately.
+   Topic chips replace a free-text subject line. An email typed into the
+   home page CTA arrives pre-filled (?email=). There is no mailbox behind the
+   form yet, so a sent form opens the visitor's own mail app with everything
+   composed, and says so, rather than pretending it was received.
    ──────────────────────────────────────────────────────────────── */
 
 const EMAIL = "hello@blue-iq.ai";
+const TOPICS = ["A demo", "Pricing", "A custom build", "Security review", "Something else"];
+
+const NEXT: [string, string][] = [
+  ["A person reads your message", "Someone from our team, not a bot."],
+  ["You send a few real documents", "The messy ones are the useful ones."],
+  ["We read them with Sonar, live", "Every field, every score, every flag."],
+];
 
 type Errors = { name?: string; email?: string; message?: string };
 
 export default function ContactClient() {
   const reduce = useReducedMotion();
-  const [v, setV] = useState({ name: "", email: "", message: "" });
+  const [v, setV] = useState({ name: "", email: "", company: "", message: "" });
+  const [topic, setTopic] = useState(TOPICS[0]);
   const [errors, setErrors] = useState<Errors>({});
   const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
 
+  useEffect(() => {
+    const e = new URLSearchParams(window.location.search).get("email");
+    if (e) setV((p) => ({ ...p, email: e }));
+    if (window.location.hash === "#pricing") setTopic("Pricing");
+  }, []);
+
   const set = (k: keyof typeof v) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setV((p) => ({ ...p, [k]: e.target.value }));
-    setErrors((p) => (p[k] ? { ...p, [k]: undefined } : p));
+    setErrors((p) => (k in p ? { ...p, [k]: undefined } : p));
   };
 
   async function send(e: React.FormEvent) {
     e.preventDefault();
     const next: Errors = {};
-    if (!v.name.trim()) next.name = "Please tell us your name.";
+    if (!v.name.trim()) next.name = "Please add your name.";
     if (!v.email.trim()) next.email = "We need an email to reply to.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.email.trim())) next.email = "That email does not look right.";
-    if (!v.message.trim()) next.message = "Tell us what you are trying to read.";
-
+    if (!v.message.trim()) next.message = "Tell us a little about what you need.";
     setErrors(next);
     if (Object.keys(next).length) return;
-
     setState("sending");
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 600));
     setState("sent");
   }
 
   const mailto =
-    `mailto:${EMAIL}?subject=${encodeURIComponent(`Enquiry — ${v.name.trim()}`)}` +
-    `&body=${encodeURIComponent([v.message.trim(), "", "—", v.name.trim(), v.email.trim()].filter(Boolean).join("\n"))}`;
+    `mailto:${EMAIL}?subject=${encodeURIComponent(`${topic}: ${v.name.trim()}${v.company.trim() ? `, ${v.company.trim()}` : ""}`)}` +
+    `&body=${encodeURIComponent([v.message.trim(), "", "—", v.name.trim(), v.company.trim(), v.email.trim()].filter(Boolean).join("\n"))}`;
 
-  const inputStyle = (bad?: string) => ({
-    background: SA.surface,
-    border: `1px solid ${bad ? SA.red : SA.line2}`,
-    color: SA.ink,
-  });
-  const inputClass = "w-full rounded-lg px-3.5 py-3 font-sans-g text-[15px] outline-none";
+  const field = (bad?: string) =>
+    `w-full rounded-xl px-4 py-3 font-sans-g text-[15px] outline-none transition-[border-color,box-shadow] focus:border-[#1D5BF0] focus:shadow-[0_0_0_4px_rgba(29,91,240,0.12)] ${bad ? "border-[#C0492E]" : "border-[#D6DDEA]"} border bg-white`;
 
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ background: SA.bg2, color: SA.ink }}>
       <SiteNav />
-
       <main>
-        <PageHero
-          title="Send us the ugliest document you have."
-          lede="The only test worth running is the one on your own files. Tell us what you're trying to read, and we'll show you the fields it returns, the score on each one, and the ones it flags."
-        />
+        <PageHero label="Contact" title="Talk to the Blue-IQ team" lede="Book a demo on your own documents, ask about pricing, or scope a custom build." />
 
-        <section className={`${WRAP} pb-28 sm:pb-36`}>
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.62fr)] gap-y-14 lg:gap-x-24 items-start">
-            <div className="pt-10" style={{ borderTop: `1px solid ${SA.line2}` }}>
+        <section className={`${WRAP} relative -mt-10 sm:-mt-14 pb-20 sm:pb-28`}>
+          <div className="grid lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)] gap-6 items-start">
+            <div className="rounded-[28px] p-6 sm:p-10 bg-white" style={{ border: `1px solid ${SA.line}`, boxShadow: "0 40px 80px -48px rgba(10,18,48,0.45)" }}>
               {state === "sent" ? (
-                <motion.div
-                  initial={reduce ? false : { opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={SPRING_SOFT}
-                >
-                  <Check className="w-7 h-7" strokeWidth={1.5} style={{ color: SA.accent }} aria-hidden />
-                  <h2
-                    className="mt-5 font-display font-normal leading-[1.15]"
-                    style={{ fontSize: "clamp(1.5rem, 2.4vw, 2rem)", letterSpacing: "-0.03em", color: SA.ink }}
-                  >
-                    Your message is written. One click sends it.
+                <motion.div initial={reduce ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE }} className="py-6">
+                  <span className="grid place-items-center w-14 h-14 rounded-2xl" style={{ background: SA.accentSoft, color: SA.accent }}>
+                    <IconCheck size={28} />
+                  </span>
+                  <h2 className="mt-6 font-display font-semibold text-[1.8rem] tracking-[-0.03em]" style={{ color: SA.ink }}>
+                    Almost there. One click sends it.
                   </h2>
-                  {/* Straight with the person: there is no mailbox behind this
-                      form yet, and telling them "we got it" would be a lie told
-                      to a real customer on their first contact with us. */}
-                  <p className="mt-4 font-sans-g leading-[1.75] max-w-[48ch]" style={{ fontSize: "1rem", color: SA.sub }}>
-                    This form isn&apos;t wired to a mailbox yet, so nothing left your browser. The button below opens
-                    your own mail app with everything you typed already composed.
+                  <p className="mt-3 font-sans-g text-[15.5px] leading-[1.6] max-w-[46ch]" style={{ color: SA.sub }}>
+                    Your message is ready in your mail app, addressed to our team. Nothing has been sent yet.
                   </p>
-                  <a
-                    href={mailto}
-                    className="inline-flex items-center gap-2 mt-8 rounded-lg px-6 py-3 font-sans-g text-[15px] font-semibold text-white transition-transform active:translate-y-px"
-                    style={{ background: SA.ink }}
-                  >
-                    Open it in your mail app
+                  <a href={mailto} className="group mt-8 inline-flex items-center gap-2 rounded-full px-6 py-3.5 font-sans-g text-[15px] font-semibold text-white" style={{ background: SA.ink }}>
+                    Open in my mail app <IconArrow size={16} className="transition-transform group-hover:translate-x-0.5" />
                   </a>
                 </motion.div>
               ) : (
-                <form onSubmit={send} noValidate className="flex flex-col gap-7">
-                  <div className="grid sm:grid-cols-2 gap-x-5 gap-y-7">
-                    <div className="flex flex-col gap-2">
-                      <label htmlFor="name" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
-                        Name
-                      </label>
-                      <input id="name" value={v.name} onChange={set("name")} className={inputClass} style={inputStyle(errors.name)} aria-invalid={!!errors.name} />
-                      {errors.name && (
-                        <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
-                          {errors.name}
-                        </p>
-                      )}
+                <form onSubmit={send} noValidate className="flex flex-col gap-6">
+                  <fieldset>
+                    <legend className="font-sans-g text-[14px] font-semibold" style={{ color: SA.ink }}>
+                      What can we help with?
+                    </legend>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {TOPICS.map((t) => {
+                        const on = t === topic;
+                        return (
+                          <button
+                            key={t}
+                            type="button"
+                            aria-pressed={on}
+                            onClick={() => setTopic(t)}
+                            className="rounded-full px-4 py-2 font-sans-g text-[14px] font-medium transition-colors"
+                            style={{ background: on ? SA.ink : SA.bg2, color: on ? "#fff" : SA.sub, border: `1px solid ${on ? SA.ink : SA.line}` }}
+                          >
+                            {t}
+                          </button>
+                        );
+                      })}
                     </div>
+                  </fieldset>
 
-                    <div className="flex flex-col gap-2">
-                      <label htmlFor="email" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
-                        Work email
-                      </label>
-                      <input id="email" type="email" value={v.email} onChange={set("email")} className={inputClass} style={inputStyle(errors.email)} aria-invalid={!!errors.email} />
-                      {errors.email && (
-                        <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
-                          {errors.email}
-                        </p>
-                      )}
-                    </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    {([
+                      ["name", "Name", "text", "name"],
+                      ["email", "Work email", "email", "email"],
+                    ] as const).map(([k, label, type, ac]) => (
+                      <div key={k} className="flex flex-col gap-2">
+                        <label htmlFor={k} className="font-sans-g text-[14px] font-semibold" style={{ color: SA.ink }}>
+                          {label}
+                        </label>
+                        <input id={k} type={type} autoComplete={ac} value={v[k]} onChange={set(k)} className={field(errors[k])} aria-invalid={!!errors[k]} aria-describedby={errors[k] ? `${k}-err` : undefined} />
+                        {errors[k] && (
+                          <p id={`${k}-err`} role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
+                            {errors[k]}
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <label htmlFor="message" className="font-sans-g text-[14px] font-medium" style={{ color: SA.ink }}>
+                    <label htmlFor="company" className="font-sans-g text-[14px] font-semibold" style={{ color: SA.ink }}>
+                      Company <span className="font-normal" style={{ color: SA.faint }}>(optional)</span>
+                    </label>
+                    <input id="company" autoComplete="organization" value={v.company} onChange={set("company")} className={field()} />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label htmlFor="message" className="font-sans-g text-[14px] font-semibold" style={{ color: SA.ink }}>
                       What are you trying to read?
                     </label>
                     <textarea
                       id="message"
-                      rows={6}
+                      rows={5}
                       value={v.message}
                       onChange={set("message")}
-                      placeholder="The documents, roughly how many a month, and anything else you want to ask — pricing, a custom build, a security review."
-                      className={`${inputClass} resize-y`}
-                      style={inputStyle(errors.message)}
+                      placeholder="For example: 2,000 vendor invoices a month, mostly scanned PDFs."
+                      className={`${field(errors.message)} resize-y`}
                       aria-invalid={!!errors.message}
+                      aria-describedby={errors.message ? "message-err" : undefined}
                     />
                     {errors.message && (
-                      <p role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
+                      <p id="message-err" role="alert" className="font-sans-g text-[13px]" style={{ color: SA.red }}>
                         {errors.message}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                     <button
                       type="submit"
                       disabled={state === "sending"}
-                      className="inline-flex items-center gap-2 rounded-lg px-6 py-3 font-sans-g text-[15px] font-semibold text-white transition-transform active:translate-y-px disabled:opacity-70"
+                      className="group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 font-sans-g text-[15px] font-semibold text-white transition-colors active:scale-[0.98] disabled:opacity-70 hover:bg-[#16204A]"
                       style={{ background: SA.ink }}
                     >
-                      {state === "sending" && <Loader2 className="w-4 h-4 animate-spin" strokeWidth={2} aria-hidden />}
-                      {state === "sending" ? "Sending…" : "Send it"}
+                      {state === "sending" ? (
+                        <>
+                          <span aria-hidden className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" /> Preparing
+                        </>
+                      ) : (
+                        <>
+                          Send message <IconArrow size={16} className="transition-transform group-hover:translate-x-0.5" />
+                        </>
+                      )}
                     </button>
-
-                    <p className="font-sans-g text-[14px]" style={{ color: SA.faint }}>
+                    <p className="font-sans-g text-[14px]" style={{ color: SA.sub }}>
                       Or email{" "}
                       <a href={`mailto:${EMAIL}`} className="font-semibold hover:underline underline-offset-4" style={{ color: SA.accent }}>
                         {EMAIL}
@@ -183,29 +193,38 @@ export default function ContactClient() {
               )}
             </div>
 
-            {/* Pricing, plainly. There are no published tiers, so there are no
-                Starter/Pro/Enterprise cards here — inventing three would be the
-                easiest lie on the entire site to tell. */}
-            <aside id="pricing" className="pt-10 scroll-mt-28" style={{ borderTop: `1px solid ${SA.line2}` }}>
-              <h2
-                className="font-display font-normal leading-[1.15]"
-                style={{ fontSize: "clamp(1.4rem, 2.2vw, 1.8rem)", letterSpacing: "-0.03em", color: SA.ink }}
-              >
-                What it costs
-              </h2>
-              <p className="mt-5 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
-                We don&apos;t publish plans. A price that ignored what you&apos;re reading and how much of it arrives
-                would be a made-up number. What you pay follows the volume and which products are in play.
-              </p>
-              <p className="mt-4 font-sans-g leading-[1.75]" style={{ fontSize: "1rem", color: SA.sub }}>
-                Tell us the documents and roughly how many a month, and we&apos;ll come back with a real figure.
-              </p>
+            <aside className="flex flex-col gap-6">
+              <div className="rounded-[28px] p-7 sm:p-8" style={{ background: SA.navy }}>
+                <h2 className="font-display font-semibold text-[1.3rem] tracking-[-0.02em] text-white">What happens next</h2>
+                <ol className="mt-6 space-y-5">
+                  {NEXT.map(([t, d], k) => (
+                    <li key={t} className="flex gap-4">
+                      <span className="shrink-0 grid place-items-center w-8 h-8 rounded-full font-display font-semibold text-[14px]" style={{ background: "#6AA3FF", color: SA.navy }}>
+                        {k + 1}
+                      </span>
+                      <span>
+                        <span className="block font-sans-g text-[15px] font-semibold text-white">{t}</span>
+                        <span className="block font-sans-g text-[14px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+                          {d}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div id="pricing" className="rounded-[28px] p-7 sm:p-8 bg-white scroll-mt-28" style={{ border: `1px solid ${SA.line}` }}>
+                <h2 className="font-display font-semibold text-[1.3rem] tracking-[-0.02em]" style={{ color: SA.ink }}>
+                  Pricing
+                </h2>
+                <p className="mt-2 font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
+                  Based on your volume and the products you use. Tell us both and we will send a real number.
+                </p>
+              </div>
             </aside>
           </div>
         </section>
       </main>
-
-      <SiteFooter />
+      <SiteFooter cta={false} />
     </div>
   );
 }

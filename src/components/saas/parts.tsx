@@ -2,65 +2,104 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { SA } from "@/lib/theme";
-import { Words, child, SPRING_SOFT } from "@/components/saas/motion";
+import { EASE } from "@/components/saas/motion";
 
-/* Section headers.
+/* ────────────────────────────────────────────────────────────────
+   Section headers and the one reveal.
 
-   There is no eyebrow. Every section used to open with the same mono-caps
-   kicker behind a little dash — "TRUST", "QUESTIONS", "HOW IT WORKS" — which
-   is a label telling you what you are about to read instead of just letting
-   you read it. The reference has none of them anywhere on its page, and the
-   headline is stronger standing alone.
+   The word-by-word blur assembly is gone — it is one of the most
+   recognisable template effects there is, and on every heading it made the
+   page feel like a demo reel. A section now simply rises 16px and fades in,
+   once. Headings are semibold and tight; body copy stays at a readable
+   measure and full contrast.
+   ──────────────────────────────────────────────────────────────── */
 
-   The statement is set large and *light* (weight 400, -0.032em), not large
-   and bold: scale carries the hierarchy, weight doesn't need to help. */
+export function Reveal({
+  children,
+  className = "",
+  style,
+  delay = 0,
+  as = "div",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  delay?: number;
+  as?: "div" | "section" | "ul" | "ol";
+}) {
+  const reduce = useReducedMotion();
+  const M = motion[as];
+  return (
+    <M
+      className={className}
+      style={style}
+      initial={reduce ? false : { opacity: 0.001, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.05 }}
+      transition={{ duration: 0.7, ease: EASE, delay }}
+    >
+      {children}
+    </M>
+  );
+}
+
 export function SectionHead({
   title,
   sub,
   align = "split",
+  id,
+  tone = "light",
 }: {
   title: string;
-  sub: string;
-  align?: "split" | "center";
+  sub?: string;
+  align?: "split" | "center" | "stack";
+  id?: string;
+  tone?: "light" | "dark";
 }) {
-  const reduce = useReducedMotion();
+  const ink = tone === "dark" ? "#FFFFFF" : SA.ink;
+  const body = tone === "dark" ? "rgba(255,255,255,0.74)" : SA.sub;
 
+  /* Headings are never hidden. They render in place from the first paint;
+     only the block around them fades up. A heading that waits for an
+     observer to fire is a heading someone, somewhere, never sees. */
   const Title = (
-    <Words
-      as="h2"
-      text={title}
-      className="font-display font-normal leading-[1.08]"
-      style={{ fontSize: "clamp(2.2rem, 4.6vw, 3.6rem)", letterSpacing: "-0.032em", color: SA.ink }}
-    />
+    <h2
+      id={id}
+      className="font-display font-semibold leading-[1.08]"
+      style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", letterSpacing: "-0.035em", color: ink, maxWidth: "26ch", textWrap: "balance" }}
+    >
+      {title}
+    </h2>
   );
 
-  const Sub = (
-    <motion.p
-      variants={child}
-      initial={reduce ? false : "hidden"}
-      whileInView="show"
-      viewport={{ once: true, margin: "-12%" }}
-      transition={{ ...SPRING_SOFT, delay: 0.25 }}
-      className="font-sans-g leading-[1.65] max-w-[48ch]"
-      style={{ fontSize: "1.02rem", color: SA.sub }}
-    >
+  const Sub = sub ? (
+    <p className="font-sans-g leading-[1.7]" style={{ fontSize: "1.0625rem", color: body, maxWidth: "52ch" }}>
       {sub}
-    </motion.p>
-  );
+    </p>
+  ) : null;
 
   if (align === "center") {
     return (
-      <div className="flex flex-col items-center text-center max-w-[680px] mx-auto">
+      <Reveal className="flex flex-col items-center text-center mx-auto">
         {Title}
-        <div className="mt-7">{Sub}</div>
-      </div>
+        {Sub && <div className="mt-6">{Sub}</div>}
+      </Reveal>
+    );
+  }
+
+  if (align === "stack") {
+    return (
+      <Reveal>
+        {Title}
+        {Sub && <div className="mt-6">{Sub}</div>}
+      </Reveal>
     );
   }
 
   return (
-    <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)] gap-y-6 lg:gap-x-16 items-end">
+    <Reveal className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] gap-y-5 lg:gap-x-16 items-end">
       <div>{Title}</div>
-      <div className="lg:pb-2">{Sub}</div>
-    </div>
+      <div className="lg:pb-1.5">{Sub}</div>
+    </Reveal>
   );
 }

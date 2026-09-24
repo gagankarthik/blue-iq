@@ -3,56 +3,56 @@ import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import Hero from "@/components/saas/Hero";
 import Suite from "@/components/saas/Suite";
-import Sonar from "@/components/saas/Sonar";
-import Ledger from "@/components/saas/Ledger";
+import SonarEngine from "@/components/saas/SonarEngine";
+import Pipeline from "@/components/saas/Pipeline";
+import Confidence from "@/components/saas/Confidence";
 import Industries from "@/components/saas/Industries";
 import Security from "@/components/saas/Security";
 import Faq from "@/components/saas/Faq";
+import { FAQS } from "@/components/saas/faqData";
 
-/* Server component: every animated section below is its own client leaf, so the
-   page shell itself ships no JS.
+/* Server component: each animated section is its own client leaf.
 
-   The page is light throughout. The rhythm is carried by value *within* the
-   light range — white where the copy is, and the brand tint once, at the close.
-   No dark sections: every dark, grid-lined, glow-washed panel we tried read as
-   machine-made, and the reference is a light site.
+   Rhythm, top to bottom: white hero → white platform → navy "how it works"
+   → cool-grey confidence → white industries → cool-grey security → white FAQ
+   → navy close. One dark band mid-page and one at the end; everything else
+   alternates between two close light values. */
 
-   The pinned "how it works" scene is gone. It was 440vh — nearly five screens
-   of scroll — spent scrubbing a drawing of a document through four stages, and
-   the drawing was the same invented mock-up we deleted everywhere else. It cost
-   the reader more than it told them. */
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map(([q, a]) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
+
 export default function Home() {
   return (
     <div id="top" style={{ background: SA.bg, color: SA.ink }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:text-white focus:text-xs"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:text-white focus:text-sm"
         style={{ background: SA.ink }}
       >
         Skip to content
       </a>
 
-      {/* overDark: the bar floats over the full-bleed hero film, light, and
-          turns to glass once you scroll past it */}
       <SiteNav overDark />
 
       <main id="main">
         <Hero />
-        {/* one product per band — the sentence carries it, no card grid */}
+        <SonarEngine />
         <Suite />
-        {/* the engine underneath: one reader, Sonar, drawn as a chip with the
-            signal tracing through it — and the "send us a document" offer */}
-        <Sonar />
-        {/* the numbers, as a spec ledger: tiny label, enormous value, ruled */}
-        <Ledger />
-        <Security />
+        <Pipeline />
+        <Confidence />
         <Industries />
-        
+        <Security />
         <Faq />
       </main>
 
-      {/* the ask and the sitemap are one closing band — the page used to end,
-          and then end again */}
       <SiteFooter />
     </div>
   );
