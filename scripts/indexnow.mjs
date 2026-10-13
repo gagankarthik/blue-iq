@@ -1,17 +1,17 @@
 /* Tell IndexNow engines (Bing, Yandex, Seznam, Naver…) that pages changed.
-   Run after a deploy:  npm run indexnow            (every route)
+   Run after a deploy:  npm run indexnow            (every route in the sitemap)
                         npm run indexnow -- /products /solutions
    The key file lives at public/<key>.txt so engines can verify ownership.
    Google does not use IndexNow: submit the sitemap in Search Console. */
 const KEY = "0b552b11246343e618100bb26947a480";
 const HOST = "blue-iq.ai";
-const ALL = [
-  "/", "/platform", "/products",
-  "/solutions", "/solutions/it", "/solutions/education", "/solutions/workforce", "/solutions/healthcare", "/solutions/legal", "/solutions/procurement",
-  "/resources", "/trust", "/about", "/contact", "/privacy", "/terms",
-];
+/* every route comes from the live sitemap, so this list can never drift */
+async function allPaths() {
+  const xml = await (await fetch(`https://${HOST}/sitemap.xml`)).text();
+  return [...xml.matchAll(/<loc>https:\/\/[^/<]+([^<]*)<\/loc>/g)].map((m) => m[1] || "/");
+}
 
-const paths = process.argv.slice(2).length ? process.argv.slice(2) : ALL;
+const paths = process.argv.slice(2).length ? process.argv.slice(2) : await allPaths();
 const res = await fetch("https://api.indexnow.org/indexnow", {
   method: "POST",
   headers: { "Content-Type": "application/json; charset=utf-8" },
