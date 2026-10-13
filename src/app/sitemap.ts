@@ -1,26 +1,35 @@
 import type { MetadataRoute } from "next";
 
-/* Static sitemap for the marketing site. metadataBase in layout.tsx sets the
-   host; here we enumerate the real, indexable routes with sensible priorities.
-   The login destinations live on other subdomains and are intentionally out. */
+/* The indexable routes, with the date each page's content last really
+   changed (not the build time, which would tell crawlers everything changed
+   on every deploy). Update a date when you change that page's content.
+   Product apps on subdomains have their own sitemaps. */
 const BASE = "https://blue-iq.ai";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-  const routes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
-    { path: "/", priority: 1.0, freq: "weekly" },
-    { path: "/products", priority: 0.9, freq: "monthly" },
-    { path: "/solutions", priority: 0.8, freq: "monthly" },
-    { path: "/resources", priority: 0.7, freq: "monthly" },
-    { path: "/about", priority: 0.6, freq: "monthly" },
-    { path: "/contact", priority: 0.6, freq: "yearly" },
-    { path: "/privacy", priority: 0.3, freq: "yearly" },
-    { path: "/terms", priority: 0.3, freq: "yearly" },
-  ];
+export const ROUTES: { path: string; updated: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
+  { path: "/", updated: "2026-10-13", priority: 1.0, freq: "weekly" },
+  { path: "/platform", updated: "2026-10-13", priority: 0.9, freq: "monthly" },
+  { path: "/products", updated: "2026-10-13", priority: 0.9, freq: "monthly" },
+  { path: "/solutions", updated: "2026-10-13", priority: 0.9, freq: "monthly" },
+  ...["it", "education", "workforce", "healthcare", "legal", "procurement"].map((id) => ({
+    path: `/solutions/${id}`,
+    updated: "2026-10-13",
+    priority: 0.7,
+    freq: "monthly" as const,
+  })),
+  { path: "/trust", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
+  { path: "/faq", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
+  { path: "/resources", updated: "2026-10-13", priority: 0.7, freq: "monthly" },
+  { path: "/about", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
+  { path: "/contact", updated: "2026-10-13", priority: 0.7, freq: "yearly" },
+  { path: "/privacy", updated: "2026-07-11", priority: 0.3, freq: "yearly" },
+  { path: "/terms", updated: "2026-07-11", priority: 0.3, freq: "yearly" },
+];
 
-  return routes.map(({ path, priority, freq }) => ({
+export default function sitemap(): MetadataRoute.Sitemap {
+  return ROUTES.map(({ path, updated, priority, freq }) => ({
     url: `${BASE}${path}`,
-    lastModified: now,
+    lastModified: new Date(updated),
     changeFrequency: freq,
     priority,
   }));

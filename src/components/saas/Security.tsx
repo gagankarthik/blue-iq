@@ -1,64 +1,97 @@
-"use client";
-
 import { SA } from "@/lib/theme";
 import { SectionHead, Reveal } from "@/components/saas/parts";
-import VaultArt from "@/components/art/VaultArt";
-import { type BqIcon, IconLock, IconKey, IconServer, IconShield, IconFingerprint, IconFolderLock } from "@/components/icons/BqIcons";
+import { CONTROLS, type Control } from "@/lib/trust";
+import { Btn } from "@/components/system/Btn";
+import { type BqIcon, IconShield, IconLock, IconFingerprint, IconKey, IconFolderLock, IconServer, IconFlag } from "@/components/icons/BqIcons";
 
-/* Trust. The drawing on one side, the six controls on the other as a
-   two-column list — no card per control, just an icon, a name and one
-   sentence. Every statement is one the company already makes. */
+/* ────────────────────────────────────────────────────────────────
+   Trust — dense on purpose. A security reviewer wants a controls list they
+   can scan, not six friendly cards, so this is a ruled table: area, control,
+   detail. Every line is a claim the company already makes; nothing here is
+   a certification we do not hold.
+   ──────────────────────────────────────────────────────────────── */
 
-const CONTROLS: [BqIcon, string, string][] = [
-  [IconLock, "Encrypted in transit", "TLS from your systems to ours and back."],
-  [IconKey, "Role-based access", "People see only the projects they are on."],
-  [IconFingerprint, "Single sign-on", "Your identity provider. Offboarding is instant."],
-  [IconFolderLock, "Private workspaces", "Projects isolated to the people you name."],
-  [IconServer, "Hardened infrastructure", "Monitored cloud regions with redundancy."],
-  [IconShield, "GDPR-grade handling", "Personal data handled to GDPR standards."],
-];
+const ICONS: Record<Control["icon"], BqIcon> = {
+  shield: IconShield,
+  lock: IconLock,
+  fingerprint: IconFingerprint,
+  key: IconKey,
+  folder: IconFolderLock,
+  server: IconServer,
+  flag: IconFlag,
+};
+
+/* the controls table, shared with the Trust Center */
+export function ControlsTable() {
+  return (
+    <div className="rounded-[16px] overflow-x-auto bg-white" style={{ border: `1px solid ${SA.line}` }}>
+      <table className="w-full min-w-[560px] text-left font-sans-g">
+        <caption className="sr-only">Security controls</caption>
+        <thead>
+          <tr style={{ borderBottom: `1px solid ${SA.line}` }}>
+            <th scope="col" className="px-6 py-4 t-meta w-[34%]" style={{ color: SA.faint }}>
+              Area
+            </th>
+            <th scope="col" className="px-6 py-4 t-meta" style={{ color: SA.faint }}>
+              Control
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {CONTROLS.map((c) => {
+            const Icon = ICONS[c.icon];
+            return (
+              <tr key={c.area} className="transition-colors duration-150 hover:bg-[#F8FAFC]" style={{ borderBottom: `1px solid ${SA.line}` }}>
+                <th scope="row" className="px-6 py-4 align-top font-normal">
+                  <span className="inline-flex items-center gap-3 t-body font-medium" style={{ color: SA.ink }}>
+                    <Icon size={20} style={{ color: SA.accent }} />
+                    {c.area}
+                  </span>
+                </th>
+                <td className="px-6 py-4 align-top">
+                  <span className="block t-body font-semibold" style={{ color: SA.ink }}>
+                    {c.control}
+                  </span>
+                  <span className="block t-body" style={{ color: SA.sub }}>
+                    {c.detail}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
 
 export default function Security() {
   return (
-    <section id="security" className="relative px-5 sm:px-8 py-16 sm:py-24 scroll-mt-20" style={{ background: SA.bg2 }} aria-labelledby="sec-h">
-      <div className="max-w-[1240px] mx-auto grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-x-16 gap-y-12 items-center">
-        <Reveal className="order-2 lg:order-1 rounded-[24px] px-6 pt-8 pb-4 sm:px-10" style={{ background: SA.navy }}>
-          <div className="max-w-[440px] mx-auto">
-            <VaultArt />
-          </div>
-          <div className="flex flex-wrap justify-center gap-2 pb-4">
-            {["SOC 2", "HIPAA", "GDPR"].map((s) => (
-              <span key={s} className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 font-sans-g text-[13px] font-medium text-white" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.16)" }}>
-                <IconShield size={15} style={{ color: "#8EC2FF" }} />
-                {s} aligned
-              </span>
-            ))}
-          </div>
-        </Reveal>
-
-        <div className="order-1 lg:order-2">
+    <section
+      id="security"
+      className="relative px-5 sm:px-8 py-24 sm:py-32 scroll-mt-20"
+      style={{ background: SA.bg2, borderTop: `1px solid ${SA.line}`, borderBottom: `1px solid ${SA.line}` }}
+      aria-labelledby="sec-h"
+    >
+      <div className="max-w-[1240px] mx-auto grid grid-cols-12 gap-y-10 lg:gap-x-12">
+        <div className="col-span-12 lg:col-span-4">
           <SectionHead
             align="stack"
+            kicker="Security"
             id="sec-h"
-            title="Enterprise-grade document security"
-            sub="Clinical records, contracts and financial data, protected end to end and aligned to SOC 2, HIPAA and GDPR."
+            title="Built for teams with strict compliance"
+            sub="Clinical records, contracts and financial data, protected end to end."
           />
-          <Reveal delay={0.1} as="ul" className="mt-10 grid sm:grid-cols-2 gap-x-10 gap-y-8">
-            {CONTROLS.map(([Icon, t, d]) => (
-              <li key={t} className="flex gap-4">
-                <Icon size={26} className="shrink-0" style={{ color: SA.accent }} />
-                <div>
-                  <h3 className="font-sans-g text-[15.5px] font-semibold" style={{ color: SA.ink }}>
-                    {t}
-                  </h3>
-                  <p className="mt-1.5 font-sans-g text-[14.5px] leading-[1.6]" style={{ color: SA.sub }}>
-                    {d}
-                  </p>
-                </div>
-              </li>
-            ))}
+          <Reveal className="mt-8">
+            <Btn href="/trust" variant="secondary" arrow>
+              Visit the Trust Center
+            </Btn>
           </Reveal>
         </div>
+
+        <Reveal className="col-span-12 lg:col-span-8">
+          <ControlsTable />
+        </Reveal>
       </div>
     </section>
   );

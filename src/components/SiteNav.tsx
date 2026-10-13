@@ -1,179 +1,180 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { memo, useEffect, useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { SA } from "@/lib/theme";
-import { CaptureArt, SpendArt, GovernArt, CustomArt } from "@/components/art/ProductArt";
-import { SonarArt } from "@/components/art/StepArt";
+import { IconArrowUpRight } from "@/components/icons/BqIcons";
 import {
-  type BqIcon,
-  IconSonar,
-  IconCustom,
-  IconApi,
-  IconCapture,
-  IconSpend,
-  IconGovern,
-  IconCampus,
-  IconWorkforce,
-  IconNetwork,
-  IconHealth,
-  IconScale,
-  IconReceipt,
-  IconDocs,
-  IconShield,
-  IconArrow,
-  IconArrowUpRight,
-} from "@/components/icons/BqIcons";
+  type Spot,
+  SpotCapture,
+  SpotSpend,
+  SpotGovern,
+  SpotSonar,
+  SpotEducation,
+  SpotWorkforce,
+  SpotCustom,
+  SpotIntegrate,
+  SpotRead,
+  SpotScore,
+  SpotSecure,
+  SpotTeam,
+  SpotChat,
+  SpotFaq,
+  SpotScale,
+  SECTOR_SPOT,
+} from "@/components/icons/Spots";
 
 /* ────────────────────────────────────────────────────────────────
-   The navbar.
-
-   Three columns — logo, links, actions — so the links sit on the true centre
-   of the page. Every page opens on a navy header, so by default the bar is
-   transparent with white text over it (pass overDark={false} otherwise);
-   the moment the page scrolls or a menu opens it turns white.
-
-   Each menu is a centred panel sized to its content, led by illustrated
-   cards on light wells, so there is never a slab of empty white beside the
-   links. Only the open panel is mounted.
+   The navbar, after sarvam.ai: a full-width white bar; each menu opens a
+   full-width white panel under it — a small uppercase label, two columns
+   of items (a spot in a bordered square, a name, one line), and feature
+   cards on the right. The page behind softens while a panel is open.
    ──────────────────────────────────────────────────────────────── */
 
-type Link = { label: string; href: string; external?: boolean; Icon?: BqIcon; blurb?: string };
-type Card = { title: string; blurb: string; href: string; external?: boolean; Art: React.ComponentType };
-type Menu = { id: string; label: string; cards: Card[]; side: { header: string; links: Link[] }; foot: { t: string; href: string } };
+type Item = { t: string; d: string; href: string; external?: boolean; Spot: Spot };
+type Feature = { t: string; href: string; Spot: Spot; well: string };
+type Menu = { id: string; label: string; header: string; items: Item[]; features: Feature[] };
+
+const S = SECTOR_SPOT;
 
 const menus: Menu[] = [
   {
-    id: "platform",
-    label: "Platform",
-    cards: [
-      { title: "Capture", blurb: "Any document into scored, structured data.", href: "https://www.parsinglab.blue-iq.ai/", external: true, Art: CaptureArt },
-      { title: "Spend", blurb: "Invoices and contracts reconciled line by line.", href: "/products#spend", Art: SpendArt },
-      { title: "Govern", blurb: "Agreements checked against your playbook.", href: "https://govern.blue-iq.ai/", external: true, Art: GovernArt },
+    id: "products",
+    label: "Products",
+    header: "Products",
+    items: [
+      { t: "Capture", d: "Documents into structured data", href: "https://www.parsinglab.blue-iq.ai/", external: true, Spot: SpotCapture },
+      { t: "Spend", d: "Invoices against what was agreed", href: "/products#spend", Spot: SpotSpend },
+      { t: "Govern", d: "Contracts and obligations in view", href: "https://govern.blue-iq.ai/", external: true, Spot: SpotGovern },
+      { t: "Sonar AI", d: "The engine under every product", href: "/platform", Spot: SpotSonar },
+      { t: "Campus edition", d: "For universities and colleges", href: "/products#editions", Spot: SpotEducation },
+      { t: "Workforce edition", d: "For staffing and healthcare", href: "/products#editions", Spot: SpotWorkforce },
     ],
-    side: {
-      header: "Editions and AI",
-      links: [
-        { label: "Sonar AI", href: "/about#sonar", Icon: IconSonar, blurb: "The engine under every product" },
-        { label: "Campus", href: "/products#editions", Icon: IconCampus, blurb: "For universities and colleges" },
-        { label: "Workforce", href: "/products#editions", Icon: IconWorkforce, blurb: "For staffing and healthcare" },
-      ],
-    },
-    foot: { t: "Explore the platform", href: "/products" },
+    features: [{ t: "All Blue-IQ products", href: "/products", Spot: SpotCustom, well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)" }],
   },
   {
     id: "solutions",
     label: "Solutions",
-    cards: [{ title: "Custom builds", blurb: "When no product fits, we build the one that does, on Sonar.", href: "/solutions#custom", Art: CustomArt }],
-    side: {
-      header: "Industries",
-      links: [
-        { label: "IT sector", href: "/solutions#it", Icon: IconNetwork },
-        { label: "Education", href: "/solutions#education", Icon: IconCampus },
-        { label: "Workforce", href: "/solutions#workforce", Icon: IconWorkforce },
-        { label: "Healthcare staffing", href: "/solutions#healthcare", Icon: IconHealth },
-        { label: "Legal and contracts", href: "/solutions#legal", Icon: IconScale },
-        { label: "Procurement and finance", href: "/solutions#procurement", Icon: IconReceipt },
-        { label: "Enterprise migrations", href: "/solutions#migrations", Icon: IconDocs },
-        { label: "Integrations", href: "/solutions#integrations", Icon: IconApi },
-      ],
-    },
-    foot: { t: "All solutions", href: "/solutions" },
+    header: "Industries",
+    items: [
+      { t: "IT sector", d: "Vendor contracts and licences", href: "/solutions/it", Spot: S.it },
+      { t: "Education", d: "Applications and transcripts", href: "/solutions/education", Spot: S.education },
+      { t: "Workforce", d: "Candidates onboarded in one read", href: "/solutions/workforce", Spot: S.workforce },
+      { t: "Healthcare staffing", d: "Clinicians credentialed faster", href: "/solutions/healthcare", Spot: S.healthcare },
+      { t: "Legal and contracts", d: "Risk surfaced before signature", href: "/solutions/legal", Spot: S.legal },
+      { t: "Procurement and finance", d: "Spend reconciled as it is billed", href: "/solutions/procurement", Spot: S.procurement },
+    ],
+    features: [
+      { t: "Custom builds on Sonar", href: "/solutions#custom", Spot: SpotCustom, well: "linear-gradient(160deg, #2BA4E0 0%, #7FD3FF 55%, #E2F5FF 100%)" },
+      {
+        t: "Migrations and integrations",
+        href: "/solutions#integrations",
+        Spot: SpotScale,
+        well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)",
+      },
+    ],
   },
   {
     id: "resources",
     label: "Resources",
-    cards: [{ title: "How Sonar works", blurb: "How the AI reads, scores and flags a document.", href: "/about#sonar", Art: SonarArt }],
-    side: {
-      header: "Build and learn",
-      links: [
-        { label: "How the API works", href: "/resources#api", Icon: IconApi, blurb: "REST, JSON and signed webhooks" },
-        { label: "Formats Sonar reads", href: "/resources#formats", Icon: IconDocs, blurb: "PDF, DOCX, scans and photos" },
-        { label: "Working with scores", href: "/resources#confidence", Icon: IconSonar, blurb: "Build on confidence, not guesses" },
-        { label: "Security and privacy", href: "/privacy", Icon: IconShield, blurb: "How your documents are handled" },
-      ],
-    },
-    foot: { t: "All resources", href: "/resources" },
+    header: "Build and learn",
+    items: [
+      { t: "How the API works", d: "REST, JSON and signed webhooks", href: "/resources#api", Spot: SpotIntegrate },
+      { t: "Formats Sonar reads", d: "PDF, Word, scans and photos", href: "/resources#formats", Spot: SpotRead },
+      { t: "Working with scores", d: "Build on confidence, not guesses", href: "/resources#confidence", Spot: SpotScore },
+      { t: "Trust Center", d: "Security, privacy and compliance", href: "/trust", Spot: SpotSecure },
+    ],
+    features: [{ t: "How Sonar works", href: "/platform", Spot: SpotSonar, well: "linear-gradient(160deg, #3A4CA8 0%, #7D9DFF 55%, #E3EAFF 100%)" }],
+  },
+  {
+    id: "company",
+    label: "Company",
+    header: "Company",
+    items: [
+      { t: "About Blue-IQ", d: "Who we are and how we work", href: "/about", Spot: SpotTeam },
+      { t: "Pricing", d: "Plans shaped to your volume", href: "/contact#pricing", Spot: SpotSpend },
+      { t: "Contact", d: "Talk to the team", href: "/contact", Spot: SpotChat },
+      { t: "FAQ", d: "Answers to common questions", href: "/faq", Spot: SpotFaq },
+    ],
+    features: [
+      { t: "Trust Center", href: "/trust", Spot: SpotSecure, well: "linear-gradient(160deg, #1F9D6B 0%, #7FD8B0 55%, #E3F7EE 100%)" },
+      { t: "Book a demo", href: "/contact?topic=A%20demo", Spot: SpotChat, well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)" },
+    ],
   },
 ];
 
-const loginItems: Link[] = [
-  { label: "Capture", href: "https://www.parsinglab.blue-iq.ai/", external: true, Icon: IconCapture, blurb: "Document to data" },
-  { label: "Govern", href: "https://govern.blue-iq.ai/", external: true, Icon: IconGovern, blurb: "Contract review" },
-];
-
-function Row({ it, onClick, compact }: { it: Link; onClick?: () => void; compact?: boolean }) {
-  const Icon = it.Icon;
+function ItemRow({ it, onClick }: { it: Item; onClick?: () => void }) {
   return (
     <a
       href={it.href}
       target={it.external ? "_blank" : undefined}
       rel={it.external ? "noopener noreferrer" : undefined}
       onClick={onClick}
-      className={`group flex items-center gap-3 rounded-xl px-3 ${compact ? "py-2" : "py-2.5"} transition-colors hover:bg-[#F2F6FD]`}
+      className="group flex items-center gap-4 rounded-[14px] p-2 -m-2 transition-colors duration-150 hover:bg-[#F5F5F7]"
     >
-      {Icon && (
-        <span className="shrink-0 grid place-items-center w-9 h-9 rounded-lg transition-colors group-hover:bg-[#1D5BF0] group-hover:text-white" style={{ background: SA.accentSoft, color: SA.accent }}>
-          <Icon size={19} />
-        </span>
-      )}
+      <span
+        className="shrink-0 grid place-items-center w-12 h-12 rounded-[12px] bg-white transition-colors duration-150 group-hover:border-[#C9C9CF]"
+        style={{ border: `1px solid ${SA.line}` }}
+      >
+        <it.Spot size={32} />
+      </span>
       <span className="min-w-0">
-        <span className="flex items-center gap-1 font-sans-g text-[14.5px] font-medium leading-tight" style={{ color: SA.ink }}>
-          {it.label}
+        <span className="flex items-center gap-1 font-sans-g text-[16px] font-medium leading-tight" style={{ color: SA.ink }}>
+          {it.t}
           {it.external && <IconArrowUpRight size={13} style={{ color: SA.faint }} />}
         </span>
-        {it.blurb && (
-          <span className="block mt-0.5 font-sans-g text-[12.5px] leading-snug" style={{ color: SA.sub }}>
-            {it.blurb}
-          </span>
-        )}
+        <span className="block mt-1 font-sans-g text-[14px] leading-snug" style={{ color: SA.faint }}>
+          {it.d}
+        </span>
       </span>
     </a>
   );
 }
 
-function CardTile({ c, wide }: { c: Card; wide?: boolean }) {
+function FeatureCard({ f }: { f: Feature }) {
   return (
     <a
-      href={c.href}
-      target={c.external ? "_blank" : undefined}
-      rel={c.external ? "noopener noreferrer" : undefined}
-      className={`group flex flex-col rounded-2xl overflow-hidden transition-[border-color,transform] duration-300 hover:-translate-y-0.5 ${wide ? "w-[300px]" : "w-[228px]"}`}
+      href={f.href}
+      className="group block w-[280px] rounded-[18px] p-1.5 bg-white transition-colors duration-150 hover:border-[#C9C9CF]"
       style={{ border: `1px solid ${SA.line}` }}
     >
-      <div
-        className="h-[132px] flex items-center justify-center px-4 py-3 [&_svg]:h-full [&_svg]:w-full transition-colors group-hover:bg-[#EAF1FD]"
-        style={{ background: "linear-gradient(180deg, #F4F7FD, #EDF2FB)" }}
-      >
-        <c.Art />
-      </div>
-      <div className="p-4 bg-white">
-        <span className="flex items-center gap-1 font-sans-g text-[15px] font-semibold" style={{ color: SA.ink }}>
-          {c.title}
-          {c.external ? (
-            <IconArrowUpRight size={13} style={{ color: SA.faint }} />
-          ) : (
-            <IconArrow size={14} className="opacity-0 -translate-x-1 transition-all group-hover:opacity-100 group-hover:translate-x-0" style={{ color: SA.accent }} />
-          )}
+      <span className="grid place-items-center h-[150px] rounded-[13px] overflow-hidden" style={{ background: f.well }}>
+        <span className="grid place-items-center w-[84px] h-[84px] rounded-[20px] bg-white shadow-[0_12px_28px_-14px_rgba(15,20,50,0.45)] transition-transform duration-300 ease-out group-hover:scale-[1.05]">
+          <f.Spot size={56} />
         </span>
-        <span className="block mt-1 font-sans-g text-[13px] leading-snug" style={{ color: SA.sub }}>
-          {c.blurb}
-        </span>
-      </div>
+      </span>
+      <span className="flex items-center justify-between gap-2 px-2.5 pt-3 pb-2 font-sans-g text-[14.5px]" style={{ color: SA.ink }}>
+        {f.t}
+        <IconArrowUpRight
+          size={14}
+          className="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          style={{ color: SA.faint }}
+        />
+      </span>
     </a>
   );
 }
 
 function Chevron({ open }: { open: boolean }) {
   return (
-    <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden className="transition-transform duration-200" style={{ transform: open ? "rotate(180deg)" : "none" }}>
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      aria-hidden
+      className="transition-transform duration-200"
+      style={{ transform: open ? "rotate(180deg)" : "none" }}
+    >
       <path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function SiteNav({ overDark = true }: { overDark?: boolean }) {
+/* `overDark` is accepted for compatibility with older pages and ignored. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function SiteNav({ overDark }: { overDark?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
@@ -200,200 +201,168 @@ function SiteNav({ overDark = true }: { overDark?: boolean }) {
     setMobile(false);
     setSection(null);
   };
-  const solid = scrolled || mobile || !!open || !overDark;
-  const light = !solid; // white text over the navy hero
-  const idle = light ? "rgba(255,255,255,0.8)" : SA.sub;
-  const hover = light ? "hover:text-white" : "hover:text-[#0A1230]";
 
   return (
-    <header
-      onMouseLeave={() => setOpen(null)}
-      className="fixed top-0 inset-x-0 z-[60]"
-      style={{
-        background: solid ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0)",
-        borderBottom: `1px solid ${solid && (scrolled || open || mobile) ? SA.line : "transparent"}`,
-        boxShadow: scrolled && !open ? "0 6px 20px -16px rgba(10,18,48,0.3)" : "none",
-        transition: "background .25s ease, border-color .25s ease, box-shadow .25s ease",
-      }}
-    >
-      <div className="max-w-[1240px] mx-auto px-5 sm:px-8">
-        <div className="h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
-          <a href="/" aria-label="Blue-IQ home" className="flex items-center justify-self-start" onMouseEnter={() => setOpen(null)}>
-            <Image
-              src="/logo.svg"
-              alt="Blue-IQ"
-              width={108}
-              height={34}
-              priority
-              style={{ filter: light ? "brightness(0) invert(1)" : "none", transition: "filter .25s ease" }}
-            />
-          </a>
-
-          <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Primary">
-            {menus.map((m) => {
-              const isOn = open === m.id;
-              return (
-                <button
-                  key={m.id}
-                  type="button"
-                  onMouseEnter={() => setOpen(m.id)}
-                  onClick={() => setOpen(isOn ? null : m.id)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
-                  style={{ color: isOn ? SA.ink : idle, background: isOn ? SA.bg2 : "transparent" }}
-                  aria-expanded={isOn}
-                  aria-haspopup="true"
-                >
-                  {m.label}
-                  <Chevron open={isOn} />
-                </button>
-              );
-            })}
-            <a
-              href="/contact#pricing"
-              onMouseEnter={() => setOpen(null)}
-              className={`px-3.5 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
-              style={{ color: idle }}
-            >
-              Pricing
-            </a>
-          </nav>
-
-          <div className="flex items-center justify-self-end gap-2" onMouseEnter={() => setOpen(null)}>
-            <div className="hidden md:block relative group/login">
-              <button
-                type="button"
-                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-full font-sans-g text-[14.5px] font-medium transition-colors ${hover}`}
-                style={{ color: idle }}
-                aria-haspopup="true"
-              >
-                Log in <Chevron open={false} />
-              </button>
-              <div className="absolute right-0 top-full pt-2 opacity-0 pointer-events-none transition-opacity duration-150 group-hover/login:opacity-100 group-hover/login:pointer-events-auto group-focus-within/login:opacity-100 group-focus-within/login:pointer-events-auto">
-                <div className="w-[240px] rounded-2xl p-2 bg-white" style={{ border: `1px solid ${SA.line}`, boxShadow: "0 24px 48px -24px rgba(10,18,48,0.3)" }}>
-                  {loginItems.map((it) => (
-                    <Row key={it.label} it={it} />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <a
-              href="/contact"
-              className="hidden sm:inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold px-5 py-2.5 rounded-full transition-colors active:scale-[0.98]"
-              style={{ background: light ? "#fff" : SA.ink, color: light ? SA.ink : "#fff" }}
-            >
-              Book a demo
-            </a>
-            <button
-              className="lg:hidden w-11 h-11 grid place-items-center -mr-2 rounded-lg"
-              onClick={() => (mobile ? closeMobile() : setMobile(true))}
-              aria-label={mobile ? "Close menu" : "Open menu"}
-              aria-expanded={mobile}
-              style={{ color: light ? "#fff" : SA.ink }}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
-                {mobile ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 8h16M4 16h16" />}
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* the mega panel: centred, sized to its content */}
+    <>
+      {/* the page behind softens while a panel is open */}
       <AnimatePresence>
         {active && (
           <motion.div
-            key={active.id}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            className="hidden lg:flex absolute left-0 right-0 top-full justify-center px-5 pt-2"
-          >
-            <div
-              className="rounded-3xl bg-white p-3 flex gap-3"
-              style={{ border: `1px solid ${SA.line}`, boxShadow: "0 40px 80px -36px rgba(10,18,48,0.35)" }}
-            >
-              <div className="flex gap-3">
-                {active.cards.map((c) => (
-                  <CardTile key={c.title} c={c} wide={active.cards.length === 1} />
-                ))}
-              </div>
-              <div className={`flex flex-col px-2 py-2 ${active.side.links.length > 4 ? "w-[440px]" : "w-[280px]"}`}>
-                <p className="px-3 pb-1.5 font-sans-g text-[12.5px] font-semibold" style={{ color: SA.faint }}>
-                  {active.side.header}
-                </p>
-                <div className={active.side.links.length > 4 ? "grid grid-cols-2" : "flex flex-col"}>
-                  {active.side.links.map((l) => (
-                    <Row key={l.label} it={l} compact={active.side.links.length > 4} />
-                  ))}
-                </div>
-                <a
-                  href={active.foot.href}
-                  className="group mt-auto mx-3 pt-3 inline-flex items-center gap-1.5 font-sans-g text-[14px] font-semibold"
-                  style={{ color: SA.accent, borderTop: `1px solid ${SA.line}` }}
-                >
-                  {active.foot.t}
-                  <IconArrow size={15} className="transition-transform group-hover:translate-x-0.5" />
-                </a>
-              </div>
-            </div>
-          </motion.div>
+            key="veil"
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="hidden lg:block fixed inset-0 z-[55] bg-[rgba(30,33,48,0.12)] backdrop-blur-[6px]"
+            onMouseEnter={() => setOpen(null)}
+          />
         )}
       </AnimatePresence>
 
-      {/* mobile sheet */}
-      {mobile && (
-        <div className="lg:hidden h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain bg-white">
-          <div className="px-5 sm:px-8 pb-10 flex flex-col">
-            {menus.map((m) => {
-              const exp = section === m.id;
-              return (
-                <div key={m.id} style={{ borderBottom: `1px solid ${SA.line}` }}>
+      <header onMouseLeave={() => setOpen(null)} className="fixed top-0 inset-x-0 z-[60]">
+        <div
+          className="transition-[background-color,border-color] duration-200"
+          style={{
+            background: scrolled || open || mobile ? "#FFFFFF" : "transparent",
+            borderBottom: `1px solid ${scrolled || open || mobile ? SA.line : "transparent"}`,
+          }}
+        >
+          <div className="max-w-[1240px] mx-auto px-5 sm:px-8 h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
+            <Link href="/" aria-label="Blue-IQ home" className="flex items-center justify-self-start" onMouseEnter={() => setOpen(null)}>
+              <Image src="/logo.svg" alt="Blue-IQ" width={108} height={34} priority />
+            </Link>
+
+            <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Primary">
+              {menus.map((m) => {
+                const isOn = open === m.id;
+                return (
                   <button
-                    onClick={() => setSection(exp ? null : m.id)}
-                    aria-expanded={exp}
-                    className="w-full flex items-center justify-between py-4 text-left font-sans-g text-[17px] font-medium"
-                    style={{ color: SA.ink }}
+                    key={m.id}
+                    type="button"
+                    onMouseEnter={() => setOpen(m.id)}
+                    onClick={() => setOpen(isOn ? null : m.id)}
+                    className="inline-flex items-center px-4 py-2 rounded-full font-sans-g text-[15px] transition-colors duration-150 hover:text-[#1F1F1F]"
+                    style={{ color: SA.ink, background: isOn ? "rgba(255,255,255,0.7)" : "transparent" }}
+                    aria-expanded={isOn}
+                    aria-controls={`menu-${m.id}`}
                   >
                     {m.label}
-                    <Chevron open={exp} />
                   </button>
-                  {exp && (
-                    <div className="pb-4 -mx-3">
-                      {m.cards.map((c) => (
-                        <Row key={c.title} it={{ label: c.title, href: c.href, external: c.external, blurb: c.blurb, Icon: c.title === "Capture" ? IconCapture : c.title === "Spend" ? IconSpend : c.title === "Govern" ? IconGovern : c.title === "Custom builds" ? IconCustom : IconSonar }} onClick={closeMobile} />
-                      ))}
-                      {m.side.links.map((l) => (
-                        <Row key={l.label} it={l} onClick={closeMobile} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            <a href="/contact#pricing" onClick={closeMobile} className="py-4 font-sans-g text-[17px] font-medium" style={{ color: SA.ink, borderBottom: `1px solid ${SA.line}` }}>
-              Pricing
-            </a>
-            <div className="pt-5 -mx-3">
-              <p className="px-3 pb-1 font-sans-g text-[13px]" style={{ color: SA.faint }}>
-                Log in to
-              </p>
-              {loginItems.map((it) => (
-                <Row key={it.label} it={it} onClick={closeMobile} />
-              ))}
+                );
+              })}
+            </nav>
+
+            <div className="flex items-center justify-self-end gap-2" onMouseEnter={() => setOpen(null)}>
+              <Link
+                href="/contact"
+                className="hidden md:inline-flex items-center h-10 px-5 rounded-full font-sans-g text-[15px] font-medium bg-white text-[#1F1F1F] border border-[#E2E2E6] transition-colors duration-150 hover:bg-[#FAFAFA] hover:border-[#C9C9CF]"
+              >
+                Contact us
+              </Link>
+              <Link
+                href="/contact?topic=A%20demo"
+                className="hidden sm:inline-flex items-center h-10 px-5 rounded-full font-sans-g text-[15px] font-medium text-white bg-[#1E2130] transition-colors duration-150 hover:bg-[#2A2E42] active:bg-[#14161F]"
+              >
+                Book a demo
+              </Link>
+              <button
+                className="lg:hidden w-11 h-11 grid place-items-center -mr-2 rounded-lg"
+                onClick={() => (mobile ? closeMobile() : setMobile(true))}
+                aria-label={mobile ? "Close menu" : "Open menu"}
+                aria-expanded={mobile}
+                style={{ color: SA.ink }}
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
+                  {mobile ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 8h16M4 16h16" />}
+                </svg>
+              </button>
             </div>
-            <a
-              href="/contact"
-              onClick={closeMobile}
-              className="mt-6 inline-flex items-center justify-center gap-2 font-sans-g text-[15px] font-semibold text-white py-3.5 rounded-full"
-              style={{ background: SA.ink }}
-            >
-              Book a demo <IconArrow size={16} />
-            </a>
           </div>
         </div>
-      )}
-    </header>
+
+        {/* the full-width panel */}
+        <AnimatePresence>
+          {active && (
+            <motion.div
+              key={active.id}
+              id={`menu-${active.id}`}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="hidden lg:block absolute inset-x-0 top-full bg-white"
+              style={{ borderBottom: `1px solid ${SA.line}`, boxShadow: "0 30px 60px -40px rgba(15,20,50,0.35)" }}
+            >
+              <div className="max-w-[1240px] mx-auto px-8 py-10 flex gap-12">
+                <div className="flex-1 min-w-0">
+                  <p className="font-sans-g text-[12.5px] font-medium uppercase tracking-[0.12em]" style={{ color: SA.faint }}>
+                    {active.header}
+                  </p>
+                  <div className={`mt-6 grid gap-x-10 gap-y-6 ${active.items.length > 3 ? "grid-cols-2" : "grid-cols-1 max-w-[380px]"}`}>
+                    {active.items.map((it) => (
+                      <ItemRow key={it.t} it={it} onClick={() => setOpen(null)} />
+                    ))}
+                  </div>
+                </div>
+                <div className="flex gap-3 shrink-0">
+                  {active.features.map((f) => (
+                    <FeatureCard key={f.t} f={f} />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* mobile sheet */}
+        {mobile && (
+          <div className="lg:hidden max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain bg-white">
+            <div className="px-5 sm:px-8 pb-10 flex flex-col">
+              {menus.map((m) => {
+                const exp = section === m.id;
+                return (
+                  <div key={m.id} style={{ borderBottom: `1px solid ${SA.line}` }}>
+                    <button
+                      onClick={() => setSection(exp ? null : m.id)}
+                      aria-expanded={exp}
+                      className="w-full flex items-center justify-between py-4 text-left font-sans-g text-[17px] font-medium"
+                      style={{ color: SA.ink }}
+                    >
+                      {m.label}
+                      <Chevron open={exp} />
+                    </button>
+                    {exp && (
+                      <div className="pb-6 pt-1 grid gap-5 pl-2">
+                        {m.items.map((it) => (
+                          <ItemRow key={it.t} it={it} onClick={closeMobile} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <div className="mt-6 grid gap-3">
+                <Link
+                  href="/contact?topic=A%20demo"
+                  onClick={closeMobile}
+                  className="inline-flex items-center justify-center h-12 font-sans-g text-base font-medium text-white rounded-full bg-[#1E2130] hover:bg-[#2A2E42] transition-colors duration-150"
+                >
+                  Book a demo
+                </Link>
+                <Link
+                  href="/contact"
+                  onClick={closeMobile}
+                  className="inline-flex items-center justify-center h-12 font-sans-g text-base font-medium rounded-full bg-white border border-[#E2E2E6] text-[#1F1F1F]"
+                >
+                  Contact us
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </header>
+    </>
   );
 }
 

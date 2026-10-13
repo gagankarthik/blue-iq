@@ -1,18 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { SA } from "@/lib/theme";
-import { IconArrowUpRight, IconShield } from "@/components/icons/BqIcons";
-import CtaBand from "@/components/CtaBand";
+import { IconArrowUpRight } from "@/components/icons/BqIcons";
+import CloseCta from "@/components/home/CloseCta";
 
 /* ────────────────────────────────────────────────────────────────
-   The close: one navy band with the offer, then a plain sitemap on white.
+   The footer: the page's closing card (when the page wants one), then a
+   full-width band on a soft brand-blue wash: the logo and one line, the
+   sitemap in four columns, and the legal line.
 
-   The neumorphic surface is gone (embossed wordmark, paired shadows, a
-   recessed well) — soft-UI is one of the most dated template looks there is
-   and it failed contrast on every link. Every link below resolves to a page
-   that exists. `cta` is off on /contact, where the offer would point at the
-   page you are already on.
-
+   Every link resolves to a page that exists. `cta` is off on /contact,
+   where the offer would point at the page you are already on.
    Server component: no client JS.
    ──────────────────────────────────────────────────────────────── */
 
@@ -25,95 +23,110 @@ const cols: { h: string; l: [string, string, boolean][] }[] = [
       ["Spend", "/products#spend", false],
       ["Govern", "https://govern.blue-iq.ai/", true],
       ["Campus and Workforce", "/products#editions", false],
+      ["Sonar, our AI", "/platform", false],
     ],
   },
   {
-    h: "Industries",
+    h: "Solutions",
     l: [
-      ["IT sector", "/solutions#it", false],
-      ["Education", "/solutions#education", false],
-      ["Workforce", "/solutions#workforce", false],
-      ["Healthcare staffing", "/solutions#healthcare", false],
-      ["Legal and contracts", "/solutions#legal", false],
-      ["Procurement and finance", "/solutions#procurement", false],
+      ["All industries", "/solutions", false],
+      ["IT sector", "/solutions/it", false],
+      ["Education", "/solutions/education", false],
+      ["Healthcare staffing", "/solutions/healthcare", false],
+      ["Legal and contracts", "/solutions/legal", false],
+      ["Custom builds", "/solutions#custom", false],
     ],
   },
   {
-    h: "Build",
+    h: "Resources",
     l: [
+      ["Developer guide", "/resources", false],
       ["How the API works", "/resources#api", false],
-      ["Formats it reads", "/resources#formats", false],
-      ["Integrations", "/solutions#integrations", false],
-      ["Custom development", "/solutions#custom", false],
+      ["Formats Sonar reads", "/resources#formats", false],
+      ["Working with scores", "/resources#confidence", false],
+      ["Trust Center", "/trust", false],
     ],
   },
   {
     h: "Company",
     l: [
       ["About", "/about", false],
-      ["The Sonar engine", "/about#sonar", false],
-      ["Security and privacy", "/privacy", false],
+      ["Pricing", "/contact#pricing", false],
+      ["FAQ", "/faq", false],
       ["Contact", "/contact", false],
+      ["Privacy policy", "/privacy", false],
+      ["Terms of service", "/terms", false],
     ],
   },
 ];
 
-export default function SiteFooter({ cta = true }: { cta?: boolean }) {
+export default function SiteFooter({ cta = {} }: { cta?: false | { title?: string; sub?: string } }) {
   return (
     <footer style={{ background: SA.bg }}>
-      {cta && <CtaBand />}
+      {cta && <CloseCta {...cta} />}
 
-      <div className="max-w-[1240px] mx-auto px-5 sm:px-8 pt-16 sm:pt-20">
-        <div className="grid grid-cols-2 md:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,1fr))] gap-x-8 gap-y-12">
-          <div className="col-span-2 md:col-span-1">
-            <Image src="/logo.svg" alt="Blue-IQ" width={112} height={36} />
-            <p className="mt-5 font-sans-g text-[14.5px] leading-[1.65] max-w-[34ch]" style={{ color: SA.sub }}>
-              Blue-IQ is a document AI platform for teams that run on paperwork. Every product is powered by Sonar.
-            </p>
-            <p className="mt-5 inline-flex items-center gap-2 font-sans-g text-[13.5px]" style={{ color: SA.sub }}>
-              <IconShield size={17} style={{ color: SA.accent }} />
-              SOC 2, HIPAA and GDPR aligned
-            </p>
+      <div
+        className="mt-16 sm:mt-20"
+        style={{
+          background: [
+            "radial-gradient(45% 70% at 0% 100%, rgba(143,174,255,0.45) 0%, rgba(143,174,255,0) 70%)",
+            "radial-gradient(40% 70% at 100% 100%, rgba(127,211,255,0.4) 0%, rgba(127,211,255,0) 70%)",
+            "linear-gradient(180deg, #FFFFFF 0%, #F3F6FF 55%, #E6ECFF 100%)",
+          ].join(", "),
+          borderTop: `1px solid ${SA.line}`,
+        }}
+      >
+        <div className="max-w-[1240px] mx-auto px-5 sm:px-8 pt-14 sm:pt-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-x-8 gap-y-12 pb-14">
+            <div className="col-span-2 md:col-span-4 lg:col-span-1">
+              <Image src="/logo.svg" alt="Blue-IQ" width={124} height={40} />
+              <p className="mt-5 font-display text-[1.5rem] leading-[1.25] tracking-[-0.02em] max-w-[18ch]" style={{ color: SA.ink }}>
+                The document AI company. Every product runs on Sonar.
+              </p>
+            </div>
+            {cols.map((col) => (
+              <nav key={col.h} aria-label={col.h}>
+                <h3 className="font-sans-g text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: "#4A4B53" }}>
+                  {col.h}
+                </h3>
+                <ul className="mt-5 space-y-3">
+                  {col.l.map(([label, href, ext]) => (
+                    <li key={label + href}>
+                      <a
+                        href={href}
+                        target={ext ? "_blank" : undefined}
+                        rel={ext ? "noopener noreferrer" : undefined}
+                        className="inline-flex items-center gap-1 font-sans-g text-[15px] transition-colors duration-150 hover:text-[#2348B8] hover:underline underline-offset-4"
+                        style={{ color: "#2A2B33" }}
+                      >
+                        {label}
+                        {ext && <IconArrowUpRight size={13} />}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
-          {cols.map((col) => (
-            <nav key={col.h} aria-label={col.h}>
-              <h3 className="font-sans-g text-[13.5px] font-semibold" style={{ color: SA.ink }}>
-                {col.h}
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {col.l.map(([label, href, ext]) => (
-                  <li key={label + href}>
-                    <a
-                      href={href}
-                      target={ext ? "_blank" : undefined}
-                      rel={ext ? "noopener noreferrer" : undefined}
-                      className="inline-flex items-center gap-1 font-sans-g text-[14.5px] transition-colors hover:text-[#1D5BF0]"
-                      style={{ color: SA.sub }}
-                    >
-                      {label}
-                      {ext && <IconArrowUpRight size={13} />}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
-        </div>
 
-        <div className="mt-16 py-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ borderTop: `1px solid ${SA.line}` }}>
-          <p className="font-sans-g text-[13px]" style={{ color: SA.sub }}>
-            © {new Date().getFullYear()} Blue-IQ. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link href="/privacy" className="font-sans-g text-[13px] transition-colors hover:text-[#1D5BF0]" style={{ color: SA.sub }}>
-              Privacy
-            </Link>
-            <Link href="/terms" className="font-sans-g text-[13px] transition-colors hover:text-[#1D5BF0]" style={{ color: SA.sub }}>
-              Terms
-            </Link>
-            <a href="mailto:hello@blue-iq.ai" className="font-sans-g text-[13px] transition-colors hover:text-[#1D5BF0]" style={{ color: SA.sub }}>
-              hello@blue-iq.ai
-            </a>
+          <div
+            className="py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+            style={{ borderTop: "1px solid rgba(31,42,107,0.12)" }}
+          >
+            <p className="font-sans-g text-[13.5px]" style={{ color: "#3A3B44" }}>
+              © {new Date().getFullYear()} Blue-IQ. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              {[
+                ["Privacy", "/privacy"],
+                ["Terms", "/terms"],
+                ["Trust", "/trust"],
+              ].map(([t, h]) => (
+                <Link key={h} href={h} className="font-sans-g text-[13.5px] transition-colors duration-150 hover:text-[#2348B8]" style={{ color: "#3A3B44" }}>
+                  {t}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </div>

@@ -1,19 +1,19 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { SA } from "@/lib/theme";
-import { EASE } from "@/components/saas/motion";
 
 /* ────────────────────────────────────────────────────────────────
    Section headers and the one reveal.
 
-   The word-by-word blur assembly is gone — it is one of the most
-   recognisable template effects there is, and on every heading it made the
-   page feel like a demo reel. A section now simply rises 16px and fades in,
-   once. Headings are semibold and tight; body copy stays at a readable
-   measure and full contrast.
+   A section rises 16px and fades in, once. Headings are semibold and tight;
+   body copy stays at a readable measure and full contrast. A short blue
+   kicker names the section in plain sentence case: no mono caps, no pill.
    ──────────────────────────────────────────────────────────────── */
 
+/* Rendered visible on the server. Only a block that mounts below the fold is
+   parked, and an IntersectionObserver releases it as it scrolls in, so a
+   section can never be left invisible if script or an observer never fires. */
 export function Reveal({
   children,
   className = "",
@@ -27,31 +27,54 @@ export function Reveal({
   delay?: number;
   as?: "div" | "section" | "ul" | "ol";
 }) {
-  const reduce = useReducedMotion();
-  const M = motion[as];
+  const ref = useRef<HTMLElement>(null);
+  const [state, setState] = useState<"idle" | "parked" | "in">("idle");
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.92) return;
+    setState("parked");
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setState("in");
+        io.disconnect();
+      },
+      { rootMargin: "0px 0px -8% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const Tag = as as React.ElementType;
+  const cls = [state === "idle" ? "" : "bq-reveal", state === "in" ? "is-in" : "", className].join(" ").trim();
   return (
-    <M
-      className={className}
-      style={style}
-      initial={reduce ? false : { opacity: 0.001, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.05 }}
-      transition={{ duration: 0.7, ease: EASE, delay }}
-    >
+    <Tag ref={ref} className={cls} style={delay ? { ...style, transitionDelay: `${delay}s` } : style}>
       {children}
-    </M>
+    </Tag>
+  );
+}
+
+export function Kicker({ children, tone = "light" }: { children: React.ReactNode; tone?: "light" | "dark" }) {
+  return (
+    <p className="mb-3 font-sans-g text-base font-semibold" style={{ color: tone === "dark" ? "#8EC2FF" : SA.accent }}>
+      {children}
+    </p>
   );
 }
 
 export function SectionHead({
   title,
   sub,
+  kicker,
   align = "split",
   id,
   tone = "light",
 }: {
   title: string;
   sub?: string;
+  kicker?: string;
   align?: "split" | "center" | "stack";
   id?: string;
   tone?: "light" | "dark";
@@ -59,30 +82,37 @@ export function SectionHead({
   const ink = tone === "dark" ? "#FFFFFF" : SA.ink;
   const body = tone === "dark" ? "rgba(255,255,255,0.74)" : SA.sub;
 
-  /* Headings are never hidden. They render in place from the first paint;
-     only the block around them fades up. A heading that waits for an
-     observer to fire is a heading someone, somewhere, never sees. */
   const Title = (
     <h2
       id={id}
-      className="font-display font-semibold leading-[1.08]"
-      style={{ fontSize: "clamp(1.8rem, 3.2vw, 2.6rem)", letterSpacing: "-0.035em", color: ink, maxWidth: "26ch", textWrap: "balance" }}
+      className="font-display t-h2"
+      style={{
+        color: ink,
+        maxWidth: align === "center" ? "22ch" : "24ch",
+        marginInline: align === "center" ? "auto" : undefined,
+      }}
     >
       {title}
     </h2>
   );
 
   const Sub = sub ? (
-    <p className="font-sans-g leading-[1.7]" style={{ fontSize: "1.0625rem", color: body, maxWidth: "52ch" }}>
+    <p
+      className="font-sans-g t-body"
+      style={{ fontSize: "var(--fs-sm)", color: body, maxWidth: "52ch", marginInline: align === "center" ? "auto" : undefined }}
+    >
       {sub}
     </p>
   ) : null;
 
+  const K = kicker ? <Kicker tone={tone}>{kicker}</Kicker> : null;
+
   if (align === "center") {
     return (
-      <Reveal className="flex flex-col items-center text-center mx-auto">
+      <Reveal className="text-center">
+        {K}
         {Title}
-        {Sub && <div className="mt-6">{Sub}</div>}
+        {Sub && <div className="mt-5">{Sub}</div>}
       </Reveal>
     );
   }
@@ -90,15 +120,19 @@ export function SectionHead({
   if (align === "stack") {
     return (
       <Reveal>
+        {K}
         {Title}
-        {Sub && <div className="mt-6">{Sub}</div>}
+        {Sub && <div className="mt-5">{Sub}</div>}
       </Reveal>
     );
   }
 
   return (
     <Reveal className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] gap-y-5 lg:gap-x-16 items-end">
-      <div>{Title}</div>
+      <div>
+        {K}
+        {Title}
+      </div>
       <div className="lg:pb-1.5">{Sub}</div>
     </Reveal>
   );

@@ -1,59 +1,38 @@
 import { SA } from "@/lib/theme";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import Hero from "@/components/saas/Hero";
-import Suite from "@/components/saas/Suite";
-import SonarEngine from "@/components/saas/SonarEngine";
-import Pipeline from "@/components/saas/Pipeline";
-import Confidence from "@/components/saas/Confidence";
-import Industries from "@/components/saas/Industries";
-import Security from "@/components/saas/Security";
-import Faq from "@/components/saas/Faq";
-import { FAQS } from "@/components/saas/faqData";
+import HomeHero from "@/components/home/HomeHero";
+import Showcase from "@/components/home/Showcase";
+import Approach from "@/components/home/Approach";
+import Portfolio from "@/components/home/Portfolio";
+import Pillars from "@/components/home/Pillars";
+import Sectors from "@/components/home/Sectors";
+import Enterprise from "@/components/home/Enterprise";
+import CloseCta from "@/components/home/CloseCta";
+import Deploy from "@/components/home/Deploy";
 
-/* Server component: each animated section is its own client leaf.
-
-   Rhythm, top to bottom: white hero → white platform → navy "how it works"
-   → cool-grey confidence → white industries → cool-grey security → white FAQ
-   → navy close. One dark band mid-page and one at the end; everything else
-   alternates between two close light values. */
-
-const faqLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: FAQS.map(([q, a]) => ({
-    "@type": "Question",
-    name: q,
-    acceptedAnswer: { "@type": "Answer", text: a },
-  })),
-};
+/* The home page, composed section by section after sarvam.ai: a colour-wash
+   hero, a framed tabbed showcase of Sonar at work, a horizontal accordion
+   for how it works, a split portfolio, a three-column company row, sectors,
+   enterprise readiness, and a dark closing card. Questions live on /faq. Server
+   component: only the interactive sections ship JavaScript. */
 
 export default function Home() {
   return (
-    <div id="top" style={{ background: SA.bg, color: SA.ink }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:text-white focus:text-sm"
-        style={{ background: SA.ink }}
-      >
-        Skip to content
-      </a>
-
-      <SiteNav overDark />
-
+    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+      <SiteNav overDark={false} />
       <main id="main">
-        <Hero />
-        <SonarEngine />
-        <Suite />
-        <Pipeline />
-        <Confidence />
-        <Industries />
-        <Security />
-        <Faq />
+        <HomeHero />
+        <Showcase />
+        <Approach />
+        <Portfolio />
+        <Pillars />
+        <Sectors />
+        <Deploy />
+        <Enterprise />
+        <CloseCta />
       </main>
-
-      <SiteFooter />
+      <SiteFooter cta={false} />
     </div>
   );
 }

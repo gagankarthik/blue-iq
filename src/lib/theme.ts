@@ -4,28 +4,28 @@
    ──────────────────────────────────────────────────────────────── */
 
 /* 2026-09 redesign: the neutrals are cool slate tinted toward the brand hue,
-   and the accent is lifted from the logo itself (#297AFF), darkened just
+   and the accent is lifted from the logo itself (#3B82F6), darkened just
    enough to pass AA as text on white. Ink is a deep navy, not black — it is
    the "serious" colour the dark panels are built from. */
 export const SA = {
-  bg: "#FFFFFF",       // canvas
-  bg2: "#F6F8FC",      // alternating section (cool)
-  bg3: "#EEF2F9",      // card preview wells / inset
-  surface: "#FFFFFF",  // cards
-  line: "#E6EAF2",     // hairline
-  line2: "#D6DDEA",    // border / hover border
-  ink: "#0A1230",      // deep navy ink (never #000)
-  sub: "#4B5570",      // body
-  faint: "#667089",    // meta / mono labels (AA on white)
-  accent: "#1D5BF0",   // brand blue - the single accent (logo #297AFF, AA-safe)
-  accent2: "#297AFF",  // logo blue: hover, illustration
-  accentSoft: "#EDF3FF", // accent tint surface
-  cyan: "#34C2FF",     // logo cyan: illustration only, never text
-  navy: "#08102B",     // dark panels
-  navy2: "#0E1A40",    // raised dark surface
-  amber: "#B07A08",    // functional: needs review
-  green: "#1F7A54",    // functional: ok
-  red: "#C0492E",      // functional: risk
+  bg: "#FAFAFA", // page canvas (soft off-white)
+  bg2: "#F3F3F5", // quiet band
+  bg3: "#EEEEF1", // wells, tracks
+  surface: "#FFFFFF", // cards
+  line: "#ECECEF", // card edges, hairlines
+  line2: "#DEDEE3", // stronger dividers
+  ink: "#1F1F1F", // primary text (neutral near-black)
+  sub: "#55565E", // body (7:1 on white)
+  faint: "#6B6C75", // meta (5.2:1 on white)
+  accent: "#2F5FE0", // brand blue for links and highlighted words (5.3:1)
+  accent2: "#5B8CFF", // lighter brand blue: illustration
+  accentSoft: "#EEF3FF", // accent tint
+  cyan: "#34C2FF", // logo cyan: illustration only
+  navy: "#1E2130", // the dark pill and dark cards
+  navy2: "#2A2E42", // raised dark surface
+  amber: "#B45309", // functional: needs review
+  green: "#047857", // functional: ok
+  red: "#B91C1C", // functional: risk
 } as const;
 
 export type Tokens = typeof SA;

@@ -1,29 +1,33 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Newsreader, Figtree, IBM_Plex_Mono } from "next/font/google";
 import "@/app/globals.css";
 
-/* One neutral geometric grotesque across the whole site.
-
-   Was Space Grotesk, and it was the wrong face for this. Space Grotesk is a
-   *display* grotesque with deliberately mannered letterforms — the splayed t,
-   the hooked y, the flicked r — and those quirks get louder the larger you set
-   it. At the 5rem the hero runs at, the type was doing the talking instead of
-   the words. Geist is the same register as the reference's Roobert: geometric,
-   quiet, and built to hold at display size with tight tracking. */
-const sans = Geist({
-  variable: "--font-geist-sans",
+/* Three faces, each with one job:
+   · Newsreader — headlines: a soft, low-contrast display serif set light and
+     tight (the role Season Mix plays on sarvam.ai)
+   · Figtree — every word of UI and body copy: a clean geometric sans
+   · IBM Plex Mono — data only (scores, values, code)
+   The older CSS variable names are kept so nothing downstream changes. */
+const display = Newsreader({
+  variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sans = Figtree({
+  variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600"],
 });
 
+const geistMono = IBM_Plex_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600"],
+});
 
 const TITLE = "Blue-IQ | Document AI Platform Powered by Sonar";
 const DESC =
@@ -44,20 +48,45 @@ export const metadata: Metadata = {
   description: DESC,
   applicationName: "Blue-IQ",
   keywords: [
-    "document AI", "enterprise document AI", "intelligent document processing", "IDP software",
-    "document data extraction", "AI contract review software", "contract intelligence", "clause extraction",
-    "candidate data extraction", "credential parsing", "confidence scoring", "spend intelligence",
-    "entitlement reconciliation", "invoice reconciliation", "contract compliance", "SAM license reconciliation",
-    "enterprise document automation", "legacy parser migration", "document AI integrations", "schema-validated JSON",
-    "SOC 2", "HIPAA", "GDPR", "Blue-IQ Capture", "Blue-IQ Spend", "Blue-IQ Govern", "Sonar AI", "Sonar engine", "document AI platform",
-    "Campus edition", "Workforce edition",
+    "document AI",
+    "enterprise document AI",
+    "intelligent document processing",
+    "IDP software",
+    "document data extraction",
+    "AI contract review software",
+    "contract intelligence",
+    "clause extraction",
+    "candidate data extraction",
+    "credential parsing",
+    "confidence scoring",
+    "spend intelligence",
+    "entitlement reconciliation",
+    "invoice reconciliation",
+    "contract compliance",
+    "SAM license reconciliation",
+    "enterprise document automation",
+    "legacy parser migration",
+    "document AI integrations",
+    "schema-validated JSON",
+    "SOC 2",
+    "HIPAA",
+    "GDPR",
+    "Blue-IQ Capture",
+    "Blue-IQ Spend",
+    "Blue-IQ Govern",
+    "Sonar AI",
+    "Sonar engine",
+    "document AI platform",
+    "Campus edition",
+    "Workforce edition",
   ],
   authors: [{ name: "Blue-IQ" }],
   creator: "Blue-IQ",
   publisher: "Blue-IQ",
   alternates: { canonical: "/" },
   robots: {
-    index: true, follow: true,
+    index: true,
+    follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
   },
   openGraph: {
@@ -76,6 +105,11 @@ export const metadata: Metadata = {
     /* twitter:image also comes from app/opengraph-image.tsx */
   },
   category: "technology",
+  /* Search Console / Bing Webmaster verification: set these env vars at deploy */
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION } : undefined,
+  },
 };
 
 /* site-wide structured data: Organization + WebSite + the platform as SoftwareApplication */
@@ -100,11 +134,12 @@ const jsonLd = {
     },
     {
       "@type": "SoftwareApplication",
+      "@id": "https://blue-iq.ai/#platform",
       name: "Blue-IQ",
+      url: "https://blue-iq.ai",
       applicationCategory: "BusinessApplication",
       operatingSystem: "Web",
       description: DESC,
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Capture, Spend and Govern via scoped demo; Campus and Workforce editions and custom solutions scoped on request" },
       featureList: [
         "Any document into structured, confidence-scored data (Capture)",
         "Spend and entitlement reconciliation across invoices, POs and contracts (Spend)",
@@ -124,13 +159,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${sans.variable} ${geistMono.variable} antialiased`}
-      >
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+      <body className={`${display.variable} ${sans.variable} ${geistMono.variable} antialiased`}>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:text-white focus:text-sm"
+          style={{ background: "#0F172A" }}
+        >
+          Skip to content
+        </a>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
         {children}
       </body>
     </html>

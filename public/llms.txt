@@ -1,0 +1,23 @@
+# Blue-IQ
+
+> Blue-IQ is a document AI platform. Its products turn business documents — contracts, invoices, resumes, licences and agreements — into structured, confidence-scored data. Every product runs on Sonar, Blue-IQ's AI, which scores every extracted field and routes anything uncertain to a person instead of guessing.
+
+## Products
+- [Capture](https://www.parsinglab.blue-iq.ai/): turns incoming documents into clean, structured data.
+- [Spend](https://blue-iq.ai/products#spend): keeps invoices in line with what was agreed.
+- [Govern](https://govern.blue-iq.ai/): keeps contracts and obligations in view.
+- [Campus and Workforce editions](https://blue-iq.ai/products#editions): the products packaged for higher education, and for staffing and healthcare.
+
+## Pages
+- [Sonar, the platform](https://blue-iq.ai/platform): how the AI reads, scores, flags, drafts and answers.
+- [Trust Center](https://blue-iq.ai/trust): security controls, data handling, compliance status.
+- [Products](https://blue-iq.ai/products)
+- [Solutions by industry](https://blue-iq.ai/solutions): [IT](https://blue-iq.ai/solutions/it), [education](https://blue-iq.ai/solutions/education), [workforce](https://blue-iq.ai/solutions/workforce), [healthcare staffing](https://blue-iq.ai/solutions/healthcare), [legal](https://blue-iq.ai/solutions/legal), [procurement](https://blue-iq.ai/solutions/procurement); custom builds, migrations, integrations.
+- [Developer guide](https://blue-iq.ai/resources): REST API, signed webhooks, supported formats, confidence scores.
+- [About](https://blue-iq.ai/about)
+- [Contact](https://blue-iq.ai/contact)
+
+## Facts
+- Up to 200 documents per API call; sub-second median read.
+- Every field returned with its own confidence score.
+- Handling aligned to SOC 2, HIPAA and GDPR.

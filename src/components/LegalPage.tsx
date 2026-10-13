@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { SA } from "@/lib/theme";
-import { WRAP, PageHero } from "@/components/page/kit";
+import { WRAP, PlainHero } from "@/components/page/kit";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -46,17 +46,7 @@ function slugs(sections: LegalSection[]) {
   });
 }
 
-export default function LegalPage({
-  title,
-  updated,
-  intro,
-  sections,
-}: {
-  title: string;
-  updated: string;
-  intro: string;
-  sections: LegalSection[];
-}) {
+export default function LegalPage({ title, updated, intro, sections }: { title: string; updated: string; intro: string; sections: LegalSection[] }) {
   const reduce = useReducedMotion();
   const ids = useMemo(() => slugs(sections), [sections]);
   const [active, setActive] = useState<string>(ids[0] ?? "");
@@ -81,7 +71,7 @@ export default function LegalPage({
         const first = ids.find((id) => seen.has(id));
         if (first) setActive(first);
       },
-      { rootMargin: "-96px 0px -60% 0px", threshold: 0 },
+      { rootMargin: "-96px 0px -60% 0px", threshold: 0 }
     );
 
     els.forEach((el) => io.observe(el));
@@ -92,31 +82,23 @@ export default function LegalPage({
 
   return (
     <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
-      <SiteNav />
+      <SiteNav overDark={false} />
 
-      <main>
-        <PageHero label={`Legal · Last updated ${updated}`} title={title} lede={intro} />
+      <main id="main">
+        <PlainHero crumb={title} title={title} lede={intro} meta={`Last updated ${updated}`} />
 
         <section className={WRAP}>
           <div className="pt-14 sm:pt-20 pb-28 sm:pb-36 lg:grid lg:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
             {/* ── the index, inline. Below lg this is all the contents list gets
                   to be, and it is enough: thirteen links, wrapped, on a rule. ── */}
-            <nav
-              aria-label="Contents"
-              className="lg:hidden py-6 mb-14"
-              style={{ borderTop: `1px solid ${SA.line2}`, borderBottom: `1px solid ${SA.line2}` }}
-            >
+            <nav aria-label="Contents" className="lg:hidden py-6 mb-14" style={{ borderTop: `1px solid ${SA.line2}`, borderBottom: `1px solid ${SA.line2}` }}>
               <p className="font-sans-g text-[13px] font-semibold" style={{ color: SA.faint }}>
                 Contents
               </p>
               <ul className="mt-4 flex flex-wrap gap-x-5 gap-y-2.5">
                 {sections.map((s, i) => (
                   <li key={ids[i]}>
-                    <a
-                      href={`#${ids[i]}`}
-                      className="font-sans-g text-[13.5px] leading-[1.4]"
-                      style={{ color: SA.sub }}
-                    >
+                    <a href={`#${ids[i]}`} className="font-sans-g text-[13.5px] leading-[1.4]" style={{ color: SA.sub }}>
                       {s.h}
                     </a>
                   </li>
@@ -128,10 +110,7 @@ export default function LegalPage({
                   the article, which is what gives the sticky child room to travel. ── */}
             <nav aria-label="Contents" className="hidden lg:block">
               <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto overscroll-contain">
-                <p
-                  className="font-sans-g text-[13px] font-semibold pb-4"
-                  style={{ color: SA.faint, borderBottom: `1px solid ${SA.line}` }}
-                >
+                <p className="font-sans-g text-[13px] font-semibold pb-4" style={{ color: SA.faint, borderBottom: `1px solid ${SA.line}` }}>
                   Contents
                 </p>
                 <ul className="mt-3">
@@ -151,8 +130,8 @@ export default function LegalPage({
                           }
                         >
                           <span
-                            className="font-mono-g text-[10.5px] tabular-nums pt-[3px] transition-colors duration-200"
-                            style={{ color: on ? SA.accent : SA.line2 }}
+                            className="font-mono-g text-[12.8px] tabular-nums pt-[2px] transition-colors duration-200"
+                            style={{ color: on ? SA.accent : SA.faint }}
                           >
                             {num(i)}
                           </span>
@@ -196,11 +175,7 @@ export default function LegalPage({
 
                   <div className="mt-6 space-y-5">
                     {s.body.map((p, j) => (
-                      <p
-                        key={j}
-                        className="font-sans-g leading-[1.8]"
-                        style={{ fontSize: "1.02rem", color: SA.sub }}
-                      >
+                      <p key={j} className="font-sans-g leading-[1.8]" style={{ fontSize: "1.02rem", color: SA.sub }}>
                         {p}
                       </p>
                     ))}
@@ -208,17 +183,14 @@ export default function LegalPage({
                 </motion.section>
               ))}
 
-              <p
-                className="mt-16 pt-8 font-sans-g text-[14.5px] leading-[1.7]"
-                style={{ color: SA.faint, borderTop: `1px solid ${SA.line2}` }}
-              >
-                Questions about this document? Write to{" "}
+              <p className="mt-16 pt-8 font-sans-g text-[14.5px] leading-[1.7]" style={{ color: SA.faint, borderTop: `1px solid ${SA.line2}` }}>
+                Questions about this document?{" "}
                 <a
-                  href="mailto:hello@blue-iq.ai"
+                  href="/contact"
                   className="underline underline-offset-4 decoration-1 transition-colors"
                   style={{ color: SA.accent, textDecorationColor: SA.line2 }}
                 >
-                  hello@blue-iq.ai
+                  Contact us
                 </a>
                 .
               </p>

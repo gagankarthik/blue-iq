@@ -22,10 +22,7 @@ export const FAQS: [string, string][] = [
     "What document types can it handle?",
     "PDFs, DOCX, images and exports, including scans and pages photographed on a phone, which go through OCR first. If your team can read it, the engine is built to read it.",
   ],
-  [
-    "How does it handle volume?",
-    "Up to 200 documents per API call, with throughput that holds steady across batches.",
-  ],
+  ["How does it handle volume?", "Up to 200 documents per API call, with throughput that holds steady across batches."],
   [
     "How is our data protected?",
     "Documents move over TLS, projects stay isolated in private workspaces, access is controlled by role and by single sign-on through your identity provider, and personal data is handled to GDPR standards. Our handling is aligned to SOC 2, HIPAA and GDPR.",
@@ -36,3 +33,16 @@ export const FAQS: [string, string][] = [
   ],
 ];
 
+/* Security questions: shown on /trust and in the security group on /faq. */
+export const TRUST_FAQS: [string, string][] = [
+  [
+    "Are you SOC 2 certified?",
+    "Our handling is aligned to SOC 2, HIPAA and GDPR. We describe it as aligned because that is accurate; ask us for our security documentation as part of your review.",
+  ],
+  [
+    "Who can see our documents?",
+    "Only the people you name. Projects sit in private workspaces, access is role-based, and sign-in runs through your identity provider.",
+  ],
+  ["How long do you keep our data?", "Per your agreement. After termination, content is available for export for 30 days, after which it may be deleted."],
+  ["How do we report a security issue?", "Use the contact form and choose 'Security review'. A person will respond."],
+];

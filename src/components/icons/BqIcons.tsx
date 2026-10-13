@@ -39,9 +39,7 @@ function Base({ size = 24, children, style, ...rest }: P & { children: React.Rea
 }
 
 /* the duo plane — a filled, stroke-less shape at low opacity */
-const D = ({ d }: { d: string }) => (
-  <path d={d} stroke="none" style={{ fill: "var(--duo, currentColor)", fillOpacity: "var(--duo-o, 0.14)" }} />
-);
+const D = ({ d }: { d: string }) => <path d={d} stroke="none" style={{ fill: "var(--duo, currentColor)", fillOpacity: "var(--duo-o, 0)" }} />;
 
 export type BqIcon = (p: P) => React.ReactElement;
 

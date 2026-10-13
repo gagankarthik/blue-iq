@@ -3,7 +3,78 @@
 The single source of truth for how Blue-IQ looks, reads, and moves.
 If the code and this document disagree, **this document wins** — fix the code.
 
-> ## 2026-09 redesign — read this first
+> ## 2026-10-14 — current system (supersedes everything below where they disagree)
+>
+> - **Company site, not product brochures.** No per-product how-it-works pages or feature lists; /products is a
+>   portfolio (one line per product + link to its own app). /products/[slug] was removed (308 → /products).
+>   Industry pages and home sections describe Blue-IQ and Sonar, not individual products.
+> - **Hero**: typography only on the light canvas — no background drawing, no stats, no mockup.
+> - **No compliance tag lines** ("SOC 2, HIPAA and GDPR aligned · …") under CTAs, in the footer or headers;
+>   compliance lives in the Security section and on /trust only.
+>
+> - **Type**: IBM Plex Sans (UI + copy) and IBM Plex Mono (data only). Inter/Geist were flagged by Impeccable
+>   as overused AI-default faces. CSS var names --font-geist-* are kept for compatibility.
+> - **Nav**: a detached white "island" bar (no blur), rounded, hairline edge, lift on scroll. No login.
+> - **Buttons**: `system/Btn` — primary/secondary carry the trailing arrow in its own circle (button-in-button);
+>   internal hrefs render as next/link.
+> - **Sections**: py-24 / sm:py-32. Light canvas, white and slate-50 alternate, hairline seams.
+> - **Home order**: hero (text, pointer-following Sonar scope sweep, trust line) → Sonar studio (split:
+>   scenario list | live workspace with ghost rows, pause control) → How it works (connected track) →
+>   platform bento (whole tiles clickable) → confidence bars → industries (tabs + products-used aside) →
+>   controls table → FAQ → centred close with trust line.
+> - **Pages**: /platform, /products/[capture|spend|govern], /solutions/[6 sectors], /trust are data-driven
+>   (lib/products.ts, lib/industries.ts, lib/trust.ts) server pages built from components/page/blocks.tsx.
+> - **Quality gates**: `npm run lint` (ESLint 10 + next core-web-vitals + TS), `npm run typecheck`.
+>   axe WCAG 2.1 AA: 0 violations on all routes. Impeccable URL scan: 0 findings. Lighthouse:
+>   A11y/BP/SEO 100, Perf 92–94. Security headers + CSP in next.config.ts; inlineCss on.
+> - **TypeScript pinned to 6.0.3** until typescript-eslint supports TS 7 (their issue #10940).
+
+> ## 2026-10-13 (later) — superseded where the block above disagrees
+>
+> - **No illustrations.** The isometric kit (art/*) was removed site-wide: the user found the custom SVGs
+>   "AI-looking". Pages are carried by type, ruled tables/lists, line icons (BqIcons, line-only: duo fill 0)
+>   and real data. Do not reintroduce drawn scenes.
+> - **Light canvas everywhere**: slate-50 / white, slate-200 dividers, slate-900 ink, blue-600 (#2563EB)
+>   for the one primary action. The only dark surface is the home "Custom builds" strip. No navy headers.
+> - **Fonts**: Inter (UI and copy) + JetBrains Mono (data, scores, specs). CSS var names kept (--font-geist-*).
+> - **Home**: text-only hero on a static hairline Sonar-scope schematic (no stats, no mockup) → **Sonar AI
+>   studio** (`saas/SonarStudio.tsx`: cursor types into a rainbow-edged prompt, clicks Generate, a scored
+>   draft or an answer table assembles; Create/Ask modes; plays only in view; reduced motion = static) →
+>   12-col platform bento → confidence bars → industries → controls table → FAQ → centred final CTA.
+>   The studio's rainbow edge and autoplay were explicitly requested and are the deliberate exceptions to
+>   the no-gradient / no-loop rules.
+> - **SEO**: `lib/seo.ts` builds metadata + JSON-LD (WebPage types, BreadcrumbList, ItemList of products and
+>   services, FAQPage). Sitemap dates are content dates. IndexNow: `npm run indexnow`. `public/llms.txt`.
+>   Verification via NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION / NEXT_PUBLIC_BING_SITE_VERIFICATION.
+
+> ## 2026-10 design system — read this first
+>
+> Overrides everything below that disagrees. Tokens live in `globals.css` (`:root`).
+>
+> - **Space**: 4px base; every value an integer multiple (Tailwind's scale, no half steps in new code).
+>   Component padding < container margin.
+> - **Type**: 1.25 ratio from 16px — 12.8 · 16 · 20 · 25 · 31 · 39 · 49 · 61, as role classes
+>   `.t-display .t-h1 .t-h2 .t-h3 .t-h4 .t-lead .t-body .t-meta`. Weights 400/500/600. Body measure 60ch.
+> - **Colour**: intent tokens (`--c-interactive`, `--c-boundary` 3:1 for control edges, `--c-ink-2/3` AA).
+>   Accent = interactive only. Green/amber/red = state only, always paired with text.
+> - **One primary action per screen**: `Btn` / `BtnButton` in `components/system/Btn.tsx` (primary · secondary · quiet,
+>   light/dark, md 40px / lg 48px). All six states live there; focus ring is global (2px, offset 2px).
+>   The nav CTA is secondary so the page's own primary is the focal point.
+> - **Motion**: 150–300ms, ease-out in / ease-in out. **No perpetual decorative loops** — no float, pulse,
+>   marching dashes, auto-advancing tabs or self-moving sliders. The Sonar field reacts to the pointer only.
+>   Loading skeletons are the one allowed loop.
+> - **Each page has its own structure**: Home = navy centred hero + scene; Products = navy split + exploded
+>   `StackArt` + comparison table; Solutions = light index header with illustrated sector links + ruled sector
+>   ledger + editorial service rows + connected timeline; Resources = white header with "On this page" contents,
+>   definition lists, format grid, connected rule track; About = navy statement with ruled problem columns,
+>   Sonar engine, product index; Contact = navy split form. Inner pages carry breadcrumbs (`Crumbs`).
+>   `CtaBand` takes per-page copy.
+> - **Industries** are drawn, not iconned: `art/IndustryArt.tsx` (six isometric scenes, one viewBox). Data in
+>   `lib/industries.ts`. Use the drawings anywhere a sector appears (home tabs, solutions, nav, editions).
+> - **No login link** on the site. No email addresses (company has none yet) — point to /contact.
+> - Data, not widgets: comparisons are tables, sequences are connected tracks, attributes are ruled lists.
+
+> ## 2026-09 redesign (superseded where 2026-10 disagrees)
 >
 > This block overrides anything below it that disagrees.
 >
@@ -28,9 +99,17 @@ If the code and this document disagree, **this document wins** — fix the code.
 > - **Live background**: `art/SonarField.tsx` (canvas dot grid, pulses from the cursor/tap,
 >   pauses off screen, static under reduced motion). Used by the home hero, every page
 >   header (`PageHero` in `page/kit.tsx`) and the closing `CtaBand`.
-> - **Home order**: centred navy hero (rotating word) → Platform bento → How Sonar works
->   (auto-playing step tabs + drawing) → Confidence (self-moving review line) → Industries
->   (tabs) → Security → FAQ → CtaBand (email field → /contact?email=) + footer.
+> - **Home order** (2026-10): navy hero (rotating word, live Sonar field, the isometric
+>   `art/HeroScene.tsx` — documents → Sonar → confidence blocks with one amber flag — and a
+>   four-cell proof strip) → white Products bento → navy "How Sonar works" (centred, the
+>   page's one centred header) → cool-grey Confidence (slider + colour legend) → white
+>   Industries → cool-grey Security → white FAQ → navy CtaBand + footer. Navy opens, splits
+>   and closes the page. The CPU-chip "SONAR" graphic is off the home page.
+> - **Section header system**: `SectionHead` in `saas/parts.tsx` = blue sentence-case
+>   kicker (`Kicker`) + semibold h2 + one-line standfirst. Every home section uses it.
+> - **Reveal**: CSS (`.bq-reveal`), released by an IntersectionObserver; server-rendered
+>   visible, so no section can be stuck invisible. Don't reintroduce framer `whileInView`
+>   for section reveals.
 > - **Nav**: logo | links on the true centre | actions. Dropdowns are centred,
 >   content-sized panels led by illustrated cards — never a wide slab of empty white.
 > - **Copy**: one line per idea. Each page has its own job and layout:
