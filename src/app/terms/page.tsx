@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata, breadcrumbLd, webPageLd, ldScript } from "@/lib/seo";
 import LegalPage, { type LegalSection } from "@/components/LegalPage";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Terms & Conditions",
-  description: "The terms and conditions governing use of the Blue-IQ platform and its products, Capture, Spend and Govern.",
-  alternates: { canonical: "/terms" },
-};
+  description: "The terms and conditions governing use of the Blue-IQ website, platform and products, including Capture, Spend and Govern, and the Sonar API.",
+  path: "/terms",
+});
 
 const sections: LegalSection[] = [
   {
@@ -98,11 +98,25 @@ const sections: LegalSection[] = [
 
 export default function TermsPage() {
   return (
-    <LegalPage
-      title="Terms & Conditions"
-      updated="11 July 2026"
-      intro="The rules for using Blue-IQ and our products, forming a binding agreement between your organization and us. Please read them carefully."
-      sections={sections}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={ldScript(
+          webPageLd({
+            name: "Terms and Conditions",
+            description:
+              "The terms and conditions governing use of the Blue-IQ website, platform and products, including Capture, Spend and Govern, and the Sonar API.",
+            path: "/terms",
+          }),
+          breadcrumbLd("Terms and Conditions", "/terms")
+        )}
+      />
+      <LegalPage
+        title="Terms & Conditions"
+        updated="11 July 2026"
+        intro="The rules for using Blue-IQ and our products, forming a binding agreement between your organization and us. Please read them carefully."
+        sections={sections}
+      />
+    </>
   );
 }

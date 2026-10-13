@@ -27,7 +27,7 @@ export default function Loading() {
       </div>
 
       <div className="max-w-[1240px] mx-auto px-5 sm:px-8 h-[72px] flex items-center gap-8" style={{ borderBottom: `1px solid ${SA.line}` }}>
-        <Image src="/logo.svg" alt="" width={108} height={34} priority />
+        <Image src="/logo.svg" alt="" width={115} height={30} priority />
         <div className="hidden lg:flex gap-6">
           <Bone className="h-3 w-16" />
           <Bone className="h-3 w-16" />

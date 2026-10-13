@@ -16,7 +16,7 @@ import SiteFooter from "@/components/SiteFooter";
 
 const TITLE = "Frequently Asked Questions";
 const DESC =
-  "Answers about Blue-IQ and Sonar: how documents are read and scored, what happens when a value is uncertain, integrations, formats, volume, security and custom builds.";
+  "Answers about Blue-IQ and Sonar: how documents are read and scored, what happens to uncertain values, integrations, formats, security and custom builds.";
 
 export const metadata = pageMetadata({
   title: TITLE,

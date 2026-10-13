@@ -53,9 +53,11 @@ const cols: { h: string; l: [string, string, boolean][] }[] = [
       ["About", "/about", false],
       ["Pricing", "/contact#pricing", false],
       ["FAQ", "/faq", false],
+      ["Media kit", "/media-kit", false],
       ["Contact", "/contact", false],
       ["Privacy policy", "/privacy", false],
       ["Terms of service", "/terms", false],
+      ["Accessibility", "/accessibility", false],
     ],
   },
 ];
@@ -79,7 +81,7 @@ export default function SiteFooter({ cta = {} }: { cta?: false | { title?: strin
         <div className="max-w-[1240px] mx-auto px-5 sm:px-8 pt-14 sm:pt-20">
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-x-8 gap-y-12 pb-14">
             <div className="col-span-2 md:col-span-4 lg:col-span-1">
-              <Image src="/logo.svg" alt="Blue-IQ" width={124} height={40} />
+              <Image src="/logo.svg" alt="Blue-IQ" width={130} height={34} />
               <p className="mt-5 font-display text-[1.5rem] leading-[1.25] tracking-[-0.02em] max-w-[18ch]" style={{ color: SA.ink }}>
                 The document AI company. Every product runs on Sonar.
               </p>
@@ -116,11 +118,12 @@ export default function SiteFooter({ cta = {} }: { cta?: false | { title?: strin
             <p className="font-sans-g text-[13.5px]" style={{ color: "#3A3B44" }}>
               © {new Date().getFullYear()} Blue-IQ. All rights reserved.
             </p>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {[
                 ["Privacy", "/privacy"],
                 ["Terms", "/terms"],
                 ["Trust", "/trust"],
+                ["Accessibility", "/accessibility"],
               ].map(([t, h]) => (
                 <Link key={h} href={h} className="font-sans-g text-[13.5px] transition-colors duration-150 hover:text-[#2348B8]" style={{ color: "#3A3B44" }}>
                   {t}

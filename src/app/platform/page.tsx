@@ -11,7 +11,7 @@ import { SpotRead, SpotExtract, SpotScore, SpotRoute, SpotCapture, SpotSpend, Sp
    Order: what Sonar is → how it reads → what makes it different →
    confidence in practice → the products on it → questions. */
 
-const TITLE = "Sonar: The Document AI Behind Every Blue-IQ Product";
+const TITLE = "Sonar: The Document AI Behind Every Product";
 const DESC =
   "Sonar reads any document like a careful person, scores every field it extracts, flags what it cannot read, and drafts and answers questions across your documents.";
 

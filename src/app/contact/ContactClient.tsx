@@ -206,7 +206,7 @@ function ContactForm() {
             {ref && (
               <p className="mt-6 font-sans-g text-[14px]" style={{ color: SA.faint }}>
                 Reference{" "}
-                <span className="font-mono-g font-semibold tabular-nums" style={{ color: SA.ink }}>
+                <span className="font-mono-g font-medium tabular-nums" style={{ color: SA.ink }}>
                   {ref}
                 </span>
               </p>

@@ -14,7 +14,7 @@ import { TRUST_FAQS } from "@/components/saas/faqData";
 
 const TITLE = "Trust Center: Security, Privacy and Compliance";
 const DESC =
-  "How Blue-IQ protects your documents: TLS in transit, SSO and role-based access, private workspaces, data handling and retention, and handling aligned to SOC 2, HIPAA and GDPR.";
+  "How Blue-IQ protects your documents: TLS in transit, SSO, role-based access, private workspaces, retention, and handling aligned to SOC 2, HIPAA and GDPR.";
 
 export const metadata = pageMetadata({
   title: TITLE,

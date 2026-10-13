@@ -1,6 +1,6 @@
 # Blue-IQ
 
-> Blue-IQ is a document AI platform. Its products turn business documents — contracts, invoices, resumes, licences and agreements — into structured, confidence-scored data. Every product runs on Sonar, Blue-IQ's AI, which scores every extracted field and routes anything uncertain to a person instead of guessing.
+> Blue-IQ (also written BlueIQ) is a document AI company. Its products turn business documents — contracts, invoices, resumes, licences and agreements — into structured, confidence-scored data. Every product runs on Sonar, Blue-IQ's AI, which scores every extracted field and routes anything uncertain to a person instead of guessing.
 
 ## Products
 - [Capture](https://www.parsinglab.blue-iq.ai/): turns incoming documents into clean, structured data.
@@ -15,6 +15,8 @@
 - [Solutions by industry](https://blue-iq.ai/solutions): [IT](https://blue-iq.ai/solutions/it), [education](https://blue-iq.ai/solutions/education), [workforce](https://blue-iq.ai/solutions/workforce), [healthcare staffing](https://blue-iq.ai/solutions/healthcare), [legal](https://blue-iq.ai/solutions/legal), [procurement](https://blue-iq.ai/solutions/procurement); custom builds, migrations, integrations.
 - [Developer guide](https://blue-iq.ai/resources): REST API, signed webhooks, supported formats, confidence scores.
 - [About](https://blue-iq.ai/about)
+- [FAQ](https://blue-iq.ai/faq): common questions about Sonar, integrations, formats and security.
+- [Media kit](https://blue-iq.ai/media-kit): logos, colours, typefaces and approved company descriptions.
 - [Contact](https://blue-iq.ai/contact)
 
 ## Facts

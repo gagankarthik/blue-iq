@@ -97,6 +97,7 @@ const menus: Menu[] = [
       { t: "Pricing", d: "Plans shaped to your volume", href: "/contact#pricing", Spot: SpotSpend },
       { t: "Contact", d: "Talk to the team", href: "/contact", Spot: SpotChat },
       { t: "FAQ", d: "Answers to common questions", href: "/faq", Spot: SpotFaq },
+      { t: "Media kit", d: "Logos, colours and descriptions", href: "/media-kit", Spot: SpotCustom },
     ],
     features: [
       { t: "Trust Center", href: "/trust", Spot: SpotSecure, well: "linear-gradient(160deg, #1F9D6B 0%, #7FD8B0 55%, #E3F7EE 100%)" },
@@ -230,7 +231,7 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
         >
           <div className="max-w-[1240px] mx-auto px-5 sm:px-8 h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
             <Link href="/" aria-label="Blue-IQ home" className="flex items-center justify-self-start" onMouseEnter={() => setOpen(null)}>
-              <Image src="/logo.svg" alt="Blue-IQ" width={108} height={34} priority />
+              <Image src="/logo.svg" alt="Blue-IQ" width={115} height={30} priority />
             </Link>
 
             <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Primary">

@@ -1,9 +1,9 @@
 import ProductsClient from "./ProductsClient";
 import { pageMetadata, breadcrumbLd, webPageLd, productsLd, ldScript } from "@/lib/seo";
 
-const TITLE = "Blue-IQ Products: Capture, Spend and Govern";
+const TITLE = "Document AI Products: Capture, Spend and Govern";
 const DESC =
-  "The products Blue-IQ builds on Sonar, its document AI: Capture for document data, Spend for spend control and Govern for contracts, plus Campus and Workforce editions.";
+  "Blue-IQ's document AI products: Capture for document data, Spend for invoice control and Govern for contracts, plus Campus and Workforce editions.";
 
 export const metadata = pageMetadata({
   title: TITLE,

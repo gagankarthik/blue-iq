@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { pageMetadata, breadcrumbLd, webPageLd, ldScript } from "@/lib/seo";
 import LegalPage, { type LegalSection } from "@/components/LegalPage";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Privacy Policy",
   description: "How Blue-IQ collects, uses, shares, and protects personal information across its platform and products, including Capture, Spend and Govern.",
-  alternates: { canonical: "/privacy" },
-};
+  path: "/privacy",
+});
 
 const sections: LegalSection[] = [
   {
@@ -21,6 +21,14 @@ const sections: LegalSection[] = [
       "Usage data, such as log files, device and browser details, and how you interact with the Service.",
       "Content you upload or connect, such as resumes, statements of work, invoices, and integration data, processed on behalf of our customers.",
       "Cookies and similar technologies used to operate and improve the Service.",
+    ],
+  },
+  {
+    h: "The contact form on this website",
+    body: [
+      "When you send the contact form we store what you enter (name, work email, and optionally company, job title, product, topic, document volume and your message), plus the page you sent it from and your browser's user-agent string. We use it only to reply to you and to handle your request.",
+      "Your IP address is used for a few minutes, in memory, to stop automated spam. It is not stored with your request. If our optional Cloudflare Turnstile check is switched on, Cloudflare processes browser signals to tell people from bots, under its own privacy policy.",
+      "Requests are stored in Amazon Web Services (DynamoDB, United States). We keep them for as long as needed to handle the request and our relationship with you, and delete them on request.",
     ],
   },
   {
@@ -68,8 +76,13 @@ const sections: LegalSection[] = [
   {
     h: "Cookies and tracking",
     body: [
-      "We use essential cookies to operate the Service and optional analytics cookies to understand usage. You can control non-essential cookies through your browser settings or our cookie controls where provided.",
+      "This website does not use advertising or analytics cookies, and it does not track you across other sites. Browsing it sets no cookies. The contact form uses a short-lived signed token, not a cookie.",
+      "Our products, once you sign in, use essential cookies to keep you signed in and secure. If we ever add analytics to this website, we will update this policy first and ask for your consent where the law requires it.",
     ],
+  },
+  {
+    h: "Selling and sharing",
+    body: ["We do not sell your personal information, and we do not share it for cross-context behavioural advertising."],
   },
   {
     h: "Children’s privacy",
@@ -88,11 +101,25 @@ const sections: LegalSection[] = [
 
 export default function PrivacyPage() {
   return (
-    <LegalPage
-      title="Privacy Policy"
-      updated="11 July 2026"
-      intro="What we collect, how we use it, and the rights and choices you have across the Blue-IQ platform and its products."
-      sections={sections}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={ldScript(
+          webPageLd({
+            name: "Privacy Policy",
+            description:
+              "How Blue-IQ collects, uses, shares, and protects personal information across its platform and products, including Capture, Spend and Govern.",
+            path: "/privacy",
+          }),
+          breadcrumbLd("Privacy Policy", "/privacy")
+        )}
+      />
+      <LegalPage
+        title="Privacy Policy"
+        updated="13 October 2026"
+        intro="What we collect, how we use it, and the rights and choices you have across the Blue-IQ platform and its products."
+        sections={sections}
+      />
+    </>
   );
 }

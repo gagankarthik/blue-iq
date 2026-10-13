@@ -12,26 +12,27 @@ const display = Newsreader({
   variable: "--font-display",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500"],
+  /* variable font: one file covers every weight */
 });
 
 const sans = Figtree({
   variable: "--font-geist-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
+  /* variable font: one file covers every weight */
 });
 
 const geistMono = IBM_Plex_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
+  preload: false /* data only, never above the fold */,
 });
 
-const TITLE = "Blue-IQ | Document AI Platform Powered by Sonar";
+const TITLE = "Blue-IQ | Document AI for Contracts, Invoices and Records";
 const DESC =
-  "Blue-IQ is a document AI platform. Extract data, reconcile invoices and review contracts with Sonar, the AI that scores every field and flags what it can't read.";
+  "Blue-IQ builds document AI: extract data, reconcile invoices and review contracts with Sonar, the AI that scores every field and flags what it can't read.";
 
 export const viewport: Viewport = {
   themeColor: "#FFFFFF",
@@ -43,7 +44,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://blue-iq.ai"),
   title: {
     default: TITLE,
-    template: "%s · Blue-IQ",
+    template: "%s | Blue-IQ",
   },
   description: DESC,
   applicationName: "Blue-IQ",
@@ -120,16 +121,32 @@ const jsonLd = {
       "@type": "Organization",
       "@id": "https://blue-iq.ai/#org",
       name: "Blue-IQ",
+      alternateName: ["BlueIQ", "Blue IQ"],
       url: "https://blue-iq.ai",
-      logo: "https://blue-iq.ai/logo.svg",
+      logo: {
+        "@type": "ImageObject",
+        "@id": "https://blue-iq.ai/#logo",
+        url: "https://blue-iq.ai/brand/icon-512.png",
+        width: 512,
+        height: 512,
+        caption: "Blue-IQ",
+      },
+      image: { "@id": "https://blue-iq.ai/#logo" },
       description: DESC,
-      sameAs: ["https://www.linkedin.com/company/blue-iq"],
+      brand: { "@type": "Brand", name: "Blue-IQ", logo: "https://blue-iq.ai/brand/logo.png" },
+      contactPoint: { "@type": "ContactPoint", contactType: "sales", url: "https://blue-iq.ai/contact", availableLanguage: ["English"] },
+      subOrganization: [
+        { "@type": "Organization", name: "Blue-IQ Capture", url: "https://www.parsinglab.blue-iq.ai/" },
+        { "@type": "Organization", name: "Blue-IQ Govern", url: "https://govern.blue-iq.ai/" },
+      ],
     },
     {
       "@type": "WebSite",
       "@id": "https://blue-iq.ai/#website",
       url: "https://blue-iq.ai",
       name: "Blue-IQ",
+      alternateName: "BlueIQ",
+      inLanguage: "en",
       publisher: { "@id": "https://blue-iq.ai/#org" },
     },
     {

@@ -34,7 +34,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Renewal dates, liability caps and licence counts extracted from every MSA and SOW.",
     reads: ["Master service agreements", "Statements of work", "Vendor invoices", "Software entitlements"],
     out: ["Renewal calendar", "Licence counts", "Rate drift"],
-    title: "Document AI for IT: Vendor Contracts and Licence Management",
+    title: "Document AI for IT: Vendor Contracts and Licences",
     description: "Extract renewal dates, liability caps and licence counts from every MSA, SOW and vendor invoice, and catch licence overages before renewal.",
     problem:
       "IT teams hold hundreds of vendor agreements, each with its own renewal window, cap and entitlement. Missed notice periods and unused seats cost real money.",
@@ -56,7 +56,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Applications and transcripts read into records your student information system can use.",
     reads: ["Admissions applications", "Transcripts", "Supplier agreements", "Grant paperwork"],
     out: ["Student records", "Course histories", "Supplier terms"],
-    title: "Document AI for Education: Admissions and Transcript Processing",
+    title: "Document AI for Admissions and Transcripts",
     description:
       "Read admissions applications and transcripts into clean student records, and keep supplier agreements and grant paperwork in view. The Campus edition.",
     problem: "Admissions teams re-key the same applications and transcripts every cycle, in every format, under deadline.",
@@ -75,7 +75,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Skills, certifications and expiry dates extracted straight into your ATS.",
     reads: ["Resumes", "Certifications", "Right-to-work documents", "Compliance files"],
     out: ["Candidate profiles", "Credential expiries", "ATS-ready records"],
-    title: "Document AI for Staffing: Resume Parsing and Onboarding",
+    title: "Document AI for Staffing: Resume Parsing",
     description:
       "Parse resumes, certifications and right-to-work documents into ATS-ready candidate records, with credential expiries tracked. The Workforce edition.",
     problem: "Recruiters spend hours turning resumes and compliance files into ATS records, and expired credentials surface too late.",
@@ -94,7 +94,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Licence numbers, issuing boards and expiry dates extracted and scored. Smudged stamps are flagged.",
     reads: ["Clinical resumes", "Nursing licences", "Immunisation records", "Compliance files"],
     out: ["Licence checks", "Expiry tracking", "Compliance status"],
-    title: "Document AI for Healthcare Staffing: Clinician Credentialing",
+    title: "Document AI for Clinician Credentialing",
     description:
       "Extract licence numbers, issuing boards and expiry dates from clinical credentials and immunisation records, with unreadable stamps flagged for review.",
     problem: "Credentialing a clinician means checking a stack of licences and records by hand. One misread expiry date is a compliance risk.",
@@ -113,7 +113,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Every deviation from your playbook comes back with a risk rating.",
     reads: ["Agreements", "Amendments", "NDAs", "Your playbook"],
     out: ["Clause risk ratings", "Playbook deviations", "Obligation dates"],
-    title: "Document AI for Legal Teams: Contract Review and Drafting",
+    title: "AI Contract Review and Drafting for Legal Teams",
     description:
       "Draft and review contracts against your playbook. Every deviating clause risk-rated, obligations and dates extracted, unreadable clauses flagged.",
     problem:
@@ -133,7 +133,7 @@ export const INDUSTRIES: Industry[] = [
     d: "Invoices matched to contracts and POs, with overbilling flagged as it is billed.",
     reads: ["Invoices", "Purchase orders", "Contracts", "Receipts"],
     out: ["Three-way match", "Leakage alerts", "Entitlement checks"],
-    title: "Document AI for Procurement: Invoice Reconciliation",
+    title: "AI Invoice Reconciliation for Procurement",
     description: "Match every invoice to its purchase order and contract automatically. Overbilling, rate drift and licence overages flagged before payment.",
     problem: "Finance teams approve invoices without re-reading the contracts behind them, so small overcharges compound across thousands of payments.",
     faqs: [

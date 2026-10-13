@@ -1,7 +1,7 @@
 import AboutClient from "./AboutClient";
 import { pageMetadata, breadcrumbLd, webPageLd, ldScript } from "@/lib/seo";
 
-const TITLE = "About Blue-IQ and Sonar, Our Document AI";
+const TITLE = "About Us: The Document AI Company";
 const DESC =
   "Blue-IQ builds the products that end document re-typing. Every one runs on Sonar, the AI that scores every field it extracts and flags what it cannot read.";
 

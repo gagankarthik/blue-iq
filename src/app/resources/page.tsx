@@ -1,7 +1,7 @@
 import ResourcesClient from "./ResourcesClient";
 import { pageMetadata, breadcrumbLd, webPageLd, ldScript } from "@/lib/seo";
 
-const TITLE = "Developer Guide: Sonar API, Formats and Confidence Scores";
+const TITLE = "Developer Guide: Sonar API and Confidence Scores";
 const DESC =
   "Connect Sonar over REST and signed webhooks, send PDFs, Word files, scans and phone photos, and route every extracted field on its own confidence score.";
 

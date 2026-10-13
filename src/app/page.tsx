@@ -1,4 +1,5 @@
 import { SA } from "@/lib/theme";
+import { webPageLd, ldScript } from "@/lib/seo";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import HomeHero from "@/components/home/HomeHero";
@@ -20,6 +21,17 @@ import Deploy from "@/components/home/Deploy";
 export default function Home() {
   return (
     <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={ldScript(
+          webPageLd({
+            name: "Blue-IQ | Document AI for Contracts, Invoices and Records",
+            description:
+              "Blue-IQ builds document AI products, Capture, Spend and Govern, all running on Sonar, the AI that scores every field and flags what it can't read.",
+            path: "/",
+          })
+        )}
+      />
       <SiteNav overDark={false} />
       <main id="main">
         <HomeHero />

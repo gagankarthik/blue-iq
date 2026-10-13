@@ -19,11 +19,13 @@ export const ROUTES: { path: string; updated: string; priority: number; freq: Me
   })),
   { path: "/trust", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
   { path: "/faq", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
+  { path: "/media-kit", updated: "2026-10-13", priority: 0.4, freq: "yearly" },
   { path: "/resources", updated: "2026-10-13", priority: 0.7, freq: "monthly" },
   { path: "/about", updated: "2026-10-13", priority: 0.6, freq: "monthly" },
   { path: "/contact", updated: "2026-10-13", priority: 0.7, freq: "yearly" },
-  { path: "/privacy", updated: "2026-07-11", priority: 0.3, freq: "yearly" },
-  { path: "/terms", updated: "2026-07-11", priority: 0.3, freq: "yearly" },
+  { path: "/privacy", updated: "2026-10-13", priority: 0.3, freq: "yearly" },
+  { path: "/terms", updated: "2026-10-13", priority: 0.3, freq: "yearly" },
+  { path: "/accessibility", updated: "2026-10-13", priority: 0.3, freq: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
