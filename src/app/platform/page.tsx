@@ -3,13 +3,16 @@ import { FAQS } from "@/components/saas/faqData";
 import { pageMetadata, breadcrumbLd, webPageLd, faqLd, ldScript } from "@/lib/seo";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
-import { DetailHeader, Block, CapabilityGrid, StepTrack, OutputTable, FaqList, RelatedLinks, Glance } from "@/components/page/blocks";
-import { SA } from "@/lib/theme";
+import { DetailHeader, Block, CapabilityGrid, StepTrack, OutputTable, RouteLegend, FaqList, RelatedLinks, Glance } from "@/components/page/blocks";
+import FlowDiagram from "@/components/home/FlowDiagram";
+import { I } from "@/components/home/icons";
+import { BB } from "@/lib/theme";
 import { SpotRead, SpotExtract, SpotScore, SpotRoute, SpotCapture, SpotSpend, SpotGovern, SpotEducation, SpotCustom } from "@/components/icons/Spots";
 
-/* /platform — Sonar, the AI under every product, given its own page.
-   Order: what Sonar is → how it reads → what makes it different →
-   confidence in practice → the products on it → questions. */
+/* /platform: how Sonar works. One job, read top to bottom:
+   what Sonar is (header + facts) → the pipeline, as four connected steps
+   and the routing diagram → what a confidence score means in practice →
+   what makes it fit your stack → the products on it → questions → close. */
 
 const TITLE = "Sonar: The Document AI Behind Every Product";
 const DESC =
@@ -46,11 +49,20 @@ const SAMPLE = [
   { field: "signatory", value: "illegible", score: 0.58 },
 ];
 
+/* one glyph per DIFFERENT card, same order */
+const DIFFERENT_ICONS = [I.scores, I.flag, I.formats, I.api, I.docs, I.editions];
+
+/* the two sides of the review line, in the words of the Route step */
+const ROUTES = [
+  { low: false, t: "Above your line", d: "Straight to your systems, validated against the fields you define." },
+  { low: true, t: "Below it", d: "To a person, with the evidence attached. Sonar flags the value instead of guessing." },
+];
+
 const SONAR_FAQS = FAQS.filter(([q]) => /Sonar|cannot read|document types|volume/i.test(q));
 
 export default function PlatformPage() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={ldScript(
@@ -63,7 +75,6 @@ export default function PlatformPage() {
       <main id="main">
         <DetailHeader
           here="Platform"
-          eyebrow="Sonar, our AI"
           title="The AI that reads your documents and tells you how sure it is"
           lede="Sonar is the engine under every Blue-IQ product. It reads like a careful person, scores every value it extracts, and flags what it cannot read instead of guessing."
           primary={{ label: "Book a demo", href: "/contact" }}
@@ -81,23 +92,44 @@ export default function PlatformPage() {
           }
         />
 
-        <Block kicker="How it works" title="Four steps, the same in every product">
+        <Block
+          seam
+          id="how"
+          title="Four steps, the same in every product"
+          sub="Every document goes through the same pipeline, whichever product it arrives in."
+        >
           <StepTrack steps={HOW} spots={[SpotRead, SpotExtract, SpotScore, SpotRoute]} />
-        </Block>
-
-        <Block tone="tint" kicker="What makes it different" title="Built to be trusted, value by value">
-          <CapabilityGrid items={DIFFERENT} />
+          <figure className="mt-4 rounded-2xl bg-white" style={{ border: `1px solid ${BB.line}` }}>
+            <div className="overflow-x-auto p-8" tabIndex={0} role="region" aria-label="How Sonar routes a document">
+              <div className="min-w-[560px] max-w-[760px] mx-auto">
+                <FlowDiagram />
+              </div>
+            </div>
+            <figcaption className="px-8 pb-8 font-mono-g text-[13px] uppercase tracking-[0.06em]" style={{ color: BB.ink3 }}>
+              Documents in, sure values to your systems, uncertain ones to a review queue
+            </figcaption>
+          </figure>
         </Block>
 
         <Block
-          kicker="Confidence in practice"
+          seam
+          id="confidence"
           title="Five fields from one contract"
           sub="Four go straight to your systems. One is flagged for a person, because Sonar could not read the signature with confidence."
         >
-          <OutputTable caption="Sample output · review line 0.90" rows={SAMPLE} />
+          <div className="grid lg:grid-cols-3 gap-4 items-start">
+            <div className="lg:col-span-2">
+              <OutputTable caption="Sample output · review line 0.90" rows={SAMPLE} />
+            </div>
+            <RouteLegend rows={ROUTES} />
+          </div>
         </Block>
 
-        <Block tone="tint" kicker="On Sonar" title="Every product runs on the same engine">
+        <Block seam id="different" title="Built to be trusted, value by value">
+          <CapabilityGrid items={DIFFERENT} icons={DIFFERENT_ICONS} />
+        </Block>
+
+        <Block seam id="products" title="Every product runs on the same engine">
           <RelatedLinks
             items={[
               ...PRODUCTS.map((p) => ({
@@ -112,7 +144,7 @@ export default function PlatformPage() {
           />
         </Block>
 
-        <Block kicker="Questions" title="Sonar, answered">
+        <Block seam id="questions" title="Sonar, answered">
           <FaqList faqs={SONAR_FAQS} />
         </Block>
       </main>

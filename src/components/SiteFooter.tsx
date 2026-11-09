@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { SA } from "@/lib/theme";
-import { IconArrowUpRight } from "@/components/icons/BqIcons";
+import { BB } from "@/lib/theme";
+import { I } from "@/components/home/icons";
 import CloseCta from "@/components/home/CloseCta";
 
 /* ────────────────────────────────────────────────────────────────
    The footer: the page's closing card (when the page wants one), then a
-   full-width band on a soft brand-blue wash: the logo and one line, the
-   sitemap in four columns, and the legal line.
+   full-width ink band (BB.ink): the white logo, one line and a demo
+   link, the sitemap in four columns, and the legal line.
 
    Every link resolves to a page that exists. `cta` is off on /contact,
    where the offer would point at the page you are already on.
@@ -64,45 +64,44 @@ const cols: { h: string; l: [string, string, boolean][] }[] = [
 
 export default function SiteFooter({ cta = {} }: { cta?: false | { title?: string; sub?: string } }) {
   return (
-    <footer style={{ background: SA.bg }}>
-      {cta && <CloseCta {...cta} />}
+    <footer className="relative z-[1]">
+      {cta && (
+        <div className="pt-16 sm:pt-24">
+          <CloseCta {...cta} />
+        </div>
+      )}
 
-      <div
-        className="mt-16 sm:mt-20"
-        style={{
-          background: [
-            "radial-gradient(45% 70% at 0% 100%, rgba(143,174,255,0.45) 0%, rgba(143,174,255,0) 70%)",
-            "radial-gradient(40% 70% at 100% 100%, rgba(127,211,255,0.4) 0%, rgba(127,211,255,0) 70%)",
-            "linear-gradient(180deg, #FFFFFF 0%, #F3F6FF 55%, #E6ECFF 100%)",
-          ].join(", "),
-          borderTop: `1px solid ${SA.line}`,
-        }}
-      >
-        <div className="max-w-[1240px] mx-auto px-5 sm:px-8 pt-14 sm:pt-20">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-x-8 gap-y-12 pb-14">
+      <div className="mt-16 sm:mt-24 px-6 sm:px-8" style={{ background: BB.ink }}>
+        <div className="max-w-[1176px] mx-auto pt-16 sm:pt-24 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-[minmax(0,1.5fr)_repeat(4,minmax(0,1fr))] gap-x-8 gap-y-12 pb-16">
             <div className="col-span-2 md:col-span-4 lg:col-span-1">
-              <Image src="/logo.svg" alt="Blue-IQ" width={130} height={34} />
-              <p className="mt-5 font-display text-[1.5rem] leading-[1.25] tracking-[-0.02em] max-w-[18ch]" style={{ color: SA.ink }}>
-                The document AI company. Every product runs on Sonar.
-              </p>
+              <Image src="/logo-white.svg" alt="Blue-IQ" width={130} height={34} />
+              <p className="mt-6 font-head text-[20px] leading-[1.4] max-w-[24ch] text-white">The document AI company. Every product runs on Sonar.</p>
+              <Link
+                href="/contact?topic=A%20demo"
+                className="mt-8 inline-flex items-center gap-4 h-12 px-6 rounded-[12px] font-mono-g text-[13px] font-medium uppercase tracking-[0.06em] text-white transition-colors duration-200 hover:bg-[#1638B8]"
+                style={{ background: BB.cobalt }}
+              >
+                Book a demo
+                <I.arrow size={16} />
+              </Link>
             </div>
             {cols.map((col) => (
               <nav key={col.h} aria-label={col.h}>
-                <h3 className="font-sans-g text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: "#4A4B53" }}>
+                <h3 className="font-mono-g text-[13px] uppercase tracking-[0.06em]" style={{ color: "#9AA0AC" }}>
                   {col.h}
                 </h3>
-                <ul className="mt-5 space-y-3">
+                <ul className="mt-6 space-y-4">
                   {col.l.map(([label, href, ext]) => (
                     <li key={label + href}>
                       <a
                         href={href}
                         target={ext ? "_blank" : undefined}
                         rel={ext ? "noopener noreferrer" : undefined}
-                        className="inline-flex items-center gap-1 font-sans-g text-[15px] transition-colors duration-150 hover:text-[#2348B8] hover:underline underline-offset-4"
-                        style={{ color: "#2A2B33" }}
+                        className="inline-flex items-center gap-1 font-sans-g text-[16px] text-[#D4D8E0] transition-colors duration-150 hover:text-white underline-offset-4 hover:underline"
                       >
                         {label}
-                        {ext && <IconArrowUpRight size={13} />}
+                        {ext && <I.external size={13} />}
                       </a>
                     </li>
                   ))}
@@ -112,10 +111,10 @@ export default function SiteFooter({ cta = {} }: { cta?: false | { title?: strin
           </div>
 
           <div
-            className="py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
-            style={{ borderTop: "1px solid rgba(31,42,107,0.12)" }}
+            className="py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+            style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}
           >
-            <p className="font-sans-g text-[13.5px]" style={{ color: "#3A3B44" }}>
+            <p className="font-sans-g text-[13px]" style={{ color: "#A3A9B5" }}>
               © {new Date().getFullYear()} Blue-IQ. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
@@ -125,7 +124,7 @@ export default function SiteFooter({ cta = {} }: { cta?: false | { title?: strin
                 ["Trust", "/trust"],
                 ["Accessibility", "/accessibility"],
               ].map(([t, h]) => (
-                <Link key={h} href={h} className="font-sans-g text-[13.5px] transition-colors duration-150 hover:text-[#2348B8]" style={{ color: "#3A3B44" }}>
+                <Link key={h} href={h} className="font-sans-g text-[13px] text-[#A3A9B5] transition-colors duration-150 hover:text-white">
                   {t}
                 </Link>
               ))}

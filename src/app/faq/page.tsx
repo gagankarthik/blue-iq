@@ -1,18 +1,23 @@
-import Link from "next/link";
 import { FAQS, TRUST_FAQS } from "@/components/saas/faqData";
 import { pageMetadata, breadcrumbLd, webPageLd, faqLd, ldScript } from "@/lib/seo";
-import { SA } from "@/lib/theme";
-import { WRAP, PageHero, CARD, CARD_EDGE, SpotWell } from "@/components/page/kit";
-import { FaqList } from "@/components/page/blocks";
-import { Btn } from "@/components/system/Btn";
-import { type Spot, SpotSonar, SpotRead, SpotSecure } from "@/components/icons/Spots";
+import { BB } from "@/lib/theme";
+import { WRAP, PageHero } from "@/components/page/kit";
+import { I, Tile, type Ico } from "@/components/home/icons";
+import { Head } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
+import Link from "next/link";
 
-/* /faq — every question in one place, grouped by topic. A contents card
-   sticks beside the answers on desktop and becomes a row of chips on
-   mobile. Native <details>, so it works without JavaScript; one FAQPage
-   block of structured data covers the lot. */
+/* /faq: one job, answer a question fast. Reading order:
+     1. the header (what this page is + ask us directly),
+     2. a contents list of the three topics (sticky beside the answers on
+        desktop, a plain ruled list above them on phones),
+     3. each topic as a section: heading, one line, then its questions as a
+        ruled accordion in one white card,
+     4. still have a question? one action.
+   Native <details>, so it works without JavaScript; one FAQPage block of
+   structured data covers the lot. */
 
 const TITLE = "Frequently Asked Questions";
 const DESC =
@@ -27,28 +32,80 @@ export const metadata = pageMetadata({
 
 const pick = (re: RegExp) => FAQS.filter(([q]) => re.test(q));
 
-const GROUPS: { id: string; t: string; d: string; Spot: Spot; faqs: [string, string][] }[] = [
-  { id: "about", t: "Blue-IQ and Sonar", d: "Who we are and the AI under every product.", Spot: SpotSonar, faqs: pick(/What is Blue-IQ|What is Sonar/) },
+const GROUPS: { id: string; t: string; d: string; icon: Ico; faqs: [string, string][] }[] = [
+  { id: "about", t: "Blue-IQ and Sonar", d: "Who we are and the AI under every product.", icon: I.sonar, faqs: pick(/What is Blue-IQ|What is Sonar/) },
   {
     id: "how",
     t: "How it works",
     d: "Reading, scoring, formats, volume and your systems.",
-    Spot: SpotRead,
+    icon: I.scores,
     faqs: pick(/cannot read|change our systems|document types|volume|none of your products/),
   },
   {
     id: "security",
     t: "Security and data",
     d: "Who sees your documents and how they are kept.",
-    Spot: SpotSecure,
+    icon: I.trust,
     faqs: [...pick(/data protected/), ...TRUST_FAQS],
   },
 ];
 
+/* one question: a ruled row that opens in place */
+function Question({ q, a, first }: { q: string; a: string; first: boolean }) {
+  return (
+    <details className="group" style={first ? undefined : { borderTop: `1px solid ${BB.line}` }}>
+      <summary
+        className="flex items-start justify-between gap-8 px-6 sm:px-8 py-6 cursor-pointer list-none font-sans-g t-base font-medium rounded-2xl [&::-webkit-details-marker]:hidden"
+        style={{ color: BB.ink }}
+      >
+        <span>{q}</span>
+        <span
+          aria-hidden
+          className="shrink-0 grid place-items-center w-8 h-8 rounded-[8px] transition-transform duration-200 group-open:rotate-90"
+          style={{ background: BB.mist2, color: BB.cobalt }}
+        >
+          <I.arrow size={16} />
+        </span>
+      </summary>
+      <p className="px-6 sm:px-8 pb-8 -mt-2 font-sans-g t-base max-w-[68ch]" style={{ color: BB.ink3 }}>
+        {a}
+      </p>
+    </details>
+  );
+}
+
+/* the topic list: same links on every width, sticky only on desktop */
+function Contents() {
+  return (
+    <nav aria-labelledby="faq-topics-h">
+      <p id="faq-topics-h" className="font-mono-g text-[13px] uppercase tracking-[0.06em]" style={{ color: BB.ink3 }}>
+        Topics
+      </p>
+      <ul className="mt-4">
+        {GROUPS.map((g) => (
+          <li key={g.id} style={{ borderTop: `1px solid ${BB.line}` }}>
+            <a href={`#${g.id}`} className="group flex items-center gap-4 py-4">
+              <Tile icon={g.icon} size={40} />
+              <span className="min-w-0 flex-1">
+                <span className="block font-sans-g t-base font-medium group-hover:underline underline-offset-4" style={{ color: BB.ink }}>
+                  {g.t}
+                </span>
+                <span className="block font-mono-g text-[13px] uppercase tracking-[0.06em]" style={{ color: BB.ink3 }}>
+                  {g.faqs.length} questions
+                </span>
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export default function FaqPage() {
   const all = GROUPS.flatMap((g) => g.faqs);
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={ldScript(webPageLd({ name: TITLE, description: DESC, path: "/faq" }), breadcrumbLd("FAQ", "/faq"), faqLd(all))}
@@ -64,95 +121,44 @@ export default function FaqPage() {
           secondary={{ label: "Visit the Trust Center", href: "/trust" }}
         />
 
-        {/* mobile: topics as a scrolling row of chips */}
-        <nav
-          aria-label="FAQ topics"
-          className="lg:hidden sticky top-[72px] z-10 border-y"
-          style={{ background: "rgba(250,250,250,0.96)", borderColor: SA.line }}
-        >
-          <ul className={`${WRAP} flex gap-2 overflow-x-auto py-3`}>
-            {GROUPS.map((g) => (
-              <li key={g.id} className="shrink-0">
-                <a
-                  href={`#${g.id}`}
-                  className="h-10 inline-flex items-center px-4 rounded-full bg-white font-sans-g text-[15px]"
-                  style={{ color: SA.ink, border: `1px solid ${SA.line2}` }}
-                >
-                  {g.t}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div aria-hidden className={WRAP}>
+          <div className="h-px" style={{ background: BB.line }} />
+        </div>
 
-        <div className={`${WRAP} py-12 sm:py-20 grid lg:grid-cols-[300px_minmax(0,1fr)] gap-10 lg:gap-14 items-start`}>
-          {/* desktop: a contents card that stays in view */}
-          <aside className="hidden lg:block sticky top-28">
-            <nav aria-label="FAQ topics" className={`${CARD} p-3`} style={CARD_EDGE}>
-              <p className="px-3 pt-2 pb-3 font-sans-g text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: SA.faint }}>
-                Topics
-              </p>
-              <ul className="grid gap-1">
-                {GROUPS.map((g) => (
-                  <li key={g.id}>
-                    <a href={`#${g.id}`} className="flex items-center gap-3 rounded-[14px] p-2 transition-colors duration-150 hover:bg-[#F5F5F7]">
-                      <SpotWell size={44}>
-                        <g.Spot size={30} />
-                      </SpotWell>
-                      <span className="min-w-0">
-                        <span className="block font-sans-g text-[15px] font-medium" style={{ color: SA.ink }}>
-                          {g.t}
-                        </span>
-                        <span className="block font-sans-g text-[13px]" style={{ color: SA.faint }}>
-                          {g.faqs.length} questions
-                        </span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
+        <div className={`${WRAP} py-24 grid lg:grid-cols-[280px_minmax(0,1fr)] gap-16 items-start`}>
+          <aside className="lg:sticky lg:top-28">
+            <Contents />
           </aside>
 
-          <div className="grid gap-16 sm:gap-20 min-w-0">
+          <div className="grid gap-24 min-w-0">
             {GROUPS.map((g) => (
-              <section key={g.id} id={g.id} className="scroll-mt-40 lg:scroll-mt-28" aria-labelledby={`${g.id}-h`}>
-                <div className="flex items-center gap-4">
-                  <SpotWell size={56}>
-                    <g.Spot size={38} />
-                  </SpotWell>
-                  <div className="min-w-0">
-                    <h2 id={`${g.id}-h`} className="font-display t-h2" style={{ color: SA.ink }}>
-                      {g.t}
-                    </h2>
-                    <p className="mt-1 font-sans-g text-[15px]" style={{ color: SA.sub }}>
-                      {g.d}
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-6 [&>div]:max-w-none">
-                  <FaqList faqs={g.faqs} />
+              <section key={g.id} id={g.id} className="scroll-mt-28" aria-labelledby={`${g.id}-h`}>
+                <Head id={`${g.id}-h`} title={g.t} sub={g.d} />
+                <div className="mt-8 rounded-2xl bg-white" style={{ border: `1px solid ${BB.line}` }}>
+                  {g.faqs.map(([q, a], k) => (
+                    <Question key={q} q={q} a={a} first={k === 0} />
+                  ))}
                 </div>
               </section>
             ))}
 
-            <div className={`${CARD} p-7 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5`} style={CARD_EDGE}>
-              <div>
-                <p className="font-sans-g text-[1.25rem] font-medium" style={{ color: SA.ink }}>
-                  Still have a question?
-                </p>
-                <p className="mt-1 font-sans-g text-base" style={{ color: SA.sub }}>
-                  A person from our team will reply. See also the{" "}
-                  <Link href="/resources" className="underline underline-offset-4" style={{ color: "#2348B8" }}>
-                    developer guide
-                  </Link>
-                  .
-                </p>
+            <section aria-labelledby="faq-more-h" className="rounded-2xl bg-white p-8" style={{ border: `1px solid ${BB.line}` }}>
+              <h2 id="faq-more-h" className="font-head h-card" style={{ color: BB.ink }}>
+                Still have a question?
+              </h2>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+                A person from our team will reply. See also the{" "}
+                <Link href="/resources" className="underline underline-offset-4" style={{ color: BB.cobalt }}>
+                  developer guide
+                </Link>
+                .
+              </p>
+              <div className="mt-8">
+                <SqBtn href="/contact?topic=Something%20else" tone="ink" arrow>
+                  Contact us
+                </SqBtn>
               </div>
-              <Btn href="/contact?topic=Something%20else" size="lg" className="w-full sm:w-auto shrink-0">
-                Contact us
-              </Btn>
-            </div>
+            </section>
           </div>
         </div>
       </main>

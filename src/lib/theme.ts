@@ -3,29 +3,52 @@
    See DESIGN.md for when each one may be used.
    ──────────────────────────────────────────────────────────────── */
 
-/* 2026-09 redesign: the neutrals are cool slate tinted toward the brand hue,
-   and the accent is lifted from the logo itself (#3B82F6), darkened just
-   enough to pass AA as text on white. Ink is a deep navy, not black — it is
-   the "serious" colour the dark panels are built from. */
+/* SA: the inner pages' tokens, moved onto the blueprint palette (2026-11) so
+   every page shares the home page's canvas, ink and cobalt. */
 export const SA = {
-  bg: "#FAFAFA", // page canvas (soft off-white)
-  bg2: "#F3F3F5", // quiet band
-  bg3: "#EEEEF1", // wells, tracks
+  bg: "#F3F4F6", // page canvas (blueprint, 2026-11)
+  bg2: "#ECEEF2", // quiet band
+  bg3: "#E7EAF0", // wells, tracks
   surface: "#FFFFFF", // cards
-  line: "#ECECEF", // card edges, hairlines
-  line2: "#DEDEE3", // stronger dividers
-  ink: "#1F1F1F", // primary text (neutral near-black)
-  sub: "#55565E", // body (7:1 on white)
-  faint: "#6B6C75", // meta (5.2:1 on white)
-  accent: "#2F5FE0", // brand blue for links and highlighted words (5.3:1)
-  accent2: "#5B8CFF", // lighter brand blue: illustration
-  accentSoft: "#EEF3FF", // accent tint
-  cyan: "#34C2FF", // logo cyan: illustration only
-  navy: "#1E2130", // the dark pill and dark cards
-  navy2: "#2A2E42", // raised dark surface
+  line: "#D9DCE2", // card edges, hairlines
+  line2: "#C6CAD3", // stronger dividers
+  ink: "#0E1116", // primary text
+  sub: "#565C68", // body (AA on canvas and white)
+  faint: "#565C68", // meta (kept AA: same as body)
+  accent: "#1F4FE6", // cobalt: links, highlighted words
+  accent2: "#3D6BFF", // lighter cobalt
+  accentSoft: "#E7EAF0", // accent tint surface
+  cyan: "#AFC3FF", // illustration only
+  navy: "#0E1116", // the dark panels
+  navy2: "#181C24", // raised dark surface
   amber: "#B45309", // functional: needs review
   green: "#047857", // functional: ok
   red: "#B91C1C", // functional: risk
 } as const;
 
-export type Tokens = typeof SA;
+/* 2026-11 "blueprint" — the home page, nav and footer (after the
+   Oberon / Arche references): a cool off-white canvas with visible
+   structure (column guides, hairlines), rounded cards, ink for type and
+   buttons, and one electric accent, cobalt, used for about 10% of the
+   surface (the Sonar field, the flow, active states).
+   Amber is functional only: a value Sonar flagged for a person. */
+export const BB = {
+  canvas: "#F3F4F6", // 60%: the page
+  panel: "#FFFFFF", // 30%: raised cells, cards
+  ink: "#0E1116", // type, primary buttons, the dark block
+  ink2: "#2E333D", // strong body
+  ink3: "#565C68", // body and meta (AA on canvas and panel)
+  line: "#D9DCE2", // hairlines, cell borders
+  guide: "#C6CAD3", // dashed column guides
+  cobalt: "#1F4FE6", // 10%: the accent
+  cobaltDeep: "#1638B8", // hover / pressed
+  sky: "#AFC3FF", // accent on ink
+  skyText: "#DCE6FF", // body on cobalt
+  navy: "#0E1116", // alias kept for components that say navy
+  navy2: "#181C24", // raised surface on ink
+  mist: "#F3F4F6", // alias of canvas
+  mist2: "#E7EAF0", // wells
+  edge: "#D9DCE2", // alias of line
+  amber: "#F5B544", // flagged for review
+  amberInk: "#8A5A00", // flagged, as text on light
+} as const;

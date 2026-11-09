@@ -1,97 +1,66 @@
-import { SA } from "@/lib/theme";
-import { SectionHead, Reveal } from "@/components/saas/parts";
+import { BB } from "@/lib/theme";
 import { CONTROLS, type Control } from "@/lib/trust";
-import { Btn } from "@/components/system/Btn";
-import { type BqIcon, IconShield, IconLock, IconFingerprint, IconKey, IconFolderLock, IconServer, IconFlag } from "@/components/icons/BqIcons";
+import { Head, Stagger } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
+import { I, Tile, type Ico } from "@/components/home/icons";
 
 /* ────────────────────────────────────────────────────────────────
-   Trust — dense on purpose. A security reviewer wants a controls list they
-   can scan, not six friendly cards, so this is a ruled table: area, control,
-   detail. Every line is a claim the company already makes; nothing here is
-   a certification we do not hold.
+   Security, in the blueprint language. A reviewer scans for a control and
+   its one-line detail, so each control is a card: area as a mono label,
+   the control as the title, the detail under it. Compliance leads and runs
+   double width, stated exactly as the company states it: aligned, not
+   certified. Every line is a claim the company already makes.
    ──────────────────────────────────────────────────────────────── */
 
-const ICONS: Record<Control["icon"], BqIcon> = {
-  shield: IconShield,
-  lock: IconLock,
-  fingerprint: IconFingerprint,
-  key: IconKey,
-  folder: IconFolderLock,
-  server: IconServer,
-  flag: IconFlag,
+const ICONS: Record<Control["icon"], Ico> = {
+  shield: I.trust,
+  lock: I.vpc,
+  fingerprint: I.workforce,
+  key: I.team,
+  folder: I.all,
+  server: I.cloud,
+  flag: I.flag,
 };
 
-/* the controls table, shared with the Trust Center */
+/* the controls, shared with the Trust Center: a grid of cards (the name is
+   kept from when it was a table) */
 export function ControlsTable() {
   return (
-    <div className="rounded-[16px] overflow-x-auto bg-white" style={{ border: `1px solid ${SA.line}` }}>
-      <table className="w-full min-w-[560px] text-left font-sans-g">
-        <caption className="sr-only">Security controls</caption>
-        <thead>
-          <tr style={{ borderBottom: `1px solid ${SA.line}` }}>
-            <th scope="col" className="px-6 py-4 t-meta w-[34%]" style={{ color: SA.faint }}>
-              Area
-            </th>
-            <th scope="col" className="px-6 py-4 t-meta" style={{ color: SA.faint }}>
-              Control
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {CONTROLS.map((c) => {
-            const Icon = ICONS[c.icon];
-            return (
-              <tr key={c.area} className="transition-colors duration-150 hover:bg-[#F8FAFC]" style={{ borderBottom: `1px solid ${SA.line}` }}>
-                <th scope="row" className="px-6 py-4 align-top font-normal">
-                  <span className="inline-flex items-center gap-3 t-body font-medium" style={{ color: SA.ink }}>
-                    <Icon size={20} style={{ color: SA.accent }} />
-                    {c.area}
-                  </span>
-                </th>
-                <td className="px-6 py-4 align-top">
-                  <span className="block t-body font-semibold" style={{ color: SA.ink }}>
-                    {c.control}
-                  </span>
-                  <span className="block t-body" style={{ color: SA.sub }}>
-                    {c.detail}
-                  </span>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <Stagger as="ul" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {CONTROLS.map((c, k) => (
+        <li key={c.area} className={`rounded-2xl bg-white p-8 flex flex-col ${k === 0 ? "sm:col-span-2" : ""}`} style={{ border: `1px solid ${BB.line}` }}>
+          <span className="flex items-center gap-4">
+            <Tile icon={ICONS[c.icon]} size={40} />
+            <span className="font-mono-g text-[13px] uppercase tracking-[0.06em]" style={{ color: BB.cobaltDeep }}>
+              {c.area}
+            </span>
+          </span>
+          <h3 className="mt-8 font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
+            {c.control}
+          </h3>
+          <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+            {c.detail}
+          </p>
+        </li>
+      ))}
+    </Stagger>
   );
 }
 
 export default function Security() {
   return (
-    <section
-      id="security"
-      className="relative px-5 sm:px-8 py-24 sm:py-32 scroll-mt-20"
-      style={{ background: SA.bg2, borderTop: `1px solid ${SA.line}`, borderBottom: `1px solid ${SA.line}` }}
-      aria-labelledby="sec-h"
-    >
-      <div className="max-w-[1240px] mx-auto grid grid-cols-12 gap-y-10 lg:gap-x-12">
-        <div className="col-span-12 lg:col-span-4">
-          <SectionHead
-            align="stack"
-            kicker="Security"
-            id="sec-h"
-            title="Built for teams with strict compliance"
-            sub="Clinical records, contracts and financial data, protected end to end."
-          />
-          <Reveal className="mt-8">
-            <Btn href="/trust" variant="secondary" arrow>
-              Visit the Trust Center
-            </Btn>
-          </Reveal>
-        </div>
-
-        <Reveal className="col-span-12 lg:col-span-8">
+    <section id="security" className="px-6 sm:px-8 pb-24 scroll-mt-24" aria-labelledby="sec-h">
+      <div className="max-w-[1112px] mx-auto">
+        <div aria-hidden className="h-px mb-24" style={{ background: BB.line }} />
+        <Head id="sec-h" title="Built for teams with strict compliance" sub="Clinical records, contracts and financial data, protected end to end." />
+        <div className="mt-12">
           <ControlsTable />
-        </Reveal>
+        </div>
+        <div className="mt-12 flex justify-center">
+          <SqBtn href="/trust" tone="outline" arrow>
+            Visit the Trust Center
+          </SqBtn>
+        </div>
       </div>
     </section>
   );

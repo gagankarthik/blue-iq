@@ -2,31 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
-import { Btn } from "@/components/system/Btn";
-import { IconCheck } from "@/components/icons/BqIcons";
-import { type Spot, SpotCapture, SpotSpend, SpotGovern } from "@/components/icons/Spots";
+import { SqBtn } from "@/components/home/ui";
+import { Head } from "@/components/home/motion";
+import { I, Tile, type Ico } from "@/components/home/icons";
 
 /* ────────────────────────────────────────────────────────────────
-   The platform showcase, built the way sarvam.ai builds theirs: a centred
-   heading, one framed stage with the products as tabs across the top.
-   Inside, a row of task chips advances on its own; for each task a request
-   types itself into a plain input card, Sonar's steps appear underneath
+   The platform showcase: a split section header, one neutral framed stage with the products as tabs across the top.
+   Inside, the product's tasks play in turn; for each, a request types
+   itself into a prompt box with a turning rainbow AI edge, Sonar's steps appear underneath
    one by one (the current one spinning), and a compact scored result
    lands. Nothing is reserved as a skeleton: the card grows as work arrives.
 
-   Runs only while on screen; hover or focus pauses it; a Pause control
-   stops it (WCAG 2.2.2). Reduced motion gets each finished frame.
+   Runs only while on screen; hover or focus pauses it; a play/pause icon
+   button at the foot of the stage stops and resumes it (WCAG 2.2.2). Reduced motion gets each finished frame.
    ──────────────────────────────────────────────────────────────── */
 
 type Row = { k: string; v: string; s: number };
 type Task = { chip: string; prompt: string; using: string[]; steps: { src: string; t: string }[]; title: string; meta: string; rows: Row[] };
-type Product = { id: string; tab: string; Spot: Spot; tasks: Task[] };
+type Product = { id: string; tab: string; icon: Ico; tasks: Task[] };
 
 const PRODUCTS: Product[] = [
   {
     id: "govern",
     tab: "Govern",
-    Spot: SpotGovern,
+    icon: I.govern,
     tasks: [
       {
         chip: "Draft",
@@ -67,7 +66,7 @@ const PRODUCTS: Product[] = [
   {
     id: "spend",
     tab: "Spend",
-    Spot: SpotSpend,
+    icon: I.spend,
     tasks: [
       {
         chip: "Overbilling",
@@ -107,7 +106,7 @@ const PRODUCTS: Product[] = [
   {
     id: "capture",
     tab: "Capture",
-    Spot: SpotCapture,
+    icon: I.capture,
     tasks: [
       {
         chip: "Extract",
@@ -167,6 +166,7 @@ export default function Showcase() {
   const [step, setStep] = useState(0);
   const [rows, setRows] = useState(0);
   const [auto, setAuto] = useState(true);
+  const [paused, setPaused] = useState(false);
   const [held, setHeld] = useState(false);
   const [visible, setVisible] = useState(false);
   const stage = useRef<HTMLDivElement>(null);
@@ -177,7 +177,7 @@ export default function Showcase() {
   const typedN = reduce ? task.prompt.length : typed;
   const stepN = reduce ? task.steps.length : step;
   const rowsN = reduce ? task.rows.length : rows;
-  const running = !reduce && visible && !held && auto;
+  const running = !reduce && visible && !held && auto && !paused;
 
   useEffect(() => {
     const el = stage.current;
@@ -204,7 +204,7 @@ export default function Showcase() {
 
   /* the timeline; a manual pick still plays through once */
   useEffect(() => {
-    if (reduce || !visible || held) return;
+    if (reduce || !visible || held || paused) return;
     let id: ReturnType<typeof setTimeout> | undefined;
     if (phase === "type") {
       id = typed < task.prompt.length ? setTimeout(() => setTyped((n) => n + 1), 42) : setTimeout(() => setPhase("steps"), 450);
@@ -223,14 +223,15 @@ export default function Showcase() {
   const showResult = view === "result" || view === "hold";
 
   return (
-    <section className="px-3 sm:px-8 py-20 sm:py-28" aria-labelledby="showcase-h">
-      <div className="max-w-[1240px] mx-auto">
-        <h2 id="showcase-h" className="mx-auto text-center font-display t-h1 max-w-[18ch]" style={{ color: "#1F1F1F" }}>
-          The document AI platform teams build on
-        </h2>
+    <section className="px-6 sm:px-8 pb-24" aria-labelledby="showcase-h">
+      <div aria-hidden className="max-w-[1112px] mx-auto h-px mb-24" style={{ background: "#D9DCE2" }} />
+      <div className="max-w-[1112px] mx-auto">
+        <div>
+          <Head id="showcase-h" title="The document AI platform teams build on" />
+        </div>
 
         {/* the frame */}
-        <div className="mt-12 rounded-[28px] p-1.5 sm:p-2" style={{ background: "linear-gradient(180deg, #D3DDFF 0%, #BFCDFF 100%)" }}>
+        <div className="mt-12 rounded-[24px] p-2" style={{ background: "#E7EAF0", border: "1px solid #D9DCE2" }}>
           <div role="tablist" aria-label="Blue-IQ products" className="grid grid-cols-3 gap-1 p-1">
             {PRODUCTS.map((x, k) => {
               const on = k === p;
@@ -242,10 +243,10 @@ export default function Showcase() {
                   aria-selected={on}
                   aria-controls="showcase-stage"
                   onClick={() => go(k, 0, true)}
-                  className={`h-12 inline-flex items-center justify-center gap-2 rounded-[16px] font-sans-g text-[15px] sm:text-base transition-colors duration-150 ${on ? "bg-white font-medium shadow-[0_1px_2px_rgba(30,33,48,0.08)]" : "hover:bg-white/50"}`}
-                  style={{ color: on ? "#2348B8" : "#2A2B33" }}
+                  className={`h-12 inline-flex items-center justify-center gap-2 rounded-[16px] font-sans-g text-[16px] sm:text-base transition-colors duration-150 ${on ? "bg-white font-medium shadow-[0_1px_2px_rgba(30,33,48,0.08)]" : "hover:bg-white/50"}`}
+                  style={{ color: on ? "#1638B8" : "#3A3F55" }}
                 >
-                  <x.Spot size={22} />
+                  <x.icon size={20} style={{ color: on ? "#1F4FE6" : "#565C68" }} />
                   {x.tab}
                 </button>
               );
@@ -261,73 +262,75 @@ export default function Showcase() {
             onMouseLeave={() => setHeld(false)}
             onFocus={() => setHeld(true)}
             onBlur={() => setHeld(false)}
-            className="mt-1 rounded-[22px] px-3 sm:px-10 py-12 sm:py-16 min-h-[560px] sm:min-h-[600px] flex flex-col justify-center"
-            style={{ background: "radial-gradient(75% 60% at 50% 0%, #E6EDFF 0%, #FFFFFF 72%)" }}
+            className="relative mt-2 rounded-[16px] px-4 sm:px-10 pt-12 sm:pt-16 pb-24 min-h-[560px] sm:min-h-[640px] flex flex-col justify-start"
+            style={{ background: "#FFFFFF" }}
           >
-            <div className="w-full mx-auto max-w-[760px]">
-              {/* task chips */}
-              <div className="flex sm:justify-center gap-2 overflow-x-auto pb-1 -mx-1 px-1" role="group" aria-label="Tasks">
-                {prod.tasks.map((x, k) => {
-                  const on = k === t;
-                  return (
-                    <button
-                      key={x.chip}
-                      type="button"
-                      aria-pressed={on}
-                      onClick={() => go(p, k, true)}
-                      className={`shrink-0 h-10 px-4 rounded-full font-sans-g text-[15px] border transition-colors duration-150 ${on ? "bg-white border-[#DEDEE3] font-medium" : "border-transparent hover:bg-white/70"}`}
-                      style={{ color: on ? "#1F1F1F" : "#4A4B53" }}
-                    >
-                      {x.chip}
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* the composer: input, then the work, then the result */}
-              <div
-                className="mt-4 rounded-[22px] bg-white p-2 text-left"
-                style={{ border: "1px solid #ECECEF", boxShadow: "0 24px 48px -36px rgba(30,40,90,0.35)" }}
+            {!reduce && (
+              <button
+                type="button"
+                onClick={() => {
+                  setPaused((v) => !v);
+                  setAuto(true);
+                }}
+                aria-pressed={paused}
+                aria-label={paused ? "Play the demo" : "Pause the demo"}
+                title={paused ? "Play the demo" : "Pause the demo"}
+                className="absolute bottom-6 left-1/2 -translate-x-1/2 grid place-items-center w-12 h-12 rounded-full bg-white text-[#0E1116] transition-colors duration-150 hover:bg-[#1F4FE6] hover:text-white"
+                style={{ border: "1px solid #D9DCE2", boxShadow: "0 4px 8px -4px rgba(14,17,22,0.2)" }}
               >
-                <div className="rounded-[16px] px-4 sm:px-5 pt-4 pb-3" style={{ border: "1px solid #E4E4E9" }}>
-                  <p className="min-h-[1.75rem] font-sans-g text-[1.0625rem] sm:text-[1.125rem] leading-[1.55]" style={{ color: "#1F1F1F" }}>
-                    <span className="sr-only">Example request: </span>
-                    {task.prompt.slice(0, typedN)}
-                    {view === "type" && <span aria-hidden className="inline-block w-[2px] h-[1.1em] align-[-0.15em] ml-px" style={{ background: "#2F5FE0" }} />}
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-1.5 font-sans-g text-[13px]" style={{ color: "#4A4B53" }}>
-                    <span aria-hidden className="grid place-items-center w-7 h-7 rounded-full text-[18px] leading-none">
-                      +
-                    </span>
-                    <span>Using</span>
-                    {task.using.map((u) => (
-                      <span key={u} className="h-7 inline-flex items-center px-2.5 rounded-[8px]" style={{ border: "1px solid #E4E4E9", color: "#2A2B33" }}>
-                        {u}
-                      </span>
-                    ))}
+                {paused ? <I.play size={20} weight="fill" /> : <I.pause size={20} weight="fill" />}
+              </button>
+            )}
+            <div className="w-full mx-auto max-w-[760px]">
+              {/* the composer: input, then the work, then the result */}
+              <div className="text-left">
+                {/* the prompt: a rainbow AI edge (2px) with a soft halo, turning while the demo runs */}
+                <div className="relative">
+                  <span aria-hidden className={`bq-ai-edge ${running ? "is-live" : ""} absolute -inset-1 rounded-[16px] blur-md opacity-50`} />
+                  <div className={`bq-ai-edge ${running ? "is-live" : ""} relative p-[2px] rounded-[14px]`}>
+                    <div className="relative bg-white rounded-[12px] px-4 sm:px-6 pt-4 pb-4">
+                      <p className="min-h-[1.75rem] font-sans-g text-[16px] sm:text-[20px] leading-[1.5]" style={{ color: "#1F1F1F" }}>
+                        <span className="sr-only">Example request: </span>
+                        {task.prompt.slice(0, typedN)}
+                        {view === "type" && (
+                          <span aria-hidden className="inline-block w-[2px] h-[1.1em] align-[-0.15em] ml-px" style={{ background: "#2F5FE0" }} />
+                        )}
+                      </p>
+                      <div className="mt-4 flex flex-wrap items-center gap-2 font-sans-g text-[13px]" style={{ color: "#4A4B53" }}>
+                        <span aria-hidden className="grid place-items-center w-8 h-8 rounded-full text-[20px] leading-[1.1]">
+                          +
+                        </span>
+                        <span>Using</span>
+                        {task.using.map((u) => (
+                          <span key={u} className="h-8 inline-flex items-center px-2 rounded-[8px]" style={{ border: "1px solid #E4E4E9", color: "#2A2B33" }}>
+                            {u}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div aria-live="polite">
                   {showSteps && (
-                    <ul className="px-3 sm:px-4 pt-3 pb-1 grid gap-2.5">
+                    <ul className="px-4 sm:px-4 pt-4 pb-1 grid gap-2">
                       {task.steps.map((s, k) => {
                         if (k > stepN) return null;
                         const done = k < stepN;
                         return (
-                          <li key={s.t} className="bq-drop flex flex-wrap items-center gap-2.5 font-sans-g text-[14.5px]" style={{ color: "#2A2B33" }}>
+                          <li key={s.t} className="bq-drop flex flex-wrap items-center gap-2 font-sans-g text-[16px]" style={{ color: "#2A2B33" }}>
                             {done ? (
                               <span
                                 className="grid place-items-center w-[18px] h-[18px] rounded-full"
                                 style={{ border: "1.5px solid #2F5FE0", color: "#2F5FE0" }}
                               >
-                                <IconCheck size={11} />
+                                <I.check size={12} weight="bold" />
                               </span>
                             ) : (
                               <Spinner />
                             )}
                             <span
-                              className="h-6 inline-flex items-center px-2 rounded-[6px] text-[12.5px]"
+                              className="h-6 inline-flex items-center px-2 rounded-[8px] text-[13px]"
                               style={{ border: "1px solid #E4E4E9", color: "#4A4B53" }}
                             >
                               {s.src}
@@ -340,13 +343,11 @@ export default function Showcase() {
                   )}
 
                   {showResult && (
-                    <div className="bq-drop mt-3 rounded-[16px]" style={{ border: "1px solid #E4E4E9" }}>
-                      <div className="flex items-center gap-3 px-4 py-3">
-                        <span className="grid place-items-center w-9 h-9 rounded-[10px] shrink-0" style={{ background: "#EEF3FF" }}>
-                          <prod.Spot size={24} />
-                        </span>
+                    <div className="bq-drop mt-4 rounded-[12px] overflow-hidden" style={{ border: "1px solid #E4E4E9" }}>
+                      <div className="flex items-center gap-4 px-4 py-4">
+                        <Tile icon={prod.icon} size={40} />
                         <span className="min-w-0">
-                          <span className="block font-sans-g text-[15px] font-medium truncate" style={{ color: "#1F1F1F" }}>
+                          <span className="block font-sans-g text-[16px] font-medium truncate" style={{ color: "#1F1F1F" }}>
                             {task.title}
                           </span>
                           <span className="block font-sans-g text-[13px]" style={{ color: "#4A4B53" }}>
@@ -361,17 +362,17 @@ export default function Showcase() {
                             return (
                               <li
                                 key={r.k}
-                                className="bq-drop grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0.5 px-4 py-2.5"
+                                className="bq-drop grid grid-cols-[minmax(0,1fr)_auto] sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 px-4 py-2"
                                 style={{ borderTop: k ? "1px solid #F1F1F3" : undefined }}
                               >
-                                <span className="font-sans-g text-[14px]" style={{ color: "#4A4B53" }}>
+                                <span className="font-sans-g text-[13px]" style={{ color: "#4A4B53" }}>
                                   {r.k}
                                 </span>
-                                <span className="col-start-1 sm:col-start-auto font-mono-g text-[13.5px]" style={{ color: "#1F1F1F" }}>
+                                <span className="col-start-1 sm:col-start-auto font-mono-g text-[13px]" style={{ color: "#1F1F1F" }}>
                                   {r.v}
                                 </span>
                                 <span
-                                  className="row-start-1 col-start-2 sm:row-start-auto sm:col-start-auto h-6 inline-flex items-center gap-1 px-2 rounded-[6px] font-mono-g text-[12px] tabular-nums"
+                                  className="row-start-1 col-start-2 sm:row-start-auto sm:col-start-auto h-6 inline-flex items-center gap-1 px-2 rounded-[8px] font-mono-g text-[13px] tabular-nums"
                                   style={{ background: low ? "#FEF3C7" : "#ECFDF5", color: low ? "#78350F" : "#065F46" }}
                                 >
                                   {low ? "Review" : "Sure"} {r.s.toFixed(2)}
@@ -386,21 +387,10 @@ export default function Showcase() {
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Btn href="/platform" variant="secondary" arrow>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                <SqBtn href="/platform" tone="outline" arrow>
                   Explore Sonar
-                </Btn>
-                {!reduce && (
-                  <button
-                    type="button"
-                    onClick={() => setAuto((v) => !v)}
-                    aria-pressed={!auto}
-                    className="h-10 px-4 rounded-full font-sans-g text-[14px] transition-colors duration-150 hover:bg-[#F3F3F5]"
-                    style={{ color: "#4A4B53" }}
-                  >
-                    {auto ? "Pause the demo" : "Play the demo"}
-                  </button>
-                )}
+                </SqBtn>
               </div>
             </div>
           </div>

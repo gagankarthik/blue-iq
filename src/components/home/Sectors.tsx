@@ -1,65 +1,68 @@
 import Link from "next/link";
 import { INDUSTRIES } from "@/lib/industries";
-import { Btn } from "@/components/system/Btn";
-import { IconArrow } from "@/components/icons/BqIcons";
-import { SECTOR_SPOT } from "@/components/icons/Spots";
+import { BB } from "@/lib/theme";
+import { Head, Stagger } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
+import { I, SECTOR_ICON, Tile } from "@/components/home/icons";
 
 /* ────────────────────────────────────────────────────────────────
-   Sectors — sarvam.ai's "India Can" composition: a narrow statement card
-   on the left with a dark pill, a wide card on the right. Here the wide
-   card is the six sectors as a grid of ways in, each with its one-line job.
+   "Built for your sector", original copy, as a grid of six cards on the
+   page's one ink block. Each card: the sector's icon tile, its name, its
+   one-line job, what Sonar reads there, and a way to the sector page. Cards
+   rise in turn; on hover the edge turns cobalt and the arrow moves.
    ──────────────────────────────────────────────────────────────── */
+
+/* sentence-case a list item, leaving acronyms such as "NDAs" alone */
+const lower = (s: string) => (/^[A-Z]{2,}/.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
 
 export default function Sectors() {
   return (
-    <section className="px-5 sm:px-8 py-24 sm:py-32" aria-labelledby="sectors-h">
-      <div className="max-w-[1240px] mx-auto grid grid-cols-12 gap-3">
-        <div className="col-span-12 lg:col-span-4 rounded-[24px] bg-white p-8 sm:p-10 flex flex-col" style={{ border: "1px solid #ECECEF" }}>
-          <h2 id="sectors-h" className="font-display t-h1" style={{ color: "#1F1F1F" }}>
-            Built for your sector
-          </h2>
-          <p className="mt-4 font-sans-g text-[1.0625rem] leading-[1.6]" style={{ color: "#55565E" }}>
-            From admissions to credentialing to contract review, Blue-IQ reads the paperwork each industry runs on.
-          </p>
-          <div className="mt-auto pt-10">
-            <Btn href="/solutions" size="lg">
-              Explore solutions
-            </Btn>
-          </div>
-        </div>
+    <section className="px-6 sm:px-8 pb-24" aria-labelledby="sectors-h">
+      <div className="max-w-[1112px] mx-auto px-6 lg:px-8 py-16 lg:py-24 rounded-[24px]" style={{ background: BB.ink }}>
+        <Head
+          id="sectors-h"
+          tone="dark"
+          title="Built for your sector"
+          sub="From admissions to credentialing to contract review, Blue-IQ reads the paperwork each industry runs on."
+        />
 
-        <ul className="col-span-12 lg:col-span-8 rounded-[24px] bg-white grid sm:grid-cols-2 overflow-hidden" style={{ border: "1px solid #ECECEF" }}>
-          {INDUSTRIES.map((x, k) => {
-            const S = SECTOR_SPOT[x.id];
+        <Stagger as="ul" className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {INDUSTRIES.map((x) => {
+            const G = SECTOR_ICON[x.id];
             return (
-              <li
-                key={x.id}
-                className={`${k % 2 ? "sm:border-l" : ""} ${k >= 2 ? "sm:border-t" : ""} ${k ? "max-sm:border-t" : ""}`}
-                style={{ borderColor: "#ECECEF" }}
-              >
-                <Link href={`/solutions/${x.id}`} className="group flex h-full items-start gap-5 p-6 sm:p-7 transition-colors duration-150 hover:bg-[#FAFAFA]">
-                  <span
-                    className="shrink-0 grid place-items-center w-16 h-16 rounded-[16px] transition-transform duration-300 group-hover:scale-[1.04]"
-                    style={{ background: "#EEF3FF" }}
-                  >
-                    {S && <S size={44} />}
+              <li key={x.id}>
+                <Link
+                  href={`/solutions/${x.id}`}
+                  className="group flex flex-col h-full p-8 rounded-2xl border border-white/10 transition-[border-color,background-color,transform] duration-300 ease-out hover:-translate-y-1 hover:border-[#1F4FE6] hover:bg-white/[0.04]"
+                  style={{ background: BB.navy2 }}
+                >
+                  <span className="flex items-start justify-between">
+                    {G && <Tile icon={G} tone="onDark" />}
+                    <I.arrow size={16} className="text-white/50 transition-[transform,color] duration-200 group-hover:translate-x-1 group-hover:text-white" />
                   </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center justify-between gap-3">
-                      <span className="font-sans-g text-[1.125rem] font-medium" style={{ color: "#1F1F1F" }}>
-                        {x.name}
-                      </span>
-                      <IconArrow size={16} className="transition-transform duration-150 group-hover:translate-x-0.5" style={{ color: "#9A9BA3" }} />
+                  <span className="mt-8 font-head h-card text-white">{x.name}</span>
+                  <span className="mt-4 font-sans-g t-base" style={{ color: "#C2C7D1" }}>
+                    {x.line}
+                  </span>
+                  <span className="mt-auto pt-8">
+                    <span className="block pt-6 font-mono-g text-[13px] uppercase tracking-[0.06em] border-t border-white/10" style={{ color: BB.sky }}>
+                      Sonar reads
                     </span>
-                    <span className="block mt-1.5 font-sans-g text-[15px] leading-[1.55]" style={{ color: "#55565E" }}>
-                      {x.line}
+                    <span className="block mt-2 font-sans-g text-[13px] leading-[1.5]" style={{ color: "#A3A9B5" }}>
+                      {x.reads.slice(0, 3).map(lower).join(", ")}
                     </span>
                   </span>
                 </Link>
               </li>
             );
           })}
-        </ul>
+        </Stagger>
+
+        <div className="mt-12 flex justify-center">
+          <SqBtn href="/solutions" tone="light" size="lg" arrow>
+            Explore solutions
+          </SqBtn>
+        </div>
       </div>
     </section>
   );

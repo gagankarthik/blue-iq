@@ -1,101 +1,132 @@
-import { Btn } from "@/components/system/Btn";
-import { IconArrow, IconArrowUpRight } from "@/components/icons/BqIcons";
-import { type Spot, SpotCapture, SpotSpend, SpotGovern, SpotCustom } from "@/components/icons/Spots";
+import Link from "next/link";
+import { BB } from "@/lib/theme";
+import { Head, Stagger } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
+import { I, Tile, type Ico } from "@/components/home/icons";
 
 /* ────────────────────────────────────────────────────────────────
-   The portfolio — sarvam.ai's API split: a tall statement card on the left
-   ending in a full-width dark pill, a grid of product cards on the right.
-   Each card is one line and a way to the product's own home; the company
-   site never explains how a product works.
+   The portfolio, original copy in the blueprint system. Five cells, exactly:
+   the statement ("One AI, every product we ship", the editions, the way to
+   all products) as a tall white cell on the left, and the four products as
+   a two-by-two beside it on four surfaces (cobalt, white, white, ink). Each
+   product is one line and a way to its own home; the company site never
+   explains how a product works.
    ──────────────────────────────────────────────────────────────── */
 
-const CARDS: { Spot: Spot; t: string; d: string; href: string; external?: boolean; well: string }[] = [
+type Card = { icon: Ico; t: string; d: string; href: string; external?: boolean; bg: string; ink: string; body: string; link: string; edge?: boolean };
+
+const CARDS: Card[] = [
   {
-    Spot: SpotCapture,
+    icon: I.capture,
     t: "Capture",
     d: "Turns incoming documents into clean, structured data.",
     href: "https://www.parsinglab.blue-iq.ai/",
     external: true,
-    well: "#EEF3FF",
+    bg: BB.cobalt,
+    ink: "#FFFFFF",
+    body: BB.skyText,
+    link: "#FFFFFF",
   },
-  { Spot: SpotSpend, t: "Spend", d: "Keeps invoices in line with what was agreed.", href: "/products#spend", well: "#E8F6FF" },
-  { Spot: SpotGovern, t: "Govern", d: "Keeps contracts and obligations in view.", href: "https://govern.blue-iq.ai/", external: true, well: "#F0F0FF" },
-  { Spot: SpotCustom, t: "Custom builds", d: "When nothing fits, we build it on Sonar.", href: "/solutions#custom", well: "#E9F7F0" },
+  {
+    icon: I.spend,
+    t: "Spend",
+    d: "Keeps invoices in line with what was agreed.",
+    href: "/products#spend",
+    bg: BB.panel,
+    ink: BB.ink,
+    body: BB.ink3,
+    link: BB.cobalt,
+    edge: true,
+  },
+  {
+    icon: I.govern,
+    t: "Govern",
+    d: "Keeps contracts and obligations in view.",
+    href: "https://govern.blue-iq.ai/",
+    external: true,
+    bg: BB.panel,
+    ink: BB.ink,
+    body: BB.ink3,
+    link: BB.cobalt,
+    edge: true,
+  },
+  {
+    icon: I.custom,
+    t: "Custom builds",
+    d: "When nothing fits, we build it on Sonar.",
+    href: "/solutions#custom",
+    bg: BB.ink,
+    ink: "#FFFFFF",
+    body: "#C2C7D1",
+    link: BB.sky,
+  },
 ];
+
+const POINTS = ["Campus edition, for universities and colleges", "Workforce edition, for staffing and healthcare", "Engineered and supported by our team"];
 
 export default function Portfolio() {
   return (
-    <section className="px-5 sm:px-8 py-24 sm:py-32" aria-labelledby="portfolio-h">
-      <div className="max-w-[1240px] mx-auto">
-        <h2 id="portfolio-h" className="mx-auto text-center font-display t-h1 max-w-[18ch]" style={{ color: "#1F1F1F" }}>
-          Build anything with Blue-IQ
-        </h2>
-        <p className="mt-4 mx-auto text-center font-sans-g text-[1.125rem] leading-[1.6] max-w-[48ch]" style={{ color: "#55565E" }}>
-          Products ready today, editions for your sector, and custom builds when you need more.
-        </p>
+    <section className="px-6 sm:px-8 pb-24" aria-labelledby="portfolio-h">
+      <div aria-hidden className="max-w-[1112px] mx-auto h-px mb-24" style={{ background: BB.line }} />
+      <div className="max-w-[1112px] mx-auto">
+        <Head
+          id="portfolio-h"
+          title="Build anything with Blue-IQ"
+          sub="Products ready today, editions for your sector, and custom builds when you need more."
+        />
 
-        <div className="mt-12 grid grid-cols-12 gap-3">
-          {/* the statement card */}
-          <div
-            className="col-span-12 lg:col-span-5 rounded-[24px] p-8 sm:p-10 flex flex-col"
-            style={{ background: "linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 45%, #E9EFFF 100%)", border: "1px solid #ECECEF" }}
-          >
-            <h3 className="font-display text-[2rem] sm:text-[2.25rem] leading-[1.15] tracking-[-0.02em]" style={{ color: "#1F1F1F" }}>
-              One AI, <span style={{ color: "#2F5FE0" }}>every product</span> we ship
+        <div className="mt-12 grid lg:grid-cols-3 gap-4">
+          {/* the statement */}
+          <div className="flex flex-col p-8 rounded-2xl" style={{ background: BB.panel, border: `1px solid ${BB.line}` }}>
+            <h3 className="font-head h-card" style={{ color: BB.ink }}>
+              One AI, <span style={{ color: BB.cobalt }}>every product</span> we ship
             </h3>
-            <p className="mt-4 font-sans-g text-[1.0625rem] leading-[1.6]" style={{ color: "#55565E" }}>
+            <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
               Every Blue-IQ product runs on Sonar. Start with the one your team needs; the rest work the same way, with the same scores and the same review.
             </p>
-            <ul className="mt-8 grid gap-3 font-sans-g text-base" style={{ color: "#3A3B44" }}>
-              {["Campus edition, for universities and colleges", "Workforce edition, for staffing and healthcare", "Engineered and supported by our team"].map(
-                (x) => (
-                  <li key={x} className="flex items-start gap-3">
-                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#2F5FE0" }} />
-                    {x}
-                  </li>
-                )
-              )}
+            <ul className="mt-8 grid gap-4">
+              {POINTS.map((x) => (
+                <li key={x} className="flex items-start gap-4 font-sans-g t-base" style={{ color: BB.ink2 }}>
+                  <I.check size={16} weight="bold" className="mt-1 shrink-0" style={{ color: BB.cobalt }} />
+                  {x}
+                </li>
+              ))}
             </ul>
-            <div className="mt-auto pt-10">
-              <Btn href="/products" size="lg" className="w-full">
+            <div className="mt-auto pt-12">
+              <SqBtn href="/products" tone="ink" arrow>
                 See all products
-              </Btn>
+              </SqBtn>
             </div>
           </div>
 
-          {/* the product cards */}
-          <ul className="col-span-12 lg:col-span-7 grid sm:grid-cols-2 gap-3">
+          {/* the products */}
+          <Stagger as="ul" className="lg:col-span-2 grid sm:grid-cols-2 gap-4">
             {CARDS.map((c) => {
-              const A = c.external ? IconArrowUpRight : IconArrow;
+              const A = c.external ? I.external : I.arrow;
               return (
                 <li key={c.t}>
-                  <a
+                  <Link
                     href={c.href}
                     target={c.external ? "_blank" : undefined}
                     rel={c.external ? "noopener noreferrer" : undefined}
-                    className="group relative flex flex-col h-full min-h-[240px] rounded-[20px] bg-white p-7 overflow-hidden transition-[border-color,transform,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_16px_32px_-20px_rgba(30,33,48,0.25)]"
-                    style={{ border: "1px solid #ECECEF" }}
+                    className="group flex flex-col h-full min-h-[264px] p-8 rounded-2xl transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_16px_32px_-16px_rgba(14,17,22,0.25)]"
+                    style={{ background: c.bg, border: c.edge ? `1px solid ${BB.line}` : undefined }}
                   >
-                    <span
-                      className="grid place-items-center w-[88px] h-[88px] rounded-[18px] transition-transform duration-300 ease-out group-hover:scale-[1.04]"
-                      style={{ background: c.well }}
-                    >
-                      <c.Spot size={60} />
+                    <span className="flex items-start justify-between">
+                      <Tile icon={c.icon} size={64} tone={c.edge ? "light" : "onColor"} />
+                      <A size={16} className="transition-transform duration-200 group-hover:translate-x-1" style={{ color: c.link }} />
                     </span>
-                    <span className="relative mt-auto pt-8 flex items-center justify-between gap-3">
-                      <span className="font-sans-g text-[1.25rem] font-medium" style={{ color: "#1F1F1F" }}>
-                        {c.t}
-                      </span>
-                      <A size={18} className="transition-transform duration-150 group-hover:translate-x-0.5" style={{ color: "#55565E" }} />
+                    <span className="mt-auto pt-12 font-head h-card" style={{ color: c.ink }}>
+                      {c.t}
                     </span>
-                    <span className="relative mt-2 font-sans-g text-[15px] leading-[1.55]" style={{ color: "#55565E" }}>
+                    <span className="mt-4 font-sans-g t-base" style={{ color: c.body }}>
                       {c.d}
                     </span>
-                  </a>
+                  </Link>
                 </li>
               );
             })}
-          </ul>
+          </Stagger>
         </div>
       </div>
     </section>

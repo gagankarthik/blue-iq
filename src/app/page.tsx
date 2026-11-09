@@ -1,4 +1,4 @@
-import { SA } from "@/lib/theme";
+import { BB } from "@/lib/theme";
 import { webPageLd, ldScript } from "@/lib/seo";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
@@ -6,21 +6,20 @@ import HomeHero from "@/components/home/HomeHero";
 import Showcase from "@/components/home/Showcase";
 import Approach from "@/components/home/Approach";
 import Portfolio from "@/components/home/Portfolio";
-import Pillars from "@/components/home/Pillars";
 import Sectors from "@/components/home/Sectors";
 import Enterprise from "@/components/home/Enterprise";
 import CloseCta from "@/components/home/CloseCta";
+import Pillars from "@/components/home/Pillars";
 import Deploy from "@/components/home/Deploy";
 
-/* The home page, composed section by section after sarvam.ai: a colour-wash
-   hero, a framed tabbed showcase of Sonar at work, a horizontal accordion
-   for how it works, a split portfolio, a three-column company row, sectors,
-   enterprise readiness, and a dark closing card. Questions live on /faq. Server
-   component: only the interactive sections ship JavaScript. */
+/* The home page: the original content and section order (hero, live demo,
+   how Sonar works, portfolio, the full stack, sectors, where it runs,
+   enterprise, close) in the 2026-11 blueprint system. Server component:
+   only the interactive sections ship JavaScript. */
 
 export default function Home() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="relative overflow-x-clip" style={{ color: BB.ink }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={ldScript(
@@ -33,7 +32,7 @@ export default function Home() {
         )}
       />
       <SiteNav overDark={false} />
-      <main id="main">
+      <main id="main" className="relative z-[1]">
         <HomeHero />
         <Showcase />
         <Approach />

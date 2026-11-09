@@ -3,14 +3,18 @@ import { pageMetadata, breadcrumbLd, webPageLd, faqLd, ldScript } from "@/lib/se
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import { ControlsTable } from "@/components/saas/Security";
-import { DetailHeader, Block, FaqList, Glance } from "@/components/page/blocks";
-import { SA } from "@/lib/theme";
+import { DetailHeader, Block, FaqList, Glance, RouteLegend } from "@/components/page/blocks";
+import { BB } from "@/lib/theme";
+import { Stagger } from "@/components/home/motion";
+import { I, Tile } from "@/components/home/icons";
 import { TRUST_FAQS } from "@/components/saas/faqData";
 
-/* /trust — the page a security reviewer opens first.
-   Order: status at a glance → controls → data handling → how accuracy is
-   protected → how to request documentation or report an issue → questions.
-   States compliance exactly as the company does: aligned, not certified. */
+/* /trust: how we protect your documents, the page a security reviewer
+   opens first. Order: status at a glance (header) → every control, as a
+   grid of cards → privacy: what happens to your content → human review:
+   how accuracy is protected → security questions → close (request the
+   documentation). States compliance exactly as the company does: aligned,
+   not certified. */
 
 const TITLE = "Trust Center: Security, Privacy and Compliance";
 const DESC =
@@ -23,9 +27,12 @@ export const metadata = pageMetadata({
   keywords: ["document AI security", "SOC 2 aligned", "HIPAA aligned", "GDPR", "data retention"],
 });
 
+/* one glyph per DATA_HANDLING card, same order */
+const DATA_ICONS = [I.trust, I.docs, I.team, I.cloud];
+
 export default function TrustPage() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={ldScript(
@@ -38,7 +45,6 @@ export default function TrustPage() {
       <main id="main">
         <DetailHeader
           here="Trust Center"
-          eyebrow="Security and privacy"
           title="How we protect the documents you trust us with"
           lede="Clinical records, contracts and financial data are some of the most sensitive files a business holds. Here is exactly how we handle them."
           primary={{ label: "Request security documentation", href: "/contact?topic=Security%20review" }}
@@ -56,37 +62,53 @@ export default function TrustPage() {
           }
         />
 
-        <Block kicker="Controls" title="The controls in place today">
+        <Block seam id="controls" title="The controls in place today">
           <ControlsTable />
         </Block>
 
-        <Block tone="tint" kicker="Data handling" title="What happens to your content">
-          <dl className="grid md:grid-cols-2 gap-3">
-            {DATA_HANDLING.map(([t, d]) => (
-              <div key={t} className="rounded-[24px] bg-white p-7" style={{ border: `1px solid ${SA.line}` }}>
-                <dt className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+        <Block seam id="privacy" title="What happens to your content">
+          <Stagger as="dl" className="grid md:grid-cols-2 gap-4">
+            {DATA_HANDLING.map(([t, d], k) => (
+              <div key={t} className="rounded-2xl bg-white p-8" style={{ border: `1px solid ${BB.line}` }}>
+                <Tile icon={DATA_ICONS[k] ?? I.trust} size={40} />
+                <dt className="mt-8 font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
                   {t}
                 </dt>
-                <dd className="mt-2 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
+                <dd className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                   {d}
                 </dd>
               </div>
             ))}
-          </dl>
+          </Stagger>
         </Block>
 
         <Block
-          kicker="Accuracy"
+          seam
+          id="review"
           title="A wrong value that looks right is a security problem too"
           sub="Every value Sonar extracts carries its own confidence score. Anything under your review line goes to a person with the evidence attached, so an uncertain field never flows silently into your systems."
         >
-          <p className="mx-auto text-center font-sans-g text-base leading-[1.6] max-w-[60ch]" style={{ color: SA.sub }}>
-            You set the review line per workflow. Raising it sends more fields to review; lowering it lets more flow straight through. Either way, nothing is
-            guessed.
-          </p>
+          <div className="grid lg:grid-cols-2 gap-4 items-start">
+            <RouteLegend
+              rows={[
+                { low: false, t: "At or above your review line", d: "Flows on to your systems." },
+                { low: true, t: "Under your review line", d: "Goes to a person with the evidence attached." },
+              ]}
+            />
+            <div className="rounded-2xl bg-white p-8" style={{ border: `1px solid ${BB.line}` }}>
+              <Tile icon={I.scores} size={40} />
+              <h3 className="mt-8 font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
+                You set the review line
+              </h3>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+                You set the review line per workflow. Raising it sends more fields to review; lowering it lets more flow straight through. Either way, nothing
+                is guessed.
+              </p>
+            </div>
+          </div>
         </Block>
 
-        <Block tone="tint" kicker="Questions" title="Security questions, answered">
+        <Block seam id="questions" title="Security questions, answered">
           <FaqList faqs={TRUST_FAQS} />
         </Block>
       </main>

@@ -1,29 +1,31 @@
-import { SA } from "@/lib/theme";
-import { PageHero, CARD, CARD_EDGE, SpotWell } from "@/components/page/kit";
-import { Block } from "@/components/page/blocks";
-import { Btn } from "@/components/system/Btn";
-import { IconArrow } from "@/components/icons/BqIcons";
-import { type Spot, SpotIntegrate, SpotRead, SpotScore, SpotSecure, SpotRoute, SpotExtract } from "@/components/icons/Spots";
+import Link from "next/link";
+import { ArrowsSplit, FileDoc, FileImage, FileJpg, FilePdf, FilePng, FileXls } from "@phosphor-icons/react/dist/ssr";
+import { BB } from "@/lib/theme";
+import { PageHero } from "@/components/page/kit";
+import { Head, Stagger } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
+import { I, Tile, type Ico } from "@/components/home/icons";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 /* ────────────────────────────────────────────────────────────────
-   /resources — the developer's page.
+   /resources: the developer guide, read top to bottom.
 
-   1. Header on the wash, the page's four parts as spot cards under it.
-   2. Connect: a dark card with a sample response beside the four ways in
-      (sarvam.ai's API split).
-   3. Formats: the six file types.
-   4. Scores: three rules, and a routed example.
+   1. Header: what you can build, two actions, and an "On this page" list.
+   2. Connect (#api): the four ways in as numbered definition rows, beside
+      a sample response on the page's one ink block.
+   3. Formats (#formats): the six file types Sonar reads.
+   4. Scores (#confidence): three numbered rules, then a routed example.
+   5. Security: one card pointing to the Trust Center.
    Everything listed exists today; there is no public docs portal yet, and
    the page says so.
    ──────────────────────────────────────────────────────────────── */
 
-const TOC: { href: string; t: string; d: string; Spot: Spot }[] = [
-  { href: "#api", t: "Connect", d: "REST, JSON and webhooks", Spot: SpotIntegrate },
-  { href: "#formats", t: "Formats", d: "What Sonar can read", Spot: SpotRead },
-  { href: "#confidence", t: "Scores", d: "Building on confidence", Spot: SpotScore },
-  { href: "/trust", t: "Security", d: "How data is handled", Spot: SpotSecure },
+const TOC: { href: string; t: string; d: string; icon: Ico }[] = [
+  { href: "#api", t: "Connect", d: "REST, JSON and webhooks", icon: I.api },
+  { href: "#formats", t: "Formats", d: "What Sonar can read", icon: I.formats },
+  { href: "#confidence", t: "Scores", d: "Building on confidence", icon: I.scores },
+  { href: "/trust", t: "Security", d: "How data is handled", icon: I.trust },
 ];
 
 const CONNECT: [string, string][] = [
@@ -33,19 +35,19 @@ const CONNECT: [string, string][] = [
   ["Native connectors", "Straight into your ATS, ERP or CLM, with custom routes where none exist."],
 ];
 
-const FORMATS: { ext: string; t: string; d: string; tone: string }[] = [
-  { ext: "PDF", t: "Digital PDFs", d: "Text layer read directly", tone: "#B91C1C" },
-  { ext: "DOCX", t: "Word documents", d: "Tables and headings kept", tone: "#2348B8" },
-  { ext: "TIFF", t: "Scanned paper", d: "OCR first, then read", tone: "#0B5A72" },
-  { ext: "JPG", t: "Phone photos", d: "Skew and glare corrected", tone: "#8F4507" },
-  { ext: "PNG", t: "Screenshots", d: "Read like any image", tone: "#065F46" },
-  { ext: "XLSX", t: "System exports", d: "Rows mapped to fields", tone: "#1E2130" },
+const FORMATS: { ext: string; t: string; d: string; icon: Ico }[] = [
+  { ext: "PDF", t: "Digital PDFs", d: "Text layer read directly", icon: FilePdf },
+  { ext: "DOCX", t: "Word documents", d: "Tables and headings kept", icon: FileDoc },
+  { ext: "TIFF", t: "Scanned paper", d: "OCR first, then read", icon: FileImage },
+  { ext: "JPG", t: "Phone photos", d: "Skew and glare corrected", icon: FileJpg },
+  { ext: "PNG", t: "Screenshots", d: "Read like any image", icon: FilePng },
+  { ext: "XLSX", t: "System exports", d: "Rows mapped to fields", icon: FileXls },
 ];
 
-const RULES: { Spot: Spot; t: string; d: string }[] = [
-  { Spot: SpotExtract, t: "Scores are per field", d: "Each value carries its own confidence, not one number per file." },
-  { Spot: SpotRoute, t: "Route on the score", d: "Accept above your line automatically. Queue the rest for a person." },
-  { Spot: SpotScore, t: "A flag is not an error", d: "It is a value Sonar refused to guess. Send it to review, do not retry." },
+const RULES: { icon: Ico; t: string; d: string }[] = [
+  { icon: I.scores, t: "Scores are per field", d: "Each value carries its own confidence, not one number per file." },
+  { icon: ArrowsSplit, t: "Route on the score", d: "Accept above your line automatically. Queue the rest for a person." },
+  { icon: I.flag, t: "A flag is not an error", d: "It is a value Sonar refused to guess. Send it to review, do not retry." },
 ];
 
 const ROUTED: [string, number][] = [
@@ -66,32 +68,24 @@ const SAMPLE = `{
   }
 }`;
 
-function FileIcon({ ext, tone }: { ext: string; tone: string }) {
+const EDGE = { border: `1px solid ${BB.line}` } as const;
+const LABEL = "font-mono-g text-[13px] uppercase tracking-[0.06em]";
+
+/* one section: a hairline seam, then the header and its content */
+function Section({ id, labelledby, children }: { id?: string; labelledby: string; children: React.ReactNode }) {
   return (
-    <svg width="44" height="52" viewBox="0 0 40 48" aria-hidden className="shrink-0">
-      <path d="M4 1.5h22l10.5 10.5v32a2.5 2.5 0 0 1-2.5 2.5H4A2.5 2.5 0 0 1 1.5 44V4A2.5 2.5 0 0 1 4 1.5Z" fill="#fff" stroke="#1F2A6B" strokeWidth="1.5" />
-      <path d="M26 1.5V12h10.5" fill="#EEF3FF" stroke="#1F2A6B" strokeWidth="1.5" strokeLinejoin="round" />
-      <rect x="8" y="17" width="20" height="2.5" rx="1.25" fill="#DCE5FF" />
-      <rect x="8" y="22.5" width="14" height="2.5" rx="1.25" fill="#DCE5FF" />
-      <rect x="0" y="30" width="32" height="12" rx="3" fill={tone} />
-      <text
-        x="16"
-        y="38.6"
-        textAnchor="middle"
-        fontSize="8"
-        fontWeight="600"
-        fill="#fff"
-        style={{ fontFamily: "var(--font-geist-mono), ui-monospace, monospace" }}
-      >
-        {ext}
-      </text>
-    </svg>
+    <section id={id} className="scroll-mt-24 px-6 sm:px-8 pb-24" aria-labelledby={labelledby}>
+      <div aria-hidden className="max-w-[1112px] mx-auto h-px mb-24" style={{ background: BB.line }} />
+      <div className="max-w-[1112px] mx-auto">{children}</div>
+    </section>
   );
 }
 
+const num = (i: number) => String(i + 1).padStart(2, "0");
+
 export default function ResourcesClient() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <SiteNav overDark={false} />
       <main id="main">
         <PageHero
@@ -102,116 +96,145 @@ export default function ResourcesClient() {
           primary={{ label: "Request API access", href: "/contact?product=Capture" }}
           secondary={{ label: "Visit the Trust Center", href: "/trust" }}
         >
-          <nav aria-label="On this page">
-            <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <nav aria-labelledby="toc-h" className="pb-16">
+            <h2 id="toc-h" className={LABEL} style={{ color: BB.ink3 }}>
+              On this page
+            </h2>
+            <ul className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {TOC.map((x) => (
                 <li key={x.t}>
-                  <a
+                  <Link
                     href={x.href}
-                    className={`group ${CARD} h-full flex items-center gap-4 p-5 transition-[border-color,box-shadow] duration-200 hover:border-[#D4D4DA] hover:shadow-[0_16px_32px_-24px_rgba(30,33,48,0.3)]`}
-                    style={CARD_EDGE}
+                    className="group flex h-full items-center gap-4 rounded-2xl border border-[#D9DCE2] bg-white p-4 transition-[border-color] duration-200 hover:border-[#1F4FE6] focus-visible:border-[#1F4FE6]"
                   >
-                    <SpotWell size={64}>
-                      <x.Spot size={44} />
-                    </SpotWell>
-                    <span className="min-w-0 flex-1 text-left">
-                      <span className="flex items-center justify-between gap-2 font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+                    <Tile icon={x.icon} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-sans-g t-base font-medium" style={{ color: BB.ink }}>
                         {x.t}
-                        <IconArrow size={15} className="shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" style={{ color: SA.faint }} />
                       </span>
-                      <span className="mt-1 block font-sans-g text-[14.5px]" style={{ color: SA.sub }}>
+                      <span className="block font-sans-g text-[13px] leading-[1.5]" style={{ color: BB.ink3 }}>
                         {x.d}
                       </span>
                     </span>
-                  </a>
+                    <I.arrow
+                      aria-hidden
+                      size={16}
+                      className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
+                      style={{ color: BB.cobalt }}
+                    />
+                  </Link>
                 </li>
               ))}
             </ul>
           </nav>
         </PageHero>
 
-        <Block id="api" title="Connect Sonar to your stack" sub="Up to 200 documents per API call, with a sub-second median read.">
-          <div className="grid lg:grid-cols-12 gap-3">
-            <div className="lg:col-span-6 rounded-[24px] p-6 sm:p-8 flex flex-col" style={{ background: "#1E2130" }}>
-              <p className="font-sans-g text-[14px] font-medium" style={{ color: "#C9CCDA" }}>
-                A sample response
-              </p>
-              <pre
-                tabIndex={0}
-                aria-label="Sample API response"
-                className="mt-4 flex-1 overflow-x-auto rounded-[16px] p-5 font-mono-g text-[13px] leading-[1.7]"
-                style={{ background: "#151826", color: "#E6E8F2" }}
-              >
-                <code>{SAMPLE}</code>
-              </pre>
-              <p className="mt-5 font-sans-g text-[14px]" style={{ color: "#C9CCDA" }}>
-                No public docs portal yet. The API reference ships with your keys.
-              </p>
-              <div className="mt-6">
-                <Btn href="/contact?product=Capture" tone="dark" size="lg" className="w-full">
-                  Request API access
-                </Btn>
-              </div>
-            </div>
-            <dl className="lg:col-span-6 grid sm:grid-cols-2 gap-3">
-              {CONNECT.map(([t, d]) => (
-                <div key={t} className={`${CARD} p-7`} style={CARD_EDGE}>
-                  <dt className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
-                    {t}
+        {/* 1. connect */}
+        <Section id="api" labelledby="api-h">
+          <Head id="api-h" title="Connect Sonar to your stack" sub="Up to 200 documents per API call, with a sub-second median read." />
+          <div className="mt-12 grid lg:grid-cols-2 gap-x-16 gap-y-12 items-start">
+            <Stagger as="dl">
+              {CONNECT.map(([t, d], i) => (
+                <div key={t} className="py-6" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  <dt className="flex items-baseline gap-4">
+                    <span aria-hidden className={`${LABEL} w-12 shrink-0`} style={{ color: BB.cobalt }}>
+                      {num(i)}
+                    </span>
+                    <span className="font-head h-card" style={{ color: BB.ink }}>
+                      {t}
+                    </span>
                   </dt>
-                  <dd className="mt-2 font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
+                  <dd className="mt-4 pl-16 font-sans-g t-base" style={{ color: BB.ink3 }}>
                     {d}
                   </dd>
                 </div>
               ))}
-            </dl>
-          </div>
-        </Block>
+            </Stagger>
 
-        <Block id="formats" title="Digital or scanned, clean or messy" sub="Images and scans go through OCR first, then Sonar reads them like any other page.">
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="rounded-[24px] p-8 flex flex-col" style={{ background: BB.ink }}>
+              <h3 className={LABEL} style={{ color: "#C2C7D1" }}>
+                A sample response
+              </h3>
+              <pre
+                tabIndex={0}
+                aria-label="Sample API response"
+                className="mt-4 overflow-x-auto rounded-[12px] p-6 font-mono-g text-[13px] leading-[1.7]"
+                style={{ background: BB.navy2, color: "#E4E7ED" }}
+              >
+                <code>{SAMPLE}</code>
+              </pre>
+              <p className="mt-8 font-sans-g t-base" style={{ color: "#C2C7D1" }}>
+                No public docs portal yet. The API reference ships with your keys.
+              </p>
+              <div className="mt-8">
+                <SqBtn href="/contact?product=Capture" tone="light" arrow>
+                  Request API access
+                </SqBtn>
+              </div>
+            </div>
+          </div>
+        </Section>
+
+        {/* 2. formats */}
+        <Section id="formats" labelledby="formats-h">
+          <Head
+            id="formats-h"
+            title="Digital or scanned, clean or messy"
+            sub="Images and scans go through OCR first, then Sonar reads them like any other page."
+          />
+          <Stagger as="ul" className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FORMATS.map((f) => (
-              <li key={f.ext} className={`${CARD} flex items-center gap-5 p-6`} style={CARD_EDGE}>
-                <FileIcon ext={f.ext} tone={f.tone} />
-                <span>
-                  <span className="block font-sans-g text-[1.0625rem] font-medium" style={{ color: SA.ink }}>
-                    {f.t}
+              <li key={f.ext} className="flex items-center gap-4 rounded-2xl bg-white p-8" style={EDGE}>
+                <Tile icon={f.icon} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="font-sans-g t-base font-medium" style={{ color: BB.ink }}>
+                      {f.t}
+                    </span>
+                    <span className={`${LABEL} inline-flex items-center h-6 px-2 rounded-[8px]`} style={{ background: BB.mist2, color: BB.ink2 }}>
+                      {f.ext}
+                    </span>
                   </span>
-                  <span className="block mt-0.5 font-sans-g text-[15px]" style={{ color: SA.sub }}>
+                  <span className="mt-1 block font-sans-g t-base" style={{ color: BB.ink3 }}>
                     {f.d}
                   </span>
                 </span>
               </li>
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block id="confidence" title="Three rules for building on confidence">
-          <ul className="grid md:grid-cols-3 gap-3">
-            {RULES.map((x) => (
-              <li key={x.t} className={`${CARD} p-7 sm:p-8`} style={CARD_EDGE}>
-                <SpotWell>
-                  <x.Spot size={56} />
-                </SpotWell>
-                <h3 className="mt-6 font-sans-g text-[1.25rem] font-medium" style={{ color: SA.ink }}>
+        {/* 3. confidence */}
+        <Section id="confidence" labelledby="confidence-h">
+          <Head id="confidence-h" title="Three rules for building on confidence" />
+          <Stagger as="ol" className="mt-12 grid md:grid-cols-3 gap-4">
+            {RULES.map((x, i) => (
+              <li key={x.t} className="h-full rounded-2xl bg-white p-8" style={EDGE}>
+                <span className="flex items-center justify-between">
+                  <Tile icon={x.icon} />
+                  <span aria-hidden className={LABEL} style={{ color: BB.cobalt }}>
+                    {num(i)}
+                  </span>
+                </span>
+                <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                   {x.t}
                 </h3>
-                <p className="mt-2 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
+                <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                   {x.d}
                 </p>
               </li>
             ))}
-          </ul>
+          </Stagger>
 
-          <div className={`mt-3 ${CARD} overflow-x-auto`} style={CARD_EDGE}>
+          <div className="mt-4 rounded-2xl bg-white overflow-x-auto" style={EDGE} tabIndex={0} role="region" aria-label="Example: review line at 0.90">
             <table className="w-full min-w-[420px] text-left">
-              <caption className="px-6 pt-5 pb-3 text-left font-sans-g text-[14px]" style={{ color: SA.faint }}>
+              <caption className={`${LABEL} px-8 pt-8 pb-4 text-left`} style={{ color: BB.ink3 }}>
                 Example: review line at 0.90
               </caption>
               <thead>
-                <tr style={{ borderBottom: `1px solid ${SA.line}` }}>
+                <tr style={{ borderBottom: `1px solid ${BB.line}` }}>
                   {["Field", "Score", "Route"].map((h) => (
-                    <th key={h} scope="col" className="px-6 py-3 font-sans-g text-[13px] font-medium" style={{ color: SA.faint }}>
+                    <th key={h} scope="col" className="px-8 py-4 font-sans-g text-[13px] font-medium" style={{ color: BB.ink3 }}>
                       {h}
                     </th>
                   ))}
@@ -221,18 +244,19 @@ export default function ResourcesClient() {
                 {ROUTED.map(([field, score], i) => {
                   const low = score < 0.9;
                   return (
-                    <tr key={field} style={{ borderTop: i ? `1px solid ${SA.line}` : undefined }}>
-                      <th scope="row" className="px-6 py-3.5 font-sans-g text-[15px] font-medium" style={{ color: SA.ink }}>
+                    <tr key={field} style={{ borderTop: i ? `1px solid ${BB.line}` : undefined }}>
+                      <th scope="row" className="px-8 py-4 font-sans-g t-base font-medium" style={{ color: BB.ink }}>
                         {field}
                       </th>
-                      <td className="px-6 py-3.5 font-mono-g text-[14px] tabular-nums" style={{ color: low ? "#78350F" : SA.ink }}>
+                      <td className="px-8 py-4 font-mono-g text-[13px] tabular-nums" style={{ color: low ? BB.amberInk : BB.ink }}>
                         {score.toFixed(2)}
                       </td>
-                      <td className="px-6 py-3.5">
+                      <td className="px-8 py-4">
                         <span
-                          className="inline-flex items-center h-6 px-2 rounded-[6px] font-sans-g text-[13px] font-medium"
-                          style={{ background: low ? "#FEF3C7" : "#ECFDF5", color: low ? "#78350F" : "#065F46" }}
+                          className="inline-flex items-center gap-2 h-6 px-2 rounded-[8px] font-sans-g text-[13px] font-medium"
+                          style={low ? { background: "#FDF0D5", color: BB.amberInk } : { background: BB.mist2, color: BB.ink2 }}
                         >
+                          {low ? <I.flag aria-hidden size={14} /> : <I.check aria-hidden size={14} />}
                           {low ? "To review" : "Accepted"}
                         </span>
                       </td>
@@ -242,7 +266,25 @@ export default function ResourcesClient() {
               </tbody>
             </table>
           </div>
-        </Block>
+        </Section>
+
+        {/* 4. security */}
+        <Section id="security" labelledby="security-h">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-8 rounded-2xl bg-white p-8" style={EDGE}>
+            <Tile icon={I.trust} size={64} />
+            <div className="min-w-0 flex-1">
+              <h2 id="security-h" className="font-head h-card" style={{ color: BB.ink }}>
+                Security
+              </h2>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+                How data is handled
+              </p>
+            </div>
+            <SqBtn href="/trust" tone="outline" arrow>
+              Visit the Trust Center
+            </SqBtn>
+          </div>
+        </Section>
       </main>
       <SiteFooter cta={{ title: "Ready to connect?", sub: "Ask for API access and we will send the reference with your keys." }} />
     </div>

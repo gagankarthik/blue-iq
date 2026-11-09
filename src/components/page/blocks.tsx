@@ -1,18 +1,43 @@
 import Link from "next/link";
-import { SA } from "@/lib/theme";
-import { WRAP, PageHero, CARD, CARD_EDGE, SpotWell } from "@/components/page/kit";
-import { IconArrow, IconCheck } from "@/components/icons/BqIcons";
+import { BB } from "@/lib/theme";
+import { WRAP, PageHero } from "@/components/page/kit";
+import { Head, Stagger } from "@/components/home/motion";
+import { I, Tile, type Ico } from "@/components/home/icons";
 import type { Spot } from "@/components/icons/Spots";
 
 /* ────────────────────────────────────────────────────────────────
-   Server-rendered building blocks for the detail pages (platform, sector,
-   trust), in the landing page's language: centred serif section heads,
-   white rounded cards on the off-white page, spots on soft wells. No
-   client JavaScript: the FAQ uses native <details>.
+   Building blocks for the inner pages (platform, sectors, trust, and the
+   pages that borrow from them), in the home page's blueprint language:
+   left-aligned stacked section heads, white rounded-2xl cards on the
+   canvas, Phosphor glyphs on square tiles, mono uppercase labels, cobalt
+   as the one accent and amber only for a value flagged for review.
+   Server-rendered; the FAQ uses native <details>, so it needs no script.
    ──────────────────────────────────────────────────────────────── */
 
 type Action = { label: string; href: string; external?: boolean };
 
+const LABEL = "font-mono-g text-[13px] uppercase tracking-[0.06em]";
+const CARD = "rounded-2xl bg-white";
+const EDGE = { border: `1px solid ${BB.line}` } as const;
+
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 48);
+
+/** A Spot (a Phosphor glyph sized to its box) on the same square well as a Tile. */
+function SpotTile({ S, size = 48 }: { S: Spot; size?: 48 | 64 }) {
+  return (
+    <span aria-hidden className="shrink-0 grid place-items-center rounded-[12px]" style={{ width: size, height: size, background: BB.mist2 }}>
+      <S size={size} />
+    </span>
+  );
+}
+
+/* the page header: crumbs, headline, one line, the actions; an optional
+   card (usually a Glance) sits under it */
 export function DetailHeader({
   here,
   trail,
@@ -38,11 +63,15 @@ export function DetailHeader({
   );
 }
 
+/** One section that answers one question: a stacked header, then its content
+    48px below. `seam` draws the home page's hairline above it in place of the
+    top padding, so consecutive sections read as separate steps. */
 export function Block({
   id,
   title,
   sub,
   align = "center",
+  seam = false,
   children,
 }: {
   id?: string;
@@ -51,43 +80,120 @@ export function Block({
   sub?: string;
   tone?: "white" | "tint";
   align?: "center" | "left";
+  seam?: boolean;
   children: React.ReactNode;
 }) {
-  const hid = id ? `${id}-h` : undefined;
-  const c = align === "center";
+  const hid = `${id ?? slug(title)}-h`;
+  void align; // headers are left-aligned site-wide (2026-11)
   return (
-    <section id={id} className="py-20 sm:py-28 scroll-mt-24" aria-labelledby={hid}>
+    <section id={id} className={`${seam ? "pb-24" : "py-24"} scroll-mt-24`} aria-labelledby={hid}>
       <div className={WRAP}>
-        <div className={c ? "text-center" : ""}>
-          <h2 id={hid} className={`font-display t-h1 max-w-[22ch] ${c ? "mx-auto" : ""}`} style={{ color: SA.ink }}>
-            {title}
-          </h2>
-          {sub && (
-            <p className={`mt-4 font-sans-g text-[1.125rem] leading-[1.6] max-w-[56ch] ${c ? "mx-auto" : ""}`} style={{ color: SA.sub }}>
-              {sub}
-            </p>
-          )}
-        </div>
+        {seam && <div aria-hidden className="h-px mb-24" style={{ background: BB.line }} />}
+        <Head id={hid} title={title} sub={sub} />
         <div className="mt-12">{children}</div>
       </div>
     </section>
   );
 }
 
-/* capabilities: white cards, a check on a blue disc */
-export function CapabilityGrid({ items }: { items: [string, string][] }) {
+/* capabilities: white cards, a tile (or a cobalt check) and a title */
+export function CapabilityGrid({ items, icons }: { items: [string, string][]; icons?: Ico[] }) {
   return (
-    <dl className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-      {items.map(([t, d]) => (
-        <div key={t} className={`${CARD} p-7`} style={CARD_EDGE}>
-          <dt className="flex items-center gap-3 font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
-            <span className="grid place-items-center w-6 h-6 rounded-full shrink-0" style={{ background: SA.accent, color: "#FFFFFF" }}>
-              <IconCheck size={13} />
+    <Stagger as="dl" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {items.map(([t, d], k) => {
+        const G = icons?.[k];
+        return (
+          <div key={t} className={`${CARD} p-8`} style={EDGE}>
+            {G ? (
+              <Tile icon={G} />
+            ) : (
+              <span aria-hidden className="grid place-items-center w-10 h-10 rounded-[8px]" style={{ background: BB.mist2, color: BB.cobalt }}>
+                <I.check size={20} weight="bold" />
+              </span>
+            )}
+            <dt className="mt-8 font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
+              {t}
+            </dt>
+            <dd className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+              {d}
+            </dd>
+          </div>
+        );
+      })}
+    </Stagger>
+  );
+}
+
+const COLS: Record<number, string> = { 2: "lg:grid-cols-2", 3: "lg:grid-cols-3", 4: "lg:grid-cols-4", 5: "lg:grid-cols-5" };
+
+/** Numbered steps, connected: on desktop one row of cards with an arrow in
+    each gap, so the order reads left to right; stacked, the numbers carry it.
+    An optional spot (or icon) per step. */
+export function StepTrack({ steps, spots, icons }: { steps: [string, string][]; spots?: Spot[]; icons?: Ico[] }) {
+  return (
+    <Stagger as="ol" className={`grid sm:grid-cols-2 ${COLS[steps.length] ?? "lg:grid-cols-4"} gap-4`}>
+      {steps.map(([t, d], k) => {
+        const S = spots?.[k];
+        const G = icons?.[k];
+        const last = k === steps.length - 1;
+        return (
+          <li key={t} className={`relative ${CARD} p-8 flex flex-col`} style={{ ...EDGE, zIndex: steps.length - k }}>
+            <div className="flex items-center justify-between gap-4">
+              {G ? <Tile icon={G} /> : S ? <SpotTile S={S} /> : null}
+              <span className={LABEL} style={{ color: BB.cobalt }}>
+                Step {String(k + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
+              {t}
+            </h3>
+            <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+              {d}
+            </p>
+            {!last && (
+              <span
+                aria-hidden
+                className="hidden lg:grid absolute top-1/2 -right-6 -translate-y-1/2 w-8 h-8 place-items-center rounded-[8px] bg-white"
+                style={{ ...EDGE, color: BB.cobalt }}
+              >
+                <I.arrow size={16} />
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </Stagger>
+  );
+}
+
+/** The two outcomes of a confidence score, as chips. Amber means review. */
+export function ScoreChip({ low, score }: { low: boolean; score?: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-2 h-8 px-3 rounded-[8px] font-mono-g text-[13px] uppercase tracking-[0.06em] tabular-nums whitespace-nowrap"
+      style={low ? { background: "#FFF6E0", color: BB.amberInk, border: `1px solid ${BB.amber}` } : { background: BB.mist2, color: BB.cobaltDeep }}
+    >
+      {low ? <I.flag size={16} /> : <I.check size={16} weight="bold" />}
+      {low ? "Review" : "Accepted"}
+      {score !== undefined && <span>{score.toFixed(2)}</span>}
+    </span>
+  );
+}
+
+/** What happens either side of the review line: one ruled row per outcome. */
+export function RouteLegend({ rows }: { rows: { low: boolean; t: string; d: string }[] }) {
+  return (
+    <dl className={`${CARD} px-8`} style={EDGE}>
+      {rows.map((r, k) => (
+        <div key={r.t} className="py-8" style={{ borderTop: k ? `1px solid ${BB.line}` : undefined }}>
+          <dt>
+            <ScoreChip low={r.low} />
+            <span className="mt-4 block font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
+              {r.t}
             </span>
-            {t}
           </dt>
-          <dd className="mt-3 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
-            {d}
+          <dd className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+            {r.d}
           </dd>
         </div>
       ))}
@@ -95,58 +201,18 @@ export function CapabilityGrid({ items }: { items: [string, string][] }) {
   );
 }
 
-/* numbered steps as cards; an optional spot per step */
-export function StepTrack({ steps, spots }: { steps: [string, string][]; spots?: Spot[] }) {
-  return (
-    <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-      {steps.map(([t, d], k) => {
-        const S = spots?.[k];
-        return (
-          <li key={t} className={`${CARD} p-7 flex flex-col`} style={CARD_EDGE}>
-            <div className="flex items-start justify-between">
-              {S ? (
-                <SpotWell>
-                  <S size={56} />
-                </SpotWell>
-              ) : (
-                <span
-                  className="grid place-items-center w-11 h-11 rounded-full font-sans-g text-[16px] font-medium tabular-nums"
-                  style={{ background: SA.accentSoft, color: "#2348B8" }}
-                >
-                  {k + 1}
-                </span>
-              )}
-              {S && (
-                <span className="font-mono-g text-[13px]" style={{ color: SA.faint }}>
-                  0{k + 1}
-                </span>
-              )}
-            </div>
-            <span className="mt-6 block font-sans-g text-[1.25rem] font-medium" style={{ color: SA.ink }}>
-              {t}
-            </span>
-            <span className="mt-2 block font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
-              {d}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
-  );
-}
-
-/* sample output: field, value, score (with a word, not just a colour) */
+/* sample output: field, value, score (with a word and a glyph, not just a colour) */
 export function OutputTable({ caption, rows, line = 0.9 }: { caption: string; rows: { field: string; value: string; score: number }[]; line?: number }) {
   return (
-    <div className={`${CARD} overflow-x-auto max-w-[900px] mx-auto`} style={CARD_EDGE}>
-      <table className="w-full min-w-[480px] text-left">
-        <caption className="px-6 pt-5 pb-3 text-left font-sans-g text-[14px]" style={{ color: SA.faint }}>
+    <div className={`${CARD} overflow-x-auto`} style={EDGE} tabIndex={0} role="region" aria-label={caption}>
+      <table className="w-full min-w-[520px] text-left">
+        <caption className={`px-8 pt-8 pb-4 text-left ${LABEL}`} style={{ color: BB.ink3 }}>
           {caption}
         </caption>
         <thead>
-          <tr style={{ borderBottom: `1px solid ${SA.line}` }}>
+          <tr style={{ borderBottom: `1px solid ${BB.line}` }}>
             {["Field", "Value", "Confidence"].map((h) => (
-              <th key={h} scope="col" className="px-6 py-3 font-sans-g text-[13px] font-medium" style={{ color: SA.faint }}>
+              <th key={h} scope="col" className={`px-8 py-4 font-medium ${LABEL}`} style={{ color: BB.ink3 }}>
                 {h}
               </th>
             ))}
@@ -156,20 +222,15 @@ export function OutputTable({ caption, rows, line = 0.9 }: { caption: string; ro
           {rows.map((r, i) => {
             const low = r.score < line;
             return (
-              <tr key={r.field} style={{ borderTop: i ? `1px solid ${SA.line}` : undefined }}>
-                <th scope="row" className="px-6 py-3.5 font-mono-g text-[14px] font-normal" style={{ color: SA.sub }}>
+              <tr key={r.field} style={{ borderTop: i ? `1px solid ${BB.line}` : undefined, background: low ? "#FFFBF0" : undefined }}>
+                <th scope="row" className="px-8 py-4 font-mono-g text-[13px] font-normal" style={{ color: BB.ink3 }}>
                   {r.field}
                 </th>
-                <td className="px-6 py-3.5 font-mono-g text-[14px]" style={{ color: SA.ink }}>
+                <td className="px-8 py-4 font-mono-g text-[13px]" style={{ color: BB.ink }}>
                   {r.value}
                 </td>
-                <td className="px-6 py-3.5">
-                  <span
-                    className="inline-flex items-center gap-1 h-6 px-2 rounded-[6px] font-mono-g text-[12px] font-medium tabular-nums"
-                    style={{ background: low ? "#FEF3C7" : "#ECFDF5", color: low ? "#78350F" : "#065F46" }}
-                  >
-                    {low ? "Review" : "Accepted"} {r.score.toFixed(2)}
-                  </span>
+                <td className="px-8 py-4">
+                  <ScoreChip low={low} score={r.score} />
                 </td>
               </tr>
             );
@@ -180,26 +241,27 @@ export function OutputTable({ caption, rows, line = 0.9 }: { caption: string; ro
   );
 }
 
-/* a no-JS FAQ: native disclosure, keyboard and screen-reader ready */
+/* a no-JS FAQ: one card of ruled questions, each a native disclosure,
+   keyboard and screen-reader ready */
 export function FaqList({ faqs }: { faqs: [string, string][] }) {
   return (
-    <div className="max-w-[860px] mx-auto grid gap-2">
-      {faqs.map(([q, a]) => (
-        <details key={q} className={`group ${CARD} px-6`} style={CARD_EDGE}>
+    <div className={`${CARD} max-w-[860px] px-8`} style={EDGE}>
+      {faqs.map(([q, a], k) => (
+        <details key={q} className="group" style={{ borderTop: k ? `1px solid ${BB.line}` : undefined }}>
           <summary
-            className="flex items-center justify-between gap-6 py-5 cursor-pointer list-none font-sans-g text-[17px] font-medium [&::-webkit-details-marker]:hidden"
-            style={{ color: SA.ink }}
+            className="flex items-center justify-between gap-8 py-8 cursor-pointer list-none font-sans-g t-sub font-medium [&::-webkit-details-marker]:hidden"
+            style={{ color: BB.ink }}
           >
             {q}
             <span
               aria-hidden
-              className="shrink-0 grid place-items-center w-8 h-8 rounded-full text-[18px] leading-none transition-transform duration-200 group-open:rotate-45"
-              style={{ background: SA.bg2, color: SA.ink }}
+              className="shrink-0 grid place-items-center w-8 h-8 rounded-[8px] text-[20px] leading-none transition-transform duration-200 group-open:rotate-45"
+              style={{ background: BB.mist2, color: BB.cobalt }}
             >
               +
             </span>
           </summary>
-          <p className="pb-6 pr-10 font-sans-g text-base leading-[1.65]" style={{ color: SA.sub }}>
+          <p className="-mt-4 pb-8 pr-12 font-sans-g t-base max-w-[64ch]" style={{ color: BB.ink3 }}>
             {a}
           </p>
         </details>
@@ -208,62 +270,53 @@ export function FaqList({ faqs }: { faqs: [string, string][] }) {
   );
 }
 
-/* related pages, as cards; an optional spot per card */
-export function RelatedLinks({ items }: { items: { t: string; d: string; href: string; Spot?: Spot }[] }) {
+/* related pages, as whole-card links; an optional spot or icon per card */
+export function RelatedLinks({ items }: { items: { t: string; d: string; href: string; Spot?: Spot; icon?: Ico }[] }) {
   return (
-    <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <Stagger as="ul" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((x) => (
         <li key={x.href + x.t}>
           <Link
             href={x.href}
-            className={`group ${CARD} h-full flex items-start gap-5 p-6 transition-[border-color,box-shadow] duration-200 hover:border-[#D4D4DA] hover:shadow-[0_16px_32px_-24px_rgba(30,33,48,0.3)]`}
-            style={CARD_EDGE}
+            className={`group ${CARD} h-full flex flex-col p-8 transition-[border-color,box-shadow] duration-200 hover:border-[#9AA0AC] hover:shadow-[0_8px_16px_-8px_rgba(14,17,22,0.12)]`}
+            style={EDGE}
           >
-            {x.Spot && (
-              <SpotWell size={64}>
-                <x.Spot size={44} />
-              </SpotWell>
-            )}
-            <span className="min-w-0 flex-1">
-              <span className="flex items-center justify-between gap-3 font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
-                {x.t}
-                <IconArrow size={16} className="shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" style={{ color: SA.faint }} />
-              </span>
-              <span className="mt-1.5 block font-sans-g text-[15px] leading-[1.55]" style={{ color: SA.sub }}>
-                {x.d}
-              </span>
+            <span className="flex items-start justify-between gap-4">
+              {x.icon ? <Tile icon={x.icon} /> : x.Spot ? <SpotTile S={x.Spot} /> : <span />}
+              <I.arrow size={20} aria-hidden className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" style={{ color: BB.cobalt }} />
+            </span>
+            <span className="mt-8 block font-sans-g t-sub font-medium" style={{ color: BB.ink }}>
+              {x.t}
+            </span>
+            <span className="mt-4 block font-sans-g t-base" style={{ color: BB.ink3 }}>
+              {x.d}
             </span>
           </Link>
         </li>
       ))}
-    </ul>
+    </Stagger>
   );
 }
 
-/* "at a glance": a framed card of facts that sits on the header wash */
+/* "at a glance": one white card of facts, label over value, ruled cells */
 export function Glance({ title, rows }: { title: string; rows: [string, string][] }) {
   return (
-    <div
-      className="max-w-[1000px] mx-auto rounded-[28px] p-2"
-      style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 30px 60px -40px rgba(30,40,90,0.35)" }}
-    >
-      <div className={`${CARD} overflow-hidden`} style={CARD_EDGE}>
-        <p className="px-6 pt-5 pb-1 font-sans-g text-[13px] font-medium uppercase tracking-[0.12em] text-center" style={{ color: SA.faint }}>
-          {title}
-        </p>
-        <dl className={`grid sm:grid-cols-2 ${rows.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
-          {rows.map(([k, v]) => (
-            <div key={k} className="px-6 py-5 text-center">
-              <dt className="font-sans-g text-[14px]" style={{ color: SA.faint }}>
-                {k}
-              </dt>
-              <dd className="mt-1.5 font-sans-g text-[1.0625rem] font-medium leading-snug" style={{ color: SA.ink }}>
-                {v}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </div>
+    <div className={`${CARD} overflow-hidden`} style={EDGE}>
+      <p className={`px-8 pt-8 ${LABEL}`} style={{ color: BB.ink3 }}>
+        {title}
+      </p>
+      <dl className={`mt-4 grid sm:grid-cols-2 ${rows.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
+        {rows.map(([k, v]) => (
+          <div key={k} className="px-8 py-8" style={{ borderTop: `1px solid ${BB.line}` }}>
+            <dt className={LABEL} style={{ color: BB.cobalt }}>
+              {k}
+            </dt>
+            <dd className="mt-4 font-sans-g t-base font-medium" style={{ color: BB.ink }}>
+              {v}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </div>
   );
 }

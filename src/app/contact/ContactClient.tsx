@@ -4,35 +4,27 @@ import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import { SA } from "@/lib/theme";
+import { BB } from "@/lib/theme";
 import { SOURCES, TOPICS, isSource, type Source } from "@/lib/contacts";
-import { WRAP, Crumbs, Wash, SpotWell } from "@/components/page/kit";
+import { PageHero, WRAP } from "@/components/page/kit";
 import { BtnButton } from "@/components/system/Btn";
-import { IconCheck, IconArrow } from "@/components/icons/BqIcons";
-import {
-  type Spot,
-  SpotChat,
-  SpotRead,
-  SpotScore,
-  SpotCapture,
-  SpotSecure,
-  SpotCustom,
-  SpotSonar,
-  SpotSpend,
-  SpotTeam,
-  SpotFaq,
-} from "@/components/icons/Spots";
+import { I, Tile, type Ico } from "@/components/home/icons";
+import { Head, Stagger } from "@/components/home/motion";
+import { SqBtn } from "@/components/home/ui";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 /* ────────────────────────────────────────────────────────────────
-   /contact — a split navy header with the form in it, so the form is the
-   first thing on screen at every width.
+   /contact: one job, send a request. Reading order:
+     1. the header (what this page is),
+     2. the form, the primary object, with "what happens next" beside it,
+     3. other ways in, for people who do not need the form.
 
    Every request is saved to the shared `blue-iq-contacts-form` table through
    POST /api/contact. A product that links here passes ?source=govern (or
    capture, spend…) and the record says so; ?email= pre-fills the field
-   from the home page CTA; ?product= pre-selects the product.
+   from the home page CTA; ?product= pre-selects the product; ?topic= or
+   #pricing sets the topic.
    ──────────────────────────────────────────────────────────────── */
 
 /* Cloudflare Turnstile switches on when its site key is set */
@@ -41,39 +33,39 @@ const TURNSTILE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 const PRODUCTS = ["Not sure yet", "Capture", "Spend", "Govern", "Campus edition", "Workforce edition", "Custom build"];
 const VOLUMES = ["", "Under 1,000", "1,000 to 10,000", "10,000 to 100,000", "Over 100,000"];
 
-/* each topic as a card: a spot, one line, and the example the message box shows */
-const TOPIC_INFO: Record<string, { Spot: Spot; d: string; eg: string }> = {
-  "A demo": { Spot: SpotSonar, d: "Sonar on your own files", eg: "For example: 2,000 vendor invoices a month, mostly scanned PDFs." },
-  Pricing: { Spot: SpotSpend, d: "Plans for your volume", eg: "For example: around 5,000 contracts a year across two teams." },
-  "A custom build": { Spot: SpotCustom, d: "Built on Sonar for you", eg: "For example: we need credential checks pulled from licence scans into our ATS." },
-  "Security review": { Spot: SpotSecure, d: "Controls and documentation", eg: "For example: our security team needs your data handling and access details." },
-  Support: { Spot: SpotTeam, d: "Help with a product", eg: "For example: which product, what happened, and when." },
-  "Something else": { Spot: SpotFaq, d: "Any other question", eg: "Tell us what you are looking for." },
+/* each topic as a choice: an icon, one line, and the example the message box shows */
+const TOPIC_INFO: Record<string, { icon: Ico; d: string; eg: string }> = {
+  "A demo": { icon: I.sonar, d: "Sonar on your own files", eg: "For example: 2,000 vendor invoices a month, mostly scanned PDFs." },
+  Pricing: { icon: I.pricing, d: "Plans for your volume", eg: "For example: around 5,000 contracts a year across two teams." },
+  "A custom build": { icon: I.custom, d: "Built on Sonar for you", eg: "For example: we need credential checks pulled from licence scans into our ATS." },
+  "Security review": { icon: I.trust, d: "Controls and documentation", eg: "For example: our security team needs your data handling and access details." },
+  Support: { icon: I.team, d: "Help with a product", eg: "For example: which product, what happened, and when." },
+  "Something else": { icon: I.faq, d: "Any other question", eg: "Tell us what you are looking for." },
 };
 
-const NEXT: { Spot: Spot; t: string; d: string }[] = [
-  { Spot: SpotChat, t: "A person reads your request", d: "Someone from our team, not a bot." },
-  { Spot: SpotRead, t: "You share a few real documents", d: "The messy ones are the useful ones." },
-  { Spot: SpotScore, t: "We read them with Sonar, live", d: "Every field, every score, every flag." },
+const NEXT: { t: string; d: string }[] = [
+  { t: "A person reads your request", d: "Someone from our team, not a bot." },
+  { t: "You share a few real documents", d: "The messy ones are the useful ones." },
+  { t: "We read them with Sonar, live", d: "Every field, every score, every flag." },
 ];
 
-const MORE: { Spot: Spot; t: string; d: string; href: string; cta: string }[] = [
+const MORE: { icon: Ico; t: string; d: string; href: string; cta: string }[] = [
   {
-    Spot: SpotCapture,
+    icon: I.capture,
     t: "Already a customer?",
     d: "Sign in to your product, or send us a support request with the form above.",
     href: "https://www.parsinglab.blue-iq.ai/",
     cta: "Open Capture",
   },
   {
-    Spot: SpotSecure,
+    icon: I.trust,
     t: "Security review",
     d: "Controls, data handling and compliance, in one place for your security team.",
     href: "/trust",
     cta: "Visit the Trust Center",
   },
   {
-    Spot: SpotCustom,
+    icon: I.custom,
     t: "Scoping a custom build?",
     d: "See how we build document AI apps, migrations and integrations on Sonar.",
     href: "/solutions#custom",
@@ -84,22 +76,33 @@ const MORE: { Spot: Spot; t: string; d: string; href: string; cta: string }[] = 
 type Fields = { name: string; email: string; company: string; role: string; volume: string; product: string; message: string; website: string };
 type Errors = Partial<Record<"name" | "email" | "message", string>>;
 
-const LABEL = "font-sans-g text-[14px] font-medium";
+const LABEL = "font-sans-g t-base font-medium";
+const HELP = "font-sans-g t-meta-13";
+const RED = "#B91C1C";
 
-/* an inline field error: icon and words, never colour alone */
+/* an inline field error: words under the field, tied to it by aria-describedby */
 function FieldError({ id, msg }: { id: string; msg?: string }) {
   if (!msg) return null;
   return (
-    <p id={id} role="alert" className="font-sans-g t-meta" style={{ color: SA.red }}>
-      <span aria-hidden>⚠ </span>
+    <p id={id} role="alert" className={`${HELP} font-medium`} style={{ color: RED }}>
       {msg}
     </p>
   );
 }
 
+/* the "(optional)" note after a label, quieter than the label itself */
+function Optional() {
+  return (
+    <span className="font-normal" style={{ color: BB.ink3 }}>
+      {" "}
+      (optional)
+    </span>
+  );
+}
+
 /* while the form reads the URL, the card keeps its shape */
 function FormFallback() {
-  return <div aria-hidden className="rounded-[28px] bg-white min-h-[680px]" style={{ border: `1px solid ${SA.line}` }} />;
+  return <div aria-hidden className="rounded-2xl bg-white min-h-[720px]" style={{ border: `1px solid ${BB.line}` }} />;
 }
 
 /* The form: everything that needs the URL or the browser lives here, inside
@@ -180,306 +183,312 @@ function ContactForm() {
     }
   }
 
+  /* inputs: a 12px box, a 3:1 border, ink text, the global 2px focus ring
+     plus a cobalt border on focus; an error doubles the border in red */
   const field = (bad?: string) =>
-    `w-full min-h-12 rounded-[12px] px-4 py-2.5 font-sans-g text-base text-[#1F1F1F] bg-white border transition-[border-color,box-shadow] duration-150 focus:outline-none focus:border-[#2F5FE0] focus:shadow-[0_0_0_4px_rgba(47,95,224,0.16)] disabled:opacity-45 disabled:cursor-not-allowed ${bad ? "border-[#B91C1C] border-2" : "border-[#8A8B94] hover:border-[#1F1F1F]"}`;
+    `w-full min-h-12 rounded-[12px] px-4 py-2 font-sans-g t-base text-[#0E1116] bg-white border transition-[border-color] duration-150 focus:border-[#1F4FE6] disabled:opacity-45 disabled:cursor-not-allowed ${bad ? "border-[#B91C1C] border-2" : "border-[#8A8B94] hover:border-[#0E1116]"}`;
 
+  const describe = (...ids: (string | false | undefined)[]) => ids.filter(Boolean).join(" ") || undefined;
   const first = v.name.trim().split(/\s+/)[0];
 
-  /* right: the form */
   return (
-    <div
-      className="rounded-[32px] p-2"
-      style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 40px 80px -48px rgba(30,40,90,0.45)" }}
-    >
-      <div className="relative rounded-[26px] bg-white p-6 sm:p-10" style={{ border: `1px solid ${SA.line}` }}>
-        {state === "sent" ? (
-          <div className="py-6 sm:py-10" role="status">
-            <span className="grid place-items-center w-14 h-14 rounded-full" style={{ background: "#ECFDF5", color: "#065F46" }}>
-              <IconCheck size={26} />
-            </span>
-            <h2 className="mt-6 font-display t-h2" style={{ color: SA.ink }}>
-              Thanks{first ? `, ${first}` : ""}. Your request is in.
-            </h2>
-            <p className="mt-3 font-sans-g text-[15.5px] leading-[1.6] max-w-[44ch]" style={{ color: SA.sub }}>
-              A person from our team will reply to <strong style={{ color: SA.ink }}>{v.email.trim()}</strong>.
+    <div className="relative rounded-2xl bg-white p-6 sm:p-8" style={{ border: `1px solid ${BB.line}` }}>
+      {state === "sent" ? (
+        <div className="py-8" role="status">
+          <Tile icon={I.check} size={64} />
+          <h2 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
+            Thanks{first ? `, ${first}` : ""}. Your request is in.
+          </h2>
+          <p className="mt-4 font-sans-g t-base max-w-[48ch]" style={{ color: BB.ink3 }}>
+            A person from our team will reply to <strong style={{ color: BB.ink }}>{v.email.trim()}</strong>.
+          </p>
+          {ref && (
+            <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+              Reference{" "}
+              <span className="font-mono-g font-medium tabular-nums" style={{ color: BB.ink }}>
+                {ref}
+              </span>
             </p>
-            {ref && (
-              <p className="mt-6 font-sans-g text-[14px]" style={{ color: SA.faint }}>
-                Reference{" "}
-                <span className="font-mono-g font-medium tabular-nums" style={{ color: SA.ink }}>
-                  {ref}
-                </span>
-              </p>
-            )}
-            <Link href="/" className="group mt-8 inline-flex items-center gap-2 font-sans-g text-[15px] font-medium" style={{ color: "#2348B8" }}>
-              Back to the home page <IconArrow size={16} className="transition-transform group-hover:translate-x-0.5" />
-            </Link>
+          )}
+          <div className="mt-8">
+            <SqBtn href="/" tone="outline" arrow>
+              Back to the home page
+            </SqBtn>
           </div>
-        ) : (
-          <form onSubmit={send} noValidate className="flex flex-col gap-5">
-            <fieldset>
-              <legend className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
-                What can we help with?
-              </legend>
-              <p className="mt-1 font-sans-g text-[14px]" style={{ color: SA.faint }}>
-                Choose one, so the right person replies.
-              </p>
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                {TOPICS.map((t) => {
-                  const on = t === topic;
-                  const info = TOPIC_INFO[t];
-                  return (
-                    <label key={t} className="relative cursor-pointer">
-                      <input type="radio" name="topic" value={t} checked={on} onChange={() => setTopic(t)} className="peer sr-only" />
-                      <span
-                        className={`flex h-full flex-col gap-3 rounded-[16px] p-3.5 sm:p-4 transition-[border-color,background-color,box-shadow] duration-150 peer-focus-visible:shadow-[0_0_0_4px_rgba(47,95,224,0.25)] ${on ? "bg-[#F5F8FF]" : "bg-white hover:border-[#8A8B94]"}`}
-                        style={{ border: on ? "2px solid #2F5FE0" : "1px solid #DEDEE3", margin: on ? 0 : 1 }}
-                      >
-                        <span className="flex items-start justify-between">
-                          <span className="grid place-items-center w-11 h-11 rounded-[12px]" style={{ background: on ? "#FFFFFF" : "#EEF3FF" }}>
-                            {info && <info.Spot size={30} />}
-                          </span>
-                          <span
-                            aria-hidden
-                            className="grid place-items-center w-5 h-5 rounded-full transition-colors duration-150"
-                            style={{ background: on ? "#2F5FE0" : "transparent", border: on ? "none" : "1.5px solid #8A8B94", color: "#FFFFFF" }}
-                          >
-                            {on && <IconCheck size={12} />}
-                          </span>
+        </div>
+      ) : (
+        <form onSubmit={send} noValidate className="flex flex-col gap-8">
+          {/* step 1: the topic routes the request to the right person */}
+          <fieldset>
+            <legend className="font-head h-card" style={{ color: BB.ink }}>
+              What can we help with?
+            </legend>
+            <p className="mt-2 font-sans-g t-base" style={{ color: BB.ink3 }}>
+              Choose one, so the right person replies.
+            </p>
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {TOPICS.map((t) => {
+                const on = t === topic;
+                const info = TOPIC_INFO[t];
+                return (
+                  <label key={t} className="relative cursor-pointer">
+                    <input type="radio" name="topic" value={t} checked={on} onChange={() => setTopic(t)} className="peer sr-only" />
+                    <span
+                      className={`flex h-full items-center gap-4 rounded-[12px] bg-white p-4 transition-[border-color] duration-150 peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-[#2563EB] ${on ? "" : "hover:border-[#0E1116]"}`}
+                      style={{ border: on ? `2px solid ${BB.cobalt}` : `1px solid ${BB.line}`, margin: on ? 0 : 1 }}
+                    >
+                      {info && <Tile icon={info.icon} size={40} />}
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-sans-g t-base font-medium" style={{ color: BB.ink }}>
+                          {t}
                         </span>
-                        <span>
-                          <span className="block font-sans-g text-[15px] font-medium leading-snug" style={{ color: SA.ink }}>
-                            {t}
+                        {info && (
+                          <span className={`block ${HELP}`} style={{ color: BB.ink3 }}>
+                            {info.d}
                           </span>
-                          {info && (
-                            <span className="block mt-0.5 font-sans-g text-[13px] leading-snug" style={{ color: SA.faint }}>
-                              {info.d}
-                            </span>
-                          )}
-                        </span>
+                        )}
                       </span>
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="name" className={LABEL} style={{ color: SA.ink }}>
-                  Full name
-                </label>
-                <input
-                  id="name"
-                  autoComplete="name"
-                  value={v.name}
-                  onChange={set("name")}
-                  className={field(errors.name)}
-                  aria-invalid={!!errors.name}
-                  aria-describedby={errors.name ? "name-err" : undefined}
-                />
-                <FieldError id="name-err" msg={errors.name} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className={LABEL} style={{ color: SA.ink }}>
-                  Work email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={v.email}
-                  onChange={set("email")}
-                  className={field(errors.email)}
-                  aria-invalid={!!errors.email}
-                  aria-describedby={errors.email ? "email-err" : undefined}
-                />
-                <FieldError id="email-err" msg={errors.email} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="company" className={LABEL} style={{ color: SA.ink }}>
-                  Company{" "}
-                  <span className="font-normal" style={{ color: SA.faint }}>
-                    (optional)
-                  </span>
-                </label>
-                <input id="company" autoComplete="organization" value={v.company} onChange={set("company")} className={field()} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="role" className={LABEL} style={{ color: SA.ink }}>
-                  Job title{" "}
-                  <span className="font-normal" style={{ color: SA.faint }}>
-                    (optional)
-                  </span>
-                </label>
-                <input id="role" autoComplete="organization-title" value={v.role} onChange={set("role")} className={field()} />
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="product" className={LABEL} style={{ color: SA.ink }}>
-                  Product
-                </label>
-                <select id="product" value={v.product} onChange={set("product")} className={`${field()} appearance-none bq-select pr-10`}>
-                  {PRODUCTS.map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="volume" className={LABEL} style={{ color: SA.ink }}>
-                  Documents a month{" "}
-                  <span className="font-normal" style={{ color: SA.faint }}>
-                    (optional)
-                  </span>
-                </label>
-                <select id="volume" value={v.volume} onChange={set("volume")} className={`${field()} appearance-none bq-select pr-10`}>
-                  {VOLUMES.map((x) => (
-                    <option key={x} value={x}>
-                      {x || "Choose a range"}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                      <span
+                        aria-hidden
+                        className="shrink-0 grid place-items-center w-5 h-5 rounded-full"
+                        style={{ background: on ? BB.cobalt : "transparent", border: on ? "none" : "1.5px solid #8A8B94", color: "#FFFFFF" }}
+                      >
+                        {on && <I.check size={12} weight="bold" />}
+                      </span>
+                    </span>
+                  </label>
+                );
+              })}
             </div>
+          </fieldset>
 
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="message" className={LABEL} style={{ color: SA.ink }}>
-                What are you trying to read?
+          {/* step 2: who you are */}
+          <div className="grid sm:grid-cols-2 gap-x-4 gap-y-6">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="name" className={LABEL} style={{ color: BB.ink }}>
+                Full name
               </label>
-              <textarea
-                id="message"
-                rows={4}
-                value={v.message}
-                onChange={set("message")}
-                placeholder={TOPIC_INFO[topic]?.eg ?? "Tell us what you are looking for."}
-                className={`${field(errors.message)} resize-y placeholder:text-[#6B6C75]`}
-                aria-invalid={!!errors.message}
-                aria-describedby={errors.message ? "message-err" : undefined}
+              <input
+                id="name"
+                name="name"
+                autoComplete="name"
+                value={v.name}
+                onChange={set("name")}
+                className={field(errors.name)}
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "name-err" : undefined}
               />
+              <FieldError id="name-err" msg={errors.name} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className={LABEL} style={{ color: BB.ink }}>
+                Work email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={v.email}
+                onChange={set("email")}
+                className={field(errors.email)}
+                aria-invalid={!!errors.email}
+                aria-describedby={describe(errors.email ? "email-err" : "email-help")}
+              />
+              {errors.email ? (
+                <FieldError id="email-err" msg={errors.email} />
+              ) : (
+                <p id="email-help" className={HELP} style={{ color: BB.ink3 }}>
+                  We reply to this address.
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="company" className={LABEL} style={{ color: BB.ink }}>
+                Company
+                <Optional />
+              </label>
+              <input id="company" name="company" autoComplete="organization" value={v.company} onChange={set("company")} className={field()} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="role" className={LABEL} style={{ color: BB.ink }}>
+                Job title
+                <Optional />
+              </label>
+              <input id="role" name="role" autoComplete="organization-title" value={v.role} onChange={set("role")} className={field()} />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="product" className={LABEL} style={{ color: BB.ink }}>
+                Product
+              </label>
+              <select id="product" name="product" value={v.product} onChange={set("product")} className={`${field()} appearance-none bq-select pr-10`}>
+                {PRODUCTS.map((p) => (
+                  <option key={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="volume" className={LABEL} style={{ color: BB.ink }}>
+                Documents a month
+                <Optional />
+              </label>
+              <select id="volume" name="volume" value={v.volume} onChange={set("volume")} className={`${field()} appearance-none bq-select pr-10`}>
+                {VOLUMES.map((x) => (
+                  <option key={x} value={x}>
+                    {x || "Choose a range"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* step 3: the request itself */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="message" className={LABEL} style={{ color: BB.ink }}>
+              What are you trying to read?
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows={5}
+              value={v.message}
+              onChange={set("message")}
+              placeholder={TOPIC_INFO[topic]?.eg ?? "Tell us what you are looking for."}
+              className={`${field(errors.message)} resize-y placeholder:text-[#6B6C75]`}
+              aria-invalid={!!errors.message}
+              aria-describedby={describe(errors.message ? "message-err" : "message-help")}
+            />
+            {errors.message ? (
               <FieldError id="message-err" msg={errors.message} />
-            </div>
-
-            {/* honeypot: hidden from people and screen readers */}
-            <div aria-hidden className="absolute -left-[9999px] w-px h-px overflow-hidden">
-              <label htmlFor="website">Website</label>
-              <input id="website" tabIndex={-1} autoComplete="off" value={v.website} onChange={set("website")} />
-            </div>
-
-            {TURNSTILE_KEY && (
-              <>
-                <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
-                <div className="cf-turnstile" data-sitekey={TURNSTILE_KEY} data-callback="bqTurnstile" data-theme="light" data-size="flexible" />
-              </>
-            )}
-
-            {state === "failed" && (
-              <p
-                role="alert"
-                className="rounded-[10px] px-4 py-3 font-sans-g text-[14px]"
-                style={{ background: "#FDF1EE", color: "#8A2F1C", border: "1px solid #F3C9BE" }}
-              >
-                {fail} Please try again in a moment.
+            ) : (
+              <p id="message-help" className={HELP} style={{ color: BB.ink3 }}>
+                The document types and rough volumes are enough to start.
               </p>
             )}
+          </div>
 
-            <div className="pt-1 flex flex-col sm:flex-row sm:items-center gap-4">
-              <BtnButton type="submit" size="lg" arrow loading={state === "sending"}>
-                {state === "sending" ? "Sending" : "Send request"}
-              </BtnButton>
-              <p className="font-sans-g text-[13px] leading-[1.5]" style={{ color: SA.faint }}>
-                We use your details only to reply. See our{" "}
-                <Link href="/privacy" className="underline underline-offset-2 hover:text-[#1F1F1F]">
-                  privacy policy
-                </Link>
-                .
-              </p>
-            </div>
-          </form>
-        )}
-      </div>
+          {/* honeypot: hidden from people and screen readers */}
+          <div aria-hidden className="absolute -left-[9999px] w-px h-px overflow-hidden">
+            <label htmlFor="website">Website</label>
+            <input id="website" name="website" tabIndex={-1} autoComplete="off" value={v.website} onChange={set("website")} />
+          </div>
+
+          {TURNSTILE_KEY && (
+            <>
+              <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+              <div className="cf-turnstile" data-sitekey={TURNSTILE_KEY} data-callback="bqTurnstile" data-theme="light" data-size="flexible" />
+            </>
+          )}
+
+          {state === "failed" && (
+            <p role="alert" className="rounded-[12px] bg-white px-4 py-4 font-sans-g t-base" style={{ color: RED, border: `2px solid ${RED}` }}>
+              {fail} Please try again in a moment.
+            </p>
+          )}
+
+          <div className="pt-8 flex flex-col sm:flex-row sm:items-center gap-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+            <BtnButton type="submit" variant="brand" size="lg" arrow loading={state === "sending"} className="w-full sm:w-auto">
+              {state === "sending" ? "Sending" : "Send request"}
+            </BtnButton>
+            <p className={HELP} style={{ color: BB.ink3 }}>
+              We use your details only to reply. See our{" "}
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-[#0E1116]">
+                privacy policy
+              </Link>
+              .
+            </p>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
 
 export default function ContactClient() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <SiteNav overDark={false} />
       <main id="main">
-        {/* header and form, on the wash */}
-        <section className="relative isolate" aria-labelledby="contact-h">
-          <Wash tall />
-          <div className={`${WRAP} pt-32 sm:pt-40 pb-16 grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] gap-10 lg:gap-14 items-start`}>
-            <div className="lg:pt-4">
-              <Crumbs here="Contact" />
-              <h1 id="contact-h" className="mt-6 font-display t-display max-w-[14ch]" style={{ color: SA.ink }}>
-                Talk to the Blue-IQ team
-              </h1>
-              <p className="mt-5 font-sans-g text-[1.125rem] sm:text-[1.25rem] leading-[1.6] max-w-[40ch]" style={{ color: "#3A3B44" }}>
-                Book a demo on your own documents, ask about pricing, or scope a custom build.
-              </p>
+        {/* 1 + 2: the header, then the form with what happens next beside it */}
+        <PageHero
+          here="Contact"
+          id="contact-h"
+          title="Talk to the Blue-IQ team"
+          lede="Book a demo on your own documents, ask about pricing, or scope a custom build."
+        >
+          <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+            <div className="lg:col-span-2 min-w-0">
+              <Suspense fallback={<FormFallback />}>
+                <ContactForm />
+              </Suspense>
+            </div>
 
-              <p className="mt-12 font-sans-g text-[13px] font-medium uppercase tracking-[0.12em]" style={{ color: "#4A4B53" }}>
+            <aside aria-labelledby="next-h" className="lg:sticky lg:top-28">
+              <h2 id="next-h" className="font-head h-card" style={{ color: BB.ink }}>
                 What happens next
-              </p>
-              <ol className="mt-4 grid gap-3">
+              </h2>
+              <Stagger as="ol" className="mt-4">
                 {NEXT.map((x, k) => (
-                  <li key={x.t} className="flex items-center gap-4 rounded-[20px] bg-white p-4" style={{ border: `1px solid ${SA.line}` }}>
-                    <SpotWell size={56}>
-                      <x.Spot size={38} />
-                    </SpotWell>
-                    <span className="min-w-0">
-                      <span className="block font-sans-g text-[16px] font-medium" style={{ color: SA.ink }}>
-                        <span className="font-mono-g text-[13px] mr-2" style={{ color: SA.faint }}>
-                          0{k + 1}
-                        </span>
+                  <li key={x.t} className="grid grid-cols-[40px_minmax(0,1fr)] gap-4 py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                    <span className="font-mono-g text-[13px] uppercase tracking-[0.06em] pt-1 tabular-nums" style={{ color: BB.cobalt }}>
+                      0{k + 1}
+                    </span>
+                    <span>
+                      <span className="block font-sans-g t-base font-medium" style={{ color: BB.ink }}>
                         {x.t}
                       </span>
-                      <span className="block mt-0.5 font-sans-g text-[14.5px]" style={{ color: SA.sub }}>
+                      <span className="block font-sans-g t-base" style={{ color: BB.ink3 }}>
                         {x.d}
                       </span>
                     </span>
                   </li>
                 ))}
-              </ol>
-            </div>
-
-            <Suspense fallback={<FormFallback />}>
-              <ContactForm />
-            </Suspense>
+              </Stagger>
+            </aside>
           </div>
-        </section>
+        </PageHero>
 
-        {/* other ways in */}
-        <section className={`${WRAP} pt-8 pb-24 sm:pb-32`} aria-labelledby="more-h">
-          <h2 id="more-h" className="text-center font-display t-h1" style={{ color: SA.ink }}>
-            Other ways in
-          </h2>
-          <ul className="mt-12 grid md:grid-cols-3 gap-3">
-            {MORE.map((x) => (
-              <li key={x.t}>
-                <a
-                  href={x.href}
-                  className="group h-full flex flex-col rounded-[24px] bg-white p-7 sm:p-8 transition-[border-color,box-shadow] duration-200 hover:border-[#D4D4DA] hover:shadow-[0_16px_32px_-24px_rgba(30,33,48,0.3)]"
-                  style={{ border: `1px solid ${SA.line}` }}
-                >
-                  <SpotWell>
-                    <x.Spot size={56} />
-                  </SpotWell>
-                  <span className="mt-6 font-sans-g text-[1.25rem] font-medium" style={{ color: SA.ink }}>
+        {/* 3: other ways in */}
+        <section className={`${WRAP} py-24`} aria-labelledby="more-h">
+          <Head id="more-h" title="Other ways in" />
+          <Stagger as="ul" className="mt-12 grid md:grid-cols-3 gap-4">
+            {MORE.map((x) => {
+              const inner = (
+                <>
+                  <Tile icon={x.icon} />
+                  <span className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                     {x.t}
                   </span>
-                  <span className="mt-2 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
+                  <span className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                     {x.d}
                   </span>
-                  <span className="mt-auto pt-6 inline-flex items-center gap-1.5 font-sans-g text-[15px] font-medium" style={{ color: "#2348B8" }}>
+                  <span
+                    className="mt-auto pt-8 inline-flex items-center gap-2 font-mono-g text-[13px] font-medium uppercase tracking-[0.06em]"
+                    style={{ color: BB.cobalt }}
+                  >
                     {x.cta}
-                    <IconArrow size={15} className="transition-transform duration-150 group-hover:translate-x-0.5" />
+                    <I.arrow size={16} className="transition-transform duration-150 group-hover:translate-x-1" />
                   </span>
-                </a>
-              </li>
-            ))}
-          </ul>
+                </>
+              );
+              const cls =
+                "group h-full flex flex-col rounded-2xl bg-white p-8 border border-[#D9DCE2] transition-[border-color] duration-200 hover:border-[#0E1116]";
+              return (
+                <li key={x.t}>
+                  {x.href.startsWith("/") ? (
+                    <Link href={x.href} className={cls}>
+                      {inner}
+                    </Link>
+                  ) : (
+                    <a href={x.href} className={cls}>
+                      {inner}
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </Stagger>
         </section>
       </main>
       <SiteFooter cta={false} />

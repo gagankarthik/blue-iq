@@ -1,18 +1,18 @@
 import type { Metadata, Viewport } from "next";
-import { Newsreader, Figtree, IBM_Plex_Mono } from "next/font/google";
+import { Figtree, IBM_Plex_Mono, Hanken_Grotesk } from "next/font/google";
 import "@/app/globals.css";
 
-/* Three faces, each with one job:
-   · Newsreader — headlines: a soft, low-contrast display serif set light and
-     tight (the role Season Mix plays on sarvam.ai)
-   · Figtree — every word of UI and body copy: a clean geometric sans
-   · IBM Plex Mono — data only (scores, values, code)
+/* Three faces, each with one job (2026-11):
+   · Hanken Grotesk — every headline (the face the wordmark is drawn from)
+   · Figtree — every word of UI and body copy
+   · IBM Plex Mono — labels and data (scores, values, code)
    The older CSS variable names are kept so nothing downstream changes. */
-const display = Newsreader({
-  variable: "--font-display",
+/* Hanken Grotesk — the home page, nav and footer headlines (the face the
+   wordmark is drawn from): a tight, confident grotesque */
+const head = Hanken_Grotesk({
+  variable: "--font-head",
   subsets: ["latin"],
   display: "swap",
-  /* variable font: one file covers every weight */
 });
 
 const sans = Figtree({
@@ -176,7 +176,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${sans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${sans.variable} ${head.variable} ${geistMono.variable} antialiased`}>
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:text-white focus:text-sm"

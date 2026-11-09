@@ -1,7 +1,9 @@
-import { Btn } from "@/components/system/Btn";
+import { BB } from "@/lib/theme";
+import { SqBtn } from "@/components/home/ui";
 
-/* The close — a dark rounded card: deep ink fading to brand indigo at the
-   base, a light serif line, two pills. Every page ends on it. */
+/* The close: a square ink block inside the column gutter, centred: the
+   ask, one line, and the same two-button pair the hero opens with. Every page ends on it
+   (SiteFooter renders it when `cta` is on). */
 export default function CloseCta({
   title = "Put Sonar to work on your documents",
   sub = "Send us a few real files. We will read them with Sonar, live, and show you every value it finds.",
@@ -10,24 +12,23 @@ export default function CloseCta({
   sub?: string;
 }) {
   return (
-    <section className="px-3 sm:px-8 pt-8 pb-3 sm:pb-4" aria-labelledby="close-h">
-      <div
-        className="relative max-w-[1240px] mx-auto rounded-[28px] overflow-hidden px-6 sm:px-12 py-20 sm:py-24 text-center"
-        style={{ background: "linear-gradient(180deg, #1E2130 0%, #262C4D 50%, #3A4CA8 100%)" }}
-      >
-        <h2 id="close-h" className="relative mx-auto font-display t-h1 text-white max-w-[20ch]">
-          {title}
-        </h2>
-        <p className="relative mt-4 mx-auto font-sans-g text-[1.125rem] leading-[1.6] max-w-[46ch]" style={{ color: "#DDE1F0" }}>
-          {sub}
-        </p>
-        <div className="relative mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <Btn href="/contact?topic=A%20demo" tone="dark" size="lg" className="w-full sm:w-auto">
+    <section className="relative px-6 sm:px-8" aria-labelledby="close-h">
+      <div className="relative max-w-[1112px] mx-auto rounded-[24px] overflow-hidden" style={{ background: BB.ink }}>
+        <div className="px-6 lg:px-8 pt-16 lg:pt-24 pb-8 text-center">
+          <h2 id="close-h" className="mx-auto font-head h-sec text-white max-w-[20ch]">
+            {title}
+          </h2>
+          <p className="mt-4 mx-auto font-sans-g t-sub max-w-[52ch]" style={{ color: "#C2C7D1" }}>
+            {sub}
+          </p>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-center gap-4 px-6 lg:px-8 pb-16 lg:pb-24">
+          <SqBtn href="/contact?topic=A%20demo" tone="cobalt" size="lg" arrow>
             Book a demo
-          </Btn>
-          <Btn href="/contact" variant="secondary" tone="dark" size="lg" className="w-full sm:w-auto">
+          </SqBtn>
+          <SqBtn href="/contact" tone="light" size="lg" arrow>
             Contact us
-          </Btn>
+          </SqBtn>
         </div>
       </div>
     </section>

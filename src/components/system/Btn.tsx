@@ -14,27 +14,32 @@ import { IconArrow, IconArrowUpRight } from "@/components/icons/BqIcons";
    respond in 150ms.
    ──────────────────────────────────────────────────────────────── */
 
-type Variant = "primary" | "secondary" | "quiet";
+type Variant = "primary" | "brand" | "secondary" | "quiet";
 type Tone = "light" | "dark";
 
 const BASE =
-  "group relative inline-flex items-center justify-center gap-2 rounded-full font-sans-g font-semibold whitespace-nowrap select-none " +
+  "group relative inline-flex items-center justify-center gap-4 rounded-[12px] font-mono-g font-medium uppercase tracking-[0.06em] whitespace-nowrap select-none " +
   "transition-[background-color,border-color,color,transform] duration-150 ease-out active:translate-y-px " +
   "disabled:opacity-45 disabled:cursor-not-allowed disabled:active:translate-y-0 aria-disabled:opacity-45 aria-disabled:cursor-not-allowed aria-busy:cursor-progress";
 
-const SIZE = { md: "h-10 px-5 text-[15px]", lg: "h-12 px-7 text-base" } as const;
+const SIZE = { md: "h-12 px-6 text-[13px]", lg: "h-14 px-8 text-[13px]" } as const;
 
 const LOOK: Record<Variant, Record<Tone, string>> = {
   primary: {
-    light: "bg-[#1E2130] text-white hover:bg-[#2A2E42] active:bg-[#14161F] shadow-[0_1px_2px_rgba(0,0,0,0.12)]",
-    dark: "bg-white text-[#1F1F1F] hover:bg-[#F3F3F5] active:bg-[#E9E9EC]",
+    light: "bg-[#0E1116] text-white hover:bg-[#1F4FE6] active:bg-[#1638B8]",
+    dark: "bg-white text-[#0E1116] hover:bg-[#E7EAF0] active:bg-[#D9DCE2]",
+  },
+  /* brand blue fill: the home page and nav. On blue, white with blue text */
+  brand: {
+    light: "bg-[#1F4FE6] text-white hover:bg-[#1638B8] active:bg-[#122E96]",
+    dark: "bg-white text-[#1638B8] hover:bg-[#EEF3FF] active:bg-[#DCE6FF]",
   },
   secondary: {
-    light: "bg-white text-[#1F1F1F] border border-[#E2E2E6] hover:border-[#C9C9CF] hover:bg-[#FAFAFA] active:bg-[#F3F3F5] shadow-[0_1px_2px_rgba(0,0,0,0.04)]",
+    light: "bg-white text-[#0E1116] border border-[#D9DCE2] hover:border-[#0E1116] active:bg-[#E7EAF0]",
     dark: "bg-white/10 text-white border border-white/30 hover:bg-white/20 active:bg-white/25",
   },
   quiet: {
-    light: "px-0 h-auto text-[#2F5FE0] hover:text-[#1F47B8] active:text-[#1A3C9C] underline-offset-4 hover:underline",
+    light: "px-0 h-auto text-[#1F4FE6] hover:text-[#1638B8] active:text-[#122E96] underline-offset-4 hover:underline",
     dark: "px-0 h-auto text-white hover:text-white/80 underline-offset-4 hover:underline",
   },
 };

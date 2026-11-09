@@ -1,41 +1,43 @@
 import Link from "next/link";
-import { SA } from "@/lib/theme";
+import { BB } from "@/lib/theme";
 import { INDUSTRIES } from "@/lib/industries";
-import { PageHero, CARD, CARD_EDGE, SpotWell } from "@/components/page/kit";
-import { Block, StepTrack } from "@/components/page/blocks";
-import { IconArrow, IconCheck } from "@/components/icons/BqIcons";
-import { type Spot, SECTOR_SPOT, SpotCustom, SpotScale, SpotIntegrate, SpotRead, SpotChat, SpotTeam } from "@/components/icons/Spots";
+import { PageHero } from "@/components/page/kit";
+import { Head, Stagger } from "@/components/home/motion";
+import { I, SECTOR_ICON, Tile, type Ico } from "@/components/home/icons";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 
 /* ────────────────────────────────────────────────────────────────
-   /solutions — by industry, and by the work we do for you.
+   /solutions: find your sector, in the home page's blueprint system.
 
-   1. Header on the wash; the six sectors sit under it as spot cards, so
-      the page's contents are the first thing you see.
-   2. Each sector as a card: what Sonar reads, what comes back.
-   3. Services: custom builds, migrations, integrations.
-   4. How a project runs.
+   1. Header: what this page is, and the primary action.
+   2. The six sectors (#sectors) as one grid of cards: icon, name, one
+      line, what Sonar reads and what comes back, a way to the sector page.
+   3. Services (#services): custom builds (#custom), migrations
+      (#migrations), integrations (#integrations).
+   4. How a project runs (#track), four numbered steps on the page's one
+      ink block.
+   5. The footer CTA.
    ──────────────────────────────────────────────────────────────── */
 
-const SERVICES: { id: string; Spot: Spot; name: string; line: string; points: string[] }[] = [
+const SERVICES: { id: string; icon: Ico; name: string; line: string; points: string[] }[] = [
   {
     id: "custom",
-    Spot: SpotCustom,
+    icon: I.custom,
     name: "Custom development",
     line: "When no product fits, we build one on Sonar.",
     points: ["Built on your real documents", "You approve the schema first", "Shipped as an API, an app, or both"],
   },
   {
     id: "migrations",
-    Spot: SpotScale,
+    icon: I.migrate,
     name: "Enterprise migrations",
     line: "Replace a legacy document parser without losing history.",
     points: ["Every old field mapped or retired", "Archive re-read into the new schema", "Run side by side before cutover"],
   },
   {
     id: "integrations",
-    Spot: SpotIntegrate,
+    icon: I.integrate,
     name: "Integrations",
     line: "Structured data delivered to the systems your team already uses.",
     points: ["REST API and signed webhooks", "Connectors for ATS, ERP and CLM", "Custom routes where none exist"],
@@ -49,9 +51,22 @@ const STEPS: [string, string][] = [
   ["We stay on it", "Your documents change. So do we."],
 ];
 
+const LABEL = "font-mono-g text-[13px] uppercase tracking-[0.06em]";
+const EDGE = { border: `1px solid ${BB.line}` } as const;
+
+/* a seam and the section's column, as on the home page */
+function Section({ id, labelledBy, children }: { id: string; labelledBy: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className="scroll-mt-24 px-6 sm:px-8 pb-24" aria-labelledby={labelledBy}>
+      <div aria-hidden className="max-w-[1112px] mx-auto h-px mb-24" style={{ background: BB.line }} />
+      <div className="max-w-[1112px] mx-auto">{children}</div>
+    </section>
+  );
+}
+
 export default function SolutionsClient() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <SiteNav overDark={false} />
       <main id="main">
         <PageHero
@@ -61,127 +76,108 @@ export default function SolutionsClient() {
           lede="Six sectors ready today, and custom builds, migrations and integrations when you need more."
           primary={{ label: "Talk to our team", href: "/contact" }}
           secondary={{ label: "See custom builds", href: "#custom" }}
-        >
-          <nav aria-label="Sectors">
-            <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {INDUSTRIES.map((x) => {
-                const S = SECTOR_SPOT[x.id];
-                return (
-                  <li key={x.id}>
-                    <Link
-                      href={`/solutions/${x.id}`}
-                      className={`group ${CARD} h-full flex items-center gap-5 p-5 transition-[border-color,box-shadow] duration-200 hover:border-[#D4D4DA] hover:shadow-[0_16px_32px_-24px_rgba(30,33,48,0.3)]`}
-                      style={CARD_EDGE}
-                    >
-                      <SpotWell size={72}>{S && <S size={50} />}</SpotWell>
-                      <span className="min-w-0 flex-1">
-                        <span className="flex items-center justify-between gap-3 font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
-                          {x.name}
-                          <IconArrow size={16} className="shrink-0 transition-transform duration-150 group-hover:translate-x-0.5" style={{ color: SA.faint }} />
-                        </span>
-                        <span className="mt-1 block font-sans-g text-[15px] leading-[1.5]" style={{ color: SA.sub }}>
-                          {x.line}
-                        </span>
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </nav>
-        </PageHero>
+        />
 
-        <Block id="sectors" title="What Sonar reads in each sector, and what you get back">
-          <ul className="grid lg:grid-cols-2 gap-3">
+        {/* 1. the six sectors */}
+        <Section id="sectors" labelledBy="sectors-h">
+          <Head id="sectors-h" title="What Sonar reads in each sector, and what you get back" />
+
+          <Stagger as="ul" className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {INDUSTRIES.map((x) => {
-              const S = SECTOR_SPOT[x.id];
+              const G = SECTOR_ICON[x.id];
               return (
-                <li key={x.id} id={x.id} className={`scroll-mt-28 ${CARD} p-7 sm:p-8 flex flex-col`} style={CARD_EDGE}>
-                  <div className="flex items-start gap-5">
-                    <SpotWell size={64}>{S && <S size={44} />}</SpotWell>
-                    <div className="min-w-0">
-                      <h3 className="font-sans-g text-[1.375rem] font-medium" style={{ color: SA.ink }}>
-                        {x.name}
-                      </h3>
-                      <p className="mt-1.5 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
-                        {x.d}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-6 grid sm:grid-cols-2 gap-5">
+                <li key={x.id} id={x.id} className="scroll-mt-28 flex flex-col p-8 rounded-2xl bg-white" style={EDGE}>
+                  {G && <Tile icon={G} />}
+                  <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
+                    {x.name}
+                  </h3>
+                  <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+                    {x.line}
+                  </p>
+
+                  <dl className="mt-8" style={{ borderTop: `1px solid ${BB.line}` }}>
                     {(
                       [
-                        ["Reads", x.reads, SA.accentSoft, "#2348B8"],
-                        ["Returns", x.out, "#ECFDF5", "#065F46"],
+                        ["Reads", x.reads],
+                        ["Returns", x.out],
                       ] as const
-                    ).map(([label, list, bg, fg]) => (
-                      <div key={label}>
-                        <p className="font-sans-g text-[13px] font-medium uppercase tracking-[0.1em]" style={{ color: SA.faint }}>
+                    ).map(([label, list]) => (
+                      <div key={label} className="py-4" style={{ borderBottom: `1px solid ${BB.line}` }}>
+                        <dt className={LABEL} style={{ color: BB.cobalt }}>
                           {label}
-                        </p>
-                        <ul className="mt-2.5 flex flex-wrap gap-1.5">
-                          {list.map((r) => (
-                            <li
-                              key={r}
-                              className="h-8 inline-flex items-center px-3 rounded-[10px] font-sans-g text-[14px]"
-                              style={{ background: bg, color: fg }}
-                            >
-                              {r}
-                            </li>
-                          ))}
-                        </ul>
+                        </dt>
+                        <dd className="mt-2 font-sans-g t-base" style={{ color: BB.ink2 }}>
+                          {list.join(", ")}
+                        </dd>
                       </div>
                     ))}
-                  </div>
+                  </dl>
+
                   <Link
                     href={`/solutions/${x.id}`}
-                    className="group mt-7 pt-5 inline-flex items-center gap-1.5 font-sans-g text-[15px] font-medium hover:underline underline-offset-4"
-                    style={{ color: "#2348B8", borderTop: `1px solid ${SA.line}` }}
+                    className={`group mt-auto pt-8 inline-flex items-center gap-4 ${LABEL} hover:underline underline-offset-4`}
+                    style={{ color: BB.cobalt }}
                   >
                     Explore {x.name}
-                    <IconArrow size={15} className="transition-transform duration-150 group-hover:translate-x-0.5" />
+                    <I.arrow size={16} className="transition-transform duration-200 group-hover:translate-x-1" />
                   </Link>
                 </li>
               );
             })}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block
-          id="services"
-          title="When a product is not enough, our engineers build the rest"
-          sub="Engineering work, scoped on your documents and supported by our team."
-        >
-          <ul className="grid md:grid-cols-3 gap-3">
+        {/* 2. services: custom builds, migrations, integrations */}
+        <Section id="services" labelledBy="services-h">
+          <Head
+            id="services-h"
+            title="When a product is not enough, our engineers build the rest"
+            sub="Engineering work, scoped on your documents and supported by our team."
+          />
+
+          <Stagger as="ul" className="mt-12 grid md:grid-cols-3 gap-4">
             {SERVICES.map((s) => (
-              <li key={s.id} id={s.id} className={`scroll-mt-28 ${CARD} p-7 sm:p-8`} style={CARD_EDGE}>
-                <SpotWell>
-                  <s.Spot size={56} />
-                </SpotWell>
-                <h3 className="mt-6 font-sans-g text-[1.375rem] font-medium" style={{ color: SA.ink }}>
+              <li key={s.id} id={s.id} className="scroll-mt-28 p-8 rounded-2xl bg-white" style={EDGE}>
+                <Tile icon={s.icon} />
+                <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                   {s.name}
                 </h3>
-                <p className="mt-2 font-sans-g text-base leading-[1.6]" style={{ color: SA.sub }}>
+                <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                   {s.line}
                 </p>
-                <ul className="mt-6 grid gap-3">
+                <ul className="mt-8 grid gap-4">
                   {s.points.map((p) => (
-                    <li key={p} className="flex items-center gap-3 font-sans-g text-[15px]" style={{ color: "#3A3B44" }}>
-                      <span className="grid place-items-center w-5 h-5 rounded-full shrink-0" style={{ background: SA.accent, color: "#FFFFFF" }}>
-                        <IconCheck size={12} />
-                      </span>
+                    <li key={p} className="flex items-start gap-4 font-sans-g t-base" style={{ color: BB.ink2 }}>
+                      <I.check size={16} weight="bold" aria-hidden className="mt-1 shrink-0" style={{ color: BB.cobalt }} />
                       {p}
                     </li>
                   ))}
                 </ul>
               </li>
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block id="track" title="How a project runs" sub="We scope on your real data, never on a guess.">
-          <StepTrack steps={STEPS} spots={[SpotRead, SpotChat, SpotCustom, SpotTeam]} />
-        </Block>
+        {/* 3. how a project runs: the page's one ink block */}
+        <section id="track" className="scroll-mt-24 px-6 sm:px-8 pb-24" aria-labelledby="track-h">
+          <div className="max-w-[1112px] mx-auto px-6 lg:px-8 py-16 lg:py-24 rounded-[24px]" style={{ background: BB.ink }}>
+            <Head id="track-h" tone="dark" title="How a project runs" sub="We scope on your real data, never on a guess." />
+
+            <Stagger as="ol" className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {STEPS.map(([t, d], i) => (
+                <li key={t} className="pt-8" style={{ borderTop: "1px solid rgba(255,255,255,0.16)" }}>
+                  <span className={`block ${LABEL}`} style={{ color: BB.sky }}>
+                    Step {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-4 font-head h-card text-white">{t}</h3>
+                  <p className="mt-4 font-sans-g t-base" style={{ color: "#C2C7D1" }}>
+                    {d}
+                  </p>
+                </li>
+              ))}
+            </Stagger>
+          </div>
+        </section>
       </main>
       <SiteFooter cta={{ title: "Tell us what your sector reads", sub: "Bring the documents that slow your team down. We will read them with Sonar, live." }} />
     </div>

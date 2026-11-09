@@ -56,12 +56,11 @@ export function Reveal({
   );
 }
 
-export function Kicker({ children, tone = "light" }: { children: React.ReactNode; tone?: "light" | "dark" }) {
-  return (
-    <p className="mb-3 font-sans-g text-base font-semibold" style={{ color: tone === "dark" ? "#8EC2FF" : SA.accent }}>
-      {children}
-    </p>
-  );
+/* Eyebrow labels over headings were retired site-wide (2026-11): the
+   headline alone carries the section. Kept as a no-op so callers compile. */
+export function Kicker(props: { children: React.ReactNode; tone?: "light" | "dark" }) {
+  void props;
+  return null;
 }
 
 export function SectionHead({
@@ -88,8 +87,7 @@ export function SectionHead({
       className="font-display t-h2"
       style={{
         color: ink,
-        maxWidth: align === "center" ? "22ch" : "24ch",
-        marginInline: align === "center" ? "auto" : undefined,
+        maxWidth: "24ch",
       }}
     >
       {title}
@@ -99,41 +97,19 @@ export function SectionHead({
   const Sub = sub ? (
     <p
       className="font-sans-g t-body"
-      style={{ fontSize: "var(--fs-sm)", color: body, maxWidth: "52ch", marginInline: align === "center" ? "auto" : undefined }}
+      style={{ fontSize: "1rem", lineHeight: 1.6, color: body, maxWidth: "60ch" }}
     >
       {sub}
     </p>
   ) : null;
 
-  const K = kicker ? <Kicker tone={tone}>{kicker}</Kicker> : null;
-
-  if (align === "center") {
-    return (
-      <Reveal className="text-center">
-        {K}
-        {Title}
-        {Sub && <div className="mt-5">{Sub}</div>}
-      </Reveal>
-    );
-  }
-
-  if (align === "stack") {
-    return (
-      <Reveal>
-        {K}
-        {Title}
-        {Sub && <div className="mt-5">{Sub}</div>}
-      </Reveal>
-    );
-  }
+  void kicker;
+  void align;
 
   return (
-    <Reveal className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] gap-y-5 lg:gap-x-16 items-end">
-      <div>
-        {K}
-        {Title}
-      </div>
-      <div className="lg:pb-1.5">{Sub}</div>
+    <Reveal>
+      {Title}
+      {Sub && <div className="mt-4">{Sub}</div>}
     </Reveal>
   );
 }

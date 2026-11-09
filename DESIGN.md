@@ -3,7 +3,43 @@
 The single source of truth for how Blue-IQ looks, reads, and moves.
 If the code and this document disagree, **this document wins** — fix the code.
 
-> ## 2026-10-14 — current system (supersedes everything below where they disagree)
+> ## 2026-11-09 — "blueprint" system, site-wide (supersedes everything below where they disagree)
+>
+> Built with the user over one long session after the sarvam-style home was rejected ("complete transformation",
+> enterprise, references oberon.framer.website and arccheo.framer.ai). The home page carries the original copy and
+> section order; every page shares the system through the kit, tokens, Btn and the icon modules.
+>
+> - **Palette** (`BB`, and `SA` mapped onto it, in `lib/theme.ts`), 60-30-10: canvas `#F3F4F6` · white cards + ink
+>   `#0E1116` · cobalt `#1F4FE6` for the one accent. Amber `#F5B544` means "flagged for review" only. At most one dark
+>   ink block per page. No gradients, washes or glows, except the demo prompt's rainbow AI edge (user request).
+> - **Column**: two dashed end guides at the 1176px column edges, on every page (`Guides`, rendered by `SiteNav`,
+>   z below content). All content sits 32px inside them: max width 1112 (`WRAP` in `page/kit.tsx`). Nothing touches
+>   the lines. No centre guides.
+> - **Type**: Hanken Grotesk 500 headlines (`.font-head`, and `.font-display` now maps to it; the serif is gone),
+>   Figtree body, IBM Plex Mono uppercase labels and buttons. Scale 39 · 31 · 25 · 20 · 16 (+13 meta); the hero
+>   steps to 61px on desktop. Classes `.h-hero .h-sec .h-card .t-sub .t-base`, `.t-display .t-h1 .t-h2`.
+>   Never `.h-3` (collides with Tailwind). Leading: headings 1.1–1.2, body 1.5–1.6.
+> - **Spacing** on the 8px grid (4px micro): sections 96px apart with a hairline seam, header→content 48,
+>   card padding 32, gaps 16, title→text 16, action rows 32/48. Shadows tinted, blur = 2× Y-offset.
+> - **Radius**: buttons, inputs and icon tiles 12px · cards 16px · big dark blocks 24px · tags 8px.
+> - **Buttons**: `SqBtn` (home) and `Btn` (shared) share one look: mono uppercase 13px, 48px (56px large),
+>   sized to the label, paired with a 16px gap. Lone section actions are centred.
+> - **Icons**: Phosphor only, regular weight. `home/icons.tsx` (`I`, `SECTOR_ICON`, `Tile`); `icons/BqIcons.tsx`
+>   and `icons/Spots.tsx` keep their export names but render Phosphor, so every page uses the same set.
+> - **Headers**: left-aligned and stacked (headline, then one line). No eyebrow labels anywhere (`Kicker` is a no-op),
+>   no split or centred section headers. Page headers via `PageHero` / `PlainHero` (crumbs, headline, line, actions).
+> - **Home**: hero (dot-halftone document stack with a Sonar ping on the right, rotating "that read your ___",
+>   Book a demo / Contact us) → live demo (product tabs, rainbow-edged prompt, play/pause icon) → how Sonar works
+>   (verbs + animated flow diagram) → portfolio (statement + 4-cell bento) → the full stack (3 cards) → sectors
+>   (6-card grid on the ink block) → deployment axis → enterprise → centred ink close.
+> - **Nav**: canvas bar, mono links, square-rounded "Book a demo"; dropdown panels sit inside the column, rounded,
+>   item rows with icon tiles, one or two feature cards. **Footer**: ink band, white logo.
+> - **Motion**: line-mask rise, rotating word (pauses on hover/off screen), the halftone ping (canvas, ~24fps,
+>   paused off screen), flow packets, drawn rules, stagger reveals, count-ups, the demo. All finished on the
+>   server and off under `prefers-reduced-motion`.
+> - **Screenshots**: headless Chrome cannot go below ~500px wide; check phones with DevTools-protocol emulation.
+
+> ## 2026-10-14 — previous system (supersedes everything below where they disagree)
 >
 > - **Company site, not product brochures.** No per-product how-it-works pages or feature lists; /products is a
 >   portfolio (one line per product + link to its own app). /products/[slug] was removed (308 → /products).

@@ -1,18 +1,23 @@
 /* eslint-disable @next/next/no-img-element -- brand files are shown as the exact SVG/PNG people download */
 import Link from "next/link";
 import { Hanken_Grotesk } from "next/font/google";
-import { SA } from "@/lib/theme";
+import { BB, SA } from "@/lib/theme";
 import { pageMetadata, breadcrumbLd, webPageLd, ldScript } from "@/lib/seo";
-import { PageHero, CARD, CARD_EDGE } from "@/components/page/kit";
-import { Block } from "@/components/page/blocks";
+import { PageHero, WRAP } from "@/components/page/kit";
+import { Head, Stagger } from "@/components/home/motion";
 import SiteNav from "@/components/SiteNav";
 import SiteFooter from "@/components/SiteFooter";
 import CopyText from "./CopyText";
 
-/* /media-kit — everything a journalist, partner or integrator needs to show
-   Blue-IQ correctly: the logo and mark as files, the rules for using them,
-   colour, type, how to write the name, and a description to copy. Every
-   file listed is in /public/brand; the zip holds all of them. */
+/* /media-kit: one job, get the brand right. Reading order:
+     1. the header (what this is + download everything),
+     2. the files: logo, then mark and app icon,
+     3. the rules: clear space and minimum sizes, then what not to do,
+     4. the system: colour, then type,
+     5. the words: how to write the name, two descriptions to copy.
+   Every file listed is in /public/brand; the zip holds all of them. The
+   swatches and previews document the real brand files, so their colour
+   values are the brand's, not the site's. */
 
 const hanken = Hanken_Grotesk({ subsets: ["latin"], weight: ["700"], display: "swap" });
 
@@ -62,6 +67,23 @@ const DONTS: { t: string; style: React.CSSProperties; bg: string }[] = [
   { t: "Don't place it on low contrast", style: {}, bg: "#5B7BEA" },
 ];
 
+const CARD = "rounded-2xl bg-white overflow-hidden";
+const EDGE = { border: `1px solid ${BB.line}` } as const;
+const MONO = "font-mono-g text-[13px] uppercase tracking-[0.06em]";
+
+/* one section: heading, one line, then its content, all in the column */
+function Section({ id, title, sub, children }: { id: string; title: string; sub: string; children: React.ReactNode }) {
+  return (
+    <section id={id} className="pb-24 scroll-mt-24" aria-labelledby={`${id}-h`}>
+      <div className={WRAP}>
+        <div aria-hidden className="h-px mb-24" style={{ background: BB.line }} />
+        <Head id={`${id}-h`} title={title} sub={sub} />
+        <div className="mt-12">{children}</div>
+      </div>
+    </section>
+  );
+}
+
 function FileLinks({ file }: { file: string }) {
   return (
     <div className="flex gap-2">
@@ -70,7 +92,7 @@ function FileLinks({ file }: { file: string }) {
           key={ext}
           href={`/brand/${file}.${ext}`}
           download
-          className="h-9 px-3.5 inline-flex items-center rounded-full font-sans-g text-[13.5px] font-medium bg-white border border-[#DEDEE3] text-[#1F1F1F] transition-colors duration-150 hover:border-[#8A8B94]"
+          className={`h-10 px-4 inline-flex items-center rounded-[8px] bg-white border border-[#8A8B94] text-[#0E1116] font-medium transition-colors duration-150 hover:border-[#0E1116] hover:bg-[#E7EAF0] ${MONO}`}
         >
           {ext.toUpperCase()}
           <span className="sr-only"> of {file}</span>
@@ -82,15 +104,12 @@ function FileLinks({ file }: { file: string }) {
 
 function AssetCard({ t, file, bg, edge, tall }: { t: string; file: string; bg: string; edge?: boolean; tall?: boolean }) {
   return (
-    <li className={`${CARD} p-2 flex flex-col`} style={CARD_EDGE}>
-      <div
-        className={`${tall ? "h-48" : "h-40"} rounded-[18px] grid place-items-center px-8`}
-        style={{ background: bg, border: edge ? `1px solid ${SA.line}` : undefined }}
-      >
+    <li className={`${CARD} flex flex-col`} style={EDGE}>
+      <div className={`${tall ? "h-48" : "h-40"} grid place-items-center px-8`} style={{ background: bg, borderBottom: `1px solid ${edge ? BB.line : bg}` }}>
         <img src={`/brand/${file}.svg`} alt={`Blue-IQ ${t.toLowerCase()}`} className={tall ? "h-12 w-auto" : "h-20 w-auto"} />
       </div>
-      <div className="flex items-center justify-between gap-3 px-3 pt-4 pb-2">
-        <span className="font-sans-g text-[15px] font-medium" style={{ color: SA.ink }}>
+      <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <span className="font-sans-g t-base font-medium" style={{ color: BB.ink }}>
           {t}
         </span>
         <FileLinks file={file} />
@@ -101,7 +120,7 @@ function AssetCard({ t, file, bg, edge, tall }: { t: string; file: string; bg: s
 
 export default function MediaKitPage() {
   return (
-    <div className="overflow-x-clip" style={{ background: SA.bg, color: SA.ink }}>
+    <div className="overflow-x-clip" style={{ color: BB.ink }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={ldScript(webPageLd({ name: TITLE, description: DESC, path: "/media-kit" }), breadcrumbLd("Media kit", "/media-kit"))}
@@ -116,191 +135,198 @@ export default function MediaKitPage() {
           primary={{ label: "Download everything (.zip)", href: "/brand/blue-iq-media-kit.zip" }}
           secondary={{ label: "Ask the team", href: "/contact?topic=Something%20else" }}
         >
-          <div
-            className="rounded-[32px] p-2"
-            style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 30px 60px -40px rgba(30,40,90,0.35)" }}
-          >
-            <div className="grid md:grid-cols-2 gap-2">
-              <div className="h-56 sm:h-72 rounded-[26px] bg-white grid place-items-center" style={{ border: `1px solid ${SA.line}` }}>
-                <img src="/brand/logo.svg" alt="Blue-IQ logo" className="h-14 sm:h-20 w-auto" />
-              </div>
-              <div className="h-56 sm:h-72 rounded-[26px] grid place-items-center" style={{ background: "#0F172A" }}>
-                <img src="/brand/logo-on-dark.svg" alt="Blue-IQ logo on dark" className="h-14 sm:h-20 w-auto" />
-              </div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="h-56 sm:h-72 rounded-2xl bg-white grid place-items-center" style={EDGE}>
+              <img src="/brand/logo.svg" alt="Blue-IQ logo" className="h-14 sm:h-20 w-auto" />
+            </div>
+            <div className="h-56 sm:h-72 rounded-2xl grid place-items-center" style={{ background: "#0F172A" }}>
+              <img src="/brand/logo-on-dark.svg" alt="Blue-IQ logo on dark" className="h-14 sm:h-20 w-auto" />
             </div>
           </div>
         </PageHero>
 
-        <Block id="logo" title="Logo" sub="Use the primary logo wherever you can. Use the one-colour versions only where colour is not available.">
-          <ul className="grid md:grid-cols-2 gap-3">
+        {/* 2: the files */}
+        <Section id="logo" title="Logo" sub="Use the primary logo wherever you can. Use the one-colour versions only where colour is not available.">
+          <Stagger as="ul" className="grid md:grid-cols-2 gap-4">
             {LOGOS.map((l) => (
               <AssetCard key={l.file} {...l} tall />
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block
+        <Section
           id="mark"
           title="Mark and app icon"
           sub="The mark reads as a b, and turned 180° as a q: Blue, and IQ. Use it alone only where the name already appears nearby, or as an icon."
         >
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <Stagger as="ul" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {MARKS.map((m) => (
               <AssetCard key={m.file} {...m} />
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block
+        {/* 3: the rules */}
+        <Section
           id="space"
           title="Give it room"
           sub="Keep clear space around the logo equal to the width of the mark, and never set it smaller than the minimums below."
         >
-          <div className="grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-3">
-            <div className={`${CARD} p-6 sm:p-10 grid place-items-center`} style={CARD_EDGE}>
-              <div className="relative p-6 sm:p-10" style={{ outline: "1.5px dashed #2F5FE0", outlineOffset: 0 }}>
-                <div style={{ outline: "1px solid #DCE5FF" }}>
+          <div className="grid lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] gap-4">
+            <div className={`${CARD} p-8 grid place-items-center`} style={EDGE}>
+              <div className="relative p-8 sm:p-12" style={{ outline: `1.5px dashed ${BB.cobalt}`, outlineOffset: 0 }}>
+                <div style={{ outline: `1px solid ${BB.sky}` }}>
                   <img src="/brand/logo.svg" alt="" className="h-12 sm:h-16 w-auto" />
                 </div>
                 {[
                   "top-1 left-1/2 -translate-x-1/2",
                   "bottom-1 left-1/2 -translate-x-1/2",
-                  "left-1.5 top-1/2 -translate-y-1/2",
-                  "right-1.5 top-1/2 -translate-y-1/2",
+                  "left-2 top-1/2 -translate-y-1/2",
+                  "right-2 top-1/2 -translate-y-1/2",
                 ].map((pos) => (
-                  <span key={pos} aria-hidden className={`absolute ${pos} font-mono-g text-[12px]`} style={{ color: "#2348B8" }}>
+                  <span key={pos} aria-hidden className={`absolute ${pos} font-mono-g text-[13px]`} style={{ color: BB.cobalt }}>
                     x
                   </span>
                 ))}
               </div>
-              <p className="mt-6 font-sans-g text-[14px] text-center" style={{ color: SA.sub }}>
+              <p className="mt-8 font-sans-g t-base" style={{ color: BB.ink3 }}>
                 x = the width of the mark
               </p>
             </div>
-            <div className={`${CARD} p-6 sm:p-8 flex flex-col gap-6`} style={CARD_EDGE}>
-              <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+            <div className={`${CARD} p-8 flex flex-col`} style={EDGE}>
+              <h3 className="font-head h-card" style={{ color: BB.ink }}>
                 Minimum sizes
-              </p>
-              <div className="flex items-end justify-between gap-4" style={{ borderBottom: `1px solid ${SA.line}`, paddingBottom: 20 }}>
-                <img src="/brand/logo.svg" alt="" style={{ width: 96, height: "auto" }} />
-                <span className="font-sans-g text-[14px]" style={{ color: SA.sub }}>
-                  Logo: 96 px wide · 25 mm in print
-                </span>
-              </div>
-              <div className="flex items-end justify-between gap-4">
-                <img src="/brand/mark.svg" alt="" style={{ width: 16, height: 16 }} />
-                <span className="font-sans-g text-[14px]" style={{ color: SA.sub }}>
-                  Mark: 16 px · 5 mm in print
-                </span>
-              </div>
+              </h3>
+              <dl className="mt-8">
+                <div className="flex items-end justify-between gap-4 py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  <dt>
+                    <img src="/brand/logo.svg" alt="" style={{ width: 96, height: "auto" }} />
+                  </dt>
+                  <dd className="font-sans-g t-base text-right" style={{ color: BB.ink3 }}>
+                    Logo: 96 px wide · 25 mm in print
+                  </dd>
+                </div>
+                <div className="flex items-end justify-between gap-4 py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  <dt>
+                    <img src="/brand/mark.svg" alt="" style={{ width: 16, height: 16 }} />
+                  </dt>
+                  <dd className="font-sans-g t-base text-right" style={{ color: BB.ink3 }}>
+                    Mark: 16 px · 5 mm in print
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
-        </Block>
+        </Section>
 
-        <Block id="misuse" title="Please don't" sub="The logo is a drawn shape, not type. Use the files as they are.">
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <Section id="misuse" title="Please don't" sub="The logo is a drawn shape, not type. Use the files as they are.">
+          <Stagger as="ul" className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {DONTS.map((d) => (
-              <li key={d.t} className={`${CARD} p-2 flex flex-col`} style={CARD_EDGE}>
-                <div className="h-40 rounded-[18px] grid place-items-center overflow-hidden" style={{ background: d.bg, border: `1px solid ${SA.line}` }}>
+              <li key={d.t} className={`${CARD} flex flex-col`} style={EDGE}>
+                <div className="h-40 grid place-items-center overflow-hidden" style={{ background: d.bg, borderBottom: `1px solid ${BB.line}` }}>
                   <img src="/brand/logo.svg" alt="" className="h-9 w-auto" style={d.style} />
                 </div>
-                <p className="flex items-center gap-2 px-3 pt-4 pb-2 font-sans-g text-[15px]" style={{ color: SA.ink }}>
-                  <span
-                    className="h-6 px-2 inline-flex items-center rounded-[6px] text-[12px] font-semibold"
-                    style={{ background: "#FEE2E2", color: "#991B1B" }}
-                  >
-                    ✕ Don&apos;t
-                  </span>
-                  {d.t.replace("Don't ", "")}
+                <p className="px-6 py-4 font-sans-g t-base font-medium" style={{ color: BB.ink }}>
+                  {d.t}
                 </p>
               </li>
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block
+        {/* 4: the system */}
+        <Section
           id="colour"
           title="Colour"
           sub="Signal blue carries the brand. Ink and night carry the type and the dark surfaces. Cyan is for illustration only."
         >
-          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <Stagger as="ul" className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {COLOURS.map((c) => (
-              <li key={c.hex} className={`${CARD} p-2`} style={CARD_EDGE}>
+              <li key={c.hex} className={CARD} style={EDGE}>
                 <div
-                  className="h-28 rounded-[18px] p-4 flex items-end font-sans-g text-[15px] font-medium"
-                  style={{ background: c.hex, color: c.ink, border: c.hex === "#FAFAFA" ? `1px solid ${SA.line}` : undefined }}
+                  className="h-28 p-6 flex items-end font-sans-g t-base font-medium"
+                  style={{ background: c.hex, color: c.ink, borderBottom: `1px solid ${c.hex === "#FAFAFA" ? BB.line : c.hex}` }}
                 >
                   {c.n}
                 </div>
-                <dl className="grid grid-cols-[48px_minmax(0,1fr)] gap-x-3 gap-y-1 px-3 pt-4 pb-2 font-sans-g text-[14px]">
-                  <dt style={{ color: SA.faint }}>HEX</dt>
-                  <dd className="font-mono-g" style={{ color: SA.ink }}>
+                <dl className="grid grid-cols-[56px_minmax(0,1fr)] gap-x-4 gap-y-2 px-6 py-6 font-sans-g t-base">
+                  <dt className={MONO} style={{ color: BB.ink3, lineHeight: "1.6rem" }}>
+                    HEX
+                  </dt>
+                  <dd className="font-mono-g" style={{ color: BB.ink }}>
                     {c.hex}
                   </dd>
-                  <dt style={{ color: SA.faint }}>RGB</dt>
-                  <dd className="font-mono-g" style={{ color: SA.ink }}>
+                  <dt className={MONO} style={{ color: BB.ink3, lineHeight: "1.6rem" }}>
+                    RGB
+                  </dt>
+                  <dd className="font-mono-g" style={{ color: BB.ink }}>
                     {c.rgb}
                   </dd>
-                  <dt style={{ color: SA.faint }}>Use</dt>
-                  <dd style={{ color: SA.sub }}>{c.role}</dd>
+                  <dt className={MONO} style={{ color: BB.ink3, lineHeight: "1.6rem" }}>
+                    Use
+                  </dt>
+                  <dd style={{ color: BB.ink3 }}>{c.role}</dd>
                 </dl>
               </li>
             ))}
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block id="type" title="Typography" sub="Three families, each with one job.">
-          <ul className="grid lg:grid-cols-3 gap-3">
-            <li className={`${CARD} p-7 sm:p-8 flex flex-col gap-4`} style={CARD_EDGE}>
-              <span className={`${hanken.className} text-[56px] leading-none tracking-[-0.04em]`} style={{ color: SA.ink }}>
+        <Section id="type" title="Typography" sub="Three families, each with one job.">
+          <Stagger as="ul" className="grid lg:grid-cols-3 gap-4">
+            <li className={`${CARD} p-8 flex flex-col`} style={EDGE}>
+              <span aria-hidden className={`${hanken.className} text-[56px] leading-none tracking-[-0.04em]`} style={{ color: BB.ink }}>
                 blue-iq
               </span>
-              <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+              <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                 Hanken Grotesk Bold
-              </p>
-              <p className="font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
+              </h3>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                 The wordmark only, lowercase, tracking −40. It ships outlined in the logo files, so you never need to set it.
               </p>
             </li>
-            <li className={`${CARD} p-7 sm:p-8 flex flex-col gap-4`} style={CARD_EDGE}>
-              <span className="font-display text-[56px] leading-none tracking-[-0.02em]" style={{ color: SA.ink }}>
+            <li className={`${CARD} p-8 flex flex-col`} style={EDGE}>
+              <span aria-hidden className="font-display text-[56px] leading-none tracking-[-0.02em]" style={{ color: BB.ink }}>
                 Aa Gg
               </span>
-              <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+              <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                 Newsreader
-              </p>
-              <p className="font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
+              </h3>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                 Headlines, regular weight, tight tracking. A calm serif for the things we say out loud.
               </p>
             </li>
-            <li className={`${CARD} p-7 sm:p-8 flex flex-col gap-4`} style={CARD_EDGE}>
-              <span className="font-sans-g text-[56px] leading-none font-medium tracking-[-0.02em]" style={{ color: SA.ink }}>
+            <li className={`${CARD} p-8 flex flex-col`} style={EDGE}>
+              <span aria-hidden className="font-sans-g text-[56px] leading-none font-medium tracking-[-0.02em]" style={{ color: BB.ink }}>
                 Aa Gg
               </span>
-              <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+              <h3 className="mt-8 font-head h-card" style={{ color: BB.ink }}>
                 Figtree
-              </p>
-              <p className="font-sans-g text-[15px] leading-[1.6]" style={{ color: SA.sub }}>
+              </h3>
+              <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                 Interface and body copy, in regular, medium and semibold. All three families are free on Google Fonts.
               </p>
             </li>
-          </ul>
-        </Block>
+          </Stagger>
+        </Section>
 
-        <Block id="name" title="Name and description" sub="How to write about us, and two descriptions you can use as they are.">
-          <div className="grid lg:grid-cols-3 gap-3">
-            <div className={`${CARD} p-7 sm:p-8`} style={CARD_EDGE}>
-              <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+        {/* 5: the words */}
+        <Section id="name" title="Name and description" sub="How to write about us, and two descriptions you can use as they are.">
+          <div className="grid lg:grid-cols-3 gap-4">
+            <div className={`${CARD} p-8`} style={EDGE}>
+              <h3 className="font-head h-card" style={{ color: BB.ink }}>
                 Writing the name
-              </p>
-              <ul className="mt-4 grid gap-3 font-sans-g text-[15px] leading-[1.55]" style={{ color: SA.sub }}>
-                <li>
-                  In text, always <b style={{ color: SA.ink }}>Blue-IQ</b>: capital B, a hyphen, IQ in capitals.
+              </h3>
+              <ul className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
+                <li className="py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  In text, always <b style={{ color: BB.ink }}>Blue-IQ</b>: capital B, a hyphen, IQ in capitals.
                 </li>
-                <li>Not Blue IQ, BlueIQ, Blue-iq or Blueiq. The lowercase form lives only in the logo.</li>
-                <li>
-                  Products: <b style={{ color: SA.ink }}>Capture</b>, <b style={{ color: SA.ink }}>Spend</b>, <b style={{ color: SA.ink }}>Govern</b>. Our AI is{" "}
-                  <b style={{ color: SA.ink }}>Sonar</b>.
+                <li className="py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  Not Blue IQ, BlueIQ, Blue-iq or Blueiq. The lowercase form lives only in the logo.
+                </li>
+                <li className="py-4" style={{ borderTop: `1px solid ${BB.line}` }}>
+                  Products: <b style={{ color: BB.ink }}>Capture</b>, <b style={{ color: BB.ink }}>Spend</b>, <b style={{ color: BB.ink }}>Govern</b>. Our AI is{" "}
+                  <b style={{ color: BB.ink }}>Sonar</b>.
                 </li>
               </ul>
             </div>
@@ -308,27 +334,27 @@ export default function MediaKitPage() {
               ["Short description", SHORT],
               ["Long description", LONG],
             ].map(([t, text]) => (
-              <div key={t} className={`${CARD} p-7 sm:p-8 flex flex-col`} style={CARD_EDGE}>
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-sans-g text-[1.125rem] font-medium" style={{ color: SA.ink }}>
+              <div key={t} className={`${CARD} p-8 flex flex-col`} style={EDGE}>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <h3 className="font-head h-card" style={{ color: BB.ink }}>
                     {t}
-                  </p>
+                  </h3>
                   <CopyText text={text} label={t.toLowerCase()} />
                 </div>
-                <p className="mt-4 font-sans-g text-[15px] leading-[1.65]" style={{ color: SA.sub }}>
+                <p className="mt-4 font-sans-g t-base" style={{ color: BB.ink3 }}>
                   {text}
                 </p>
               </div>
             ))}
           </div>
-          <p className="mt-8 text-center font-sans-g text-[15px]" style={{ color: SA.sub }}>
+          <p className="mt-12 font-sans-g t-base" style={{ color: SA.sub }}>
             Need something that isn&apos;t here?{" "}
-            <Link href="/contact?topic=Something%20else" className="font-medium underline underline-offset-4" style={{ color: "#2348B8" }}>
+            <Link href="/contact?topic=Something%20else" className="font-medium underline underline-offset-4" style={{ color: BB.cobalt }}>
               Ask the team
             </Link>
             .
           </p>
-        </Block>
+        </Section>
       </main>
       <SiteFooter cta={{ title: "Writing about Blue-IQ?", sub: "Ask for anything that is not in the kit. A person from our team will reply." }} />
     </div>

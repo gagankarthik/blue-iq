@@ -4,40 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { memo, useEffect, useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { SA } from "@/lib/theme";
-import { IconArrowUpRight } from "@/components/icons/BqIcons";
-import {
-  type Spot,
-  SpotCapture,
-  SpotSpend,
-  SpotGovern,
-  SpotSonar,
-  SpotEducation,
-  SpotWorkforce,
-  SpotCustom,
-  SpotIntegrate,
-  SpotRead,
-  SpotScore,
-  SpotSecure,
-  SpotTeam,
-  SpotChat,
-  SpotFaq,
-  SpotScale,
-  SECTOR_SPOT,
-} from "@/components/icons/Spots";
+import { BB } from "@/lib/theme";
+import { Guides, Label } from "@/components/home/ui";
+import { I, SECTOR_ICON, type Ico } from "@/components/home/icons";
 
 /* ────────────────────────────────────────────────────────────────
-   The navbar, after sarvam.ai: a full-width white bar; each menu opens a
-   full-width white panel under it — a small uppercase label, two columns
-   of items (a spot in a bordered square, a name, one line), and feature
-   cards on the right. The page behind softens while a panel is open.
+   The navbar, blueprint system: a canvas bar with mono uppercase links and
+   one square "Book a demo". Each menu opens a white, tick-framed panel that
+   sits inside the page column (the same gutter as every block): a "+" label,
+   two columns of items (icon well, name, one line), feature cards on the
+   right. The page behind dims slightly (no blur) while a panel is open.
    ──────────────────────────────────────────────────────────────── */
 
-type Item = { t: string; d: string; href: string; external?: boolean; Spot: Spot };
-type Feature = { t: string; href: string; Spot: Spot; well: string };
+type Item = { t: string; d: string; href: string; external?: boolean; Icon: Ico };
+type Feature = { t: string; href: string; Icon: Ico; well: string };
 type Menu = { id: string; label: string; header: string; items: Item[]; features: Feature[] };
 
-const S = SECTOR_SPOT;
+const S = SECTOR_ICON;
 
 const menus: Menu[] = [
   {
@@ -45,34 +28,34 @@ const menus: Menu[] = [
     label: "Products",
     header: "Products",
     items: [
-      { t: "Capture", d: "Documents into structured data", href: "https://www.parsinglab.blue-iq.ai/", external: true, Spot: SpotCapture },
-      { t: "Spend", d: "Invoices against what was agreed", href: "/products#spend", Spot: SpotSpend },
-      { t: "Govern", d: "Contracts and obligations in view", href: "https://govern.blue-iq.ai/", external: true, Spot: SpotGovern },
-      { t: "Sonar AI", d: "The engine under every product", href: "/platform", Spot: SpotSonar },
-      { t: "Campus edition", d: "For universities and colleges", href: "/products#editions", Spot: SpotEducation },
-      { t: "Workforce edition", d: "For staffing and healthcare", href: "/products#editions", Spot: SpotWorkforce },
+      { t: "Capture", d: "Documents into structured data", href: "https://www.parsinglab.blue-iq.ai/", external: true, Icon: I.capture },
+      { t: "Spend", d: "Invoices against what was agreed", href: "/products#spend", Icon: I.spend },
+      { t: "Govern", d: "Contracts and obligations in view", href: "https://govern.blue-iq.ai/", external: true, Icon: I.govern },
+      { t: "Sonar AI", d: "The engine under every product", href: "/platform", Icon: I.sonar },
+      { t: "Campus edition", d: "For universities and colleges", href: "/products#editions", Icon: I.campus },
+      { t: "Workforce edition", d: "For staffing and healthcare", href: "/products#editions", Icon: I.workforce },
     ],
-    features: [{ t: "All Blue-IQ products", href: "/products", Spot: SpotCustom, well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)" }],
+    features: [{ t: "All Blue-IQ products", href: "/products", Icon: I.all, well: "#1F4FE6" }],
   },
   {
     id: "solutions",
     label: "Solutions",
     header: "Industries",
     items: [
-      { t: "IT sector", d: "Vendor contracts and licences", href: "/solutions/it", Spot: S.it },
-      { t: "Education", d: "Applications and transcripts", href: "/solutions/education", Spot: S.education },
-      { t: "Workforce", d: "Candidates onboarded in one read", href: "/solutions/workforce", Spot: S.workforce },
-      { t: "Healthcare staffing", d: "Clinicians credentialed faster", href: "/solutions/healthcare", Spot: S.healthcare },
-      { t: "Legal and contracts", d: "Risk surfaced before signature", href: "/solutions/legal", Spot: S.legal },
-      { t: "Procurement and finance", d: "Spend reconciled as it is billed", href: "/solutions/procurement", Spot: S.procurement },
+      { t: "IT sector", d: "Vendor contracts and licences", href: "/solutions/it", Icon: S.it },
+      { t: "Education", d: "Applications and transcripts", href: "/solutions/education", Icon: S.education },
+      { t: "Workforce", d: "Candidates onboarded in one read", href: "/solutions/workforce", Icon: S.workforce },
+      { t: "Healthcare staffing", d: "Clinicians credentialed faster", href: "/solutions/healthcare", Icon: S.healthcare },
+      { t: "Legal and contracts", d: "Risk surfaced before signature", href: "/solutions/legal", Icon: S.legal },
+      { t: "Procurement and finance", d: "Spend reconciled as it is billed", href: "/solutions/procurement", Icon: S.procurement },
     ],
     features: [
-      { t: "Custom builds on Sonar", href: "/solutions#custom", Spot: SpotCustom, well: "linear-gradient(160deg, #2BA4E0 0%, #7FD3FF 55%, #E2F5FF 100%)" },
+      { t: "Custom builds on Sonar", href: "/solutions#custom", Icon: I.custom, well: "#0B1638" },
       {
         t: "Migrations and integrations",
         href: "/solutions#integrations",
-        Spot: SpotScale,
-        well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)",
+        Icon: I.migrate,
+        well: "#1F4FE6",
       },
     ],
   },
@@ -81,28 +64,25 @@ const menus: Menu[] = [
     label: "Resources",
     header: "Build and learn",
     items: [
-      { t: "How the API works", d: "REST, JSON and signed webhooks", href: "/resources#api", Spot: SpotIntegrate },
-      { t: "Formats Sonar reads", d: "PDF, Word, scans and photos", href: "/resources#formats", Spot: SpotRead },
-      { t: "Working with scores", d: "Build on confidence, not guesses", href: "/resources#confidence", Spot: SpotScore },
-      { t: "Trust Center", d: "Security, privacy and compliance", href: "/trust", Spot: SpotSecure },
+      { t: "How the API works", d: "REST, JSON and signed webhooks", href: "/resources#api", Icon: I.api },
+      { t: "Formats Sonar reads", d: "PDF, Word, scans and photos", href: "/resources#formats", Icon: I.formats },
+      { t: "Working with scores", d: "Build on confidence, not guesses", href: "/resources#confidence", Icon: I.scores },
+      { t: "Trust Center", d: "Security, privacy and compliance", href: "/trust", Icon: I.trust },
     ],
-    features: [{ t: "How Sonar works", href: "/platform", Spot: SpotSonar, well: "linear-gradient(160deg, #3A4CA8 0%, #7D9DFF 55%, #E3EAFF 100%)" }],
+    features: [{ t: "How Sonar works", href: "/platform", Icon: I.sonar, well: "#0B1638" }],
   },
   {
     id: "company",
     label: "Company",
     header: "Company",
     items: [
-      { t: "About Blue-IQ", d: "Who we are and how we work", href: "/about", Spot: SpotTeam },
-      { t: "Pricing", d: "Plans shaped to your volume", href: "/contact#pricing", Spot: SpotSpend },
-      { t: "Contact", d: "Talk to the team", href: "/contact", Spot: SpotChat },
-      { t: "FAQ", d: "Answers to common questions", href: "/faq", Spot: SpotFaq },
-      { t: "Media kit", d: "Logos, colours and descriptions", href: "/media-kit", Spot: SpotCustom },
+      { t: "About Blue-IQ", d: "Who we are and how we work", href: "/about", Icon: I.about },
+      { t: "Pricing", d: "Plans shaped to your volume", href: "/contact#pricing", Icon: I.pricing },
+      { t: "Contact", d: "Talk to the team", href: "/contact", Icon: I.contact },
+      { t: "FAQ", d: "Answers to common questions", href: "/faq", Icon: I.faq },
+      { t: "Media kit", d: "Logos, colours and descriptions", href: "/media-kit", Icon: I.media },
     ],
-    features: [
-      { t: "Trust Center", href: "/trust", Spot: SpotSecure, well: "linear-gradient(160deg, #1F9D6B 0%, #7FD8B0 55%, #E3F7EE 100%)" },
-      { t: "Book a demo", href: "/contact?topic=A%20demo", Spot: SpotChat, well: "linear-gradient(160deg, #4F7BF2 0%, #8FAEFF 55%, #E3EAFF 100%)" },
-    ],
+    features: [{ t: "Trust Center", href: "/trust", Icon: I.trust, well: "#1638B8" }],
   },
 ];
 
@@ -113,20 +93,17 @@ function ItemRow({ it, onClick }: { it: Item; onClick?: () => void }) {
       target={it.external ? "_blank" : undefined}
       rel={it.external ? "noopener noreferrer" : undefined}
       onClick={onClick}
-      className="group flex items-center gap-4 rounded-[14px] p-2 -m-2 transition-colors duration-150 hover:bg-[#F5F5F7]"
+      className="group flex items-center gap-4 p-4 rounded-[12px] transition-colors duration-150 hover:bg-[#F3F4F6]"
     >
-      <span
-        className="shrink-0 grid place-items-center w-12 h-12 rounded-[12px] bg-white transition-colors duration-150 group-hover:border-[#C9C9CF]"
-        style={{ border: `1px solid ${SA.line}` }}
-      >
-        <it.Spot size={32} />
+      <span className="shrink-0 grid place-items-center w-12 h-12 rounded-[12px] bg-[#E7EAF0] text-[#1F4FE6] transition-colors duration-150 group-hover:bg-[#1F4FE6] group-hover:text-white">
+        <it.Icon size={24} />
       </span>
-      <span className="min-w-0">
-        <span className="flex items-center gap-1 font-sans-g text-[16px] font-medium leading-tight" style={{ color: SA.ink }}>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2 font-sans-g text-[16px] font-medium leading-[1.2]" style={{ color: BB.ink }}>
           {it.t}
-          {it.external && <IconArrowUpRight size={13} style={{ color: SA.faint }} />}
+          {it.external && <I.external size={13} style={{ color: BB.ink3 }} />}
         </span>
-        <span className="block mt-1 font-sans-g text-[14px] leading-snug" style={{ color: SA.faint }}>
+        <span className="block mt-1 font-sans-g text-[13px] leading-[1.5]" style={{ color: BB.ink3 }}>
           {it.d}
         </span>
       </span>
@@ -134,25 +111,26 @@ function ItemRow({ it, onClick }: { it: Item; onClick?: () => void }) {
   );
 }
 
-function FeatureCard({ f }: { f: Feature }) {
+function FeatureCard({ f, onClick, narrow }: { f: Feature; onClick?: () => void; narrow?: boolean }) {
+  const A = f.href.startsWith("/") ? I.arrow : I.external;
   return (
     <a
       href={f.href}
-      className="group block w-[280px] rounded-[18px] p-1.5 bg-white transition-colors duration-150 hover:border-[#C9C9CF]"
-      style={{ border: `1px solid ${SA.line}` }}
+      onClick={onClick}
+      className={`group flex flex-col overflow-hidden rounded-2xl ${narrow ? "w-[200px]" : "w-[240px]"} bg-white transition-shadow duration-200 hover:shadow-[0_8px_16px_-8px_rgba(14,17,22,0.2)]`}
+      style={{ border: `1px solid ${BB.line}` }}
     >
-      <span className="grid place-items-center h-[150px] rounded-[13px] overflow-hidden" style={{ background: f.well }}>
-        <span className="grid place-items-center w-[84px] h-[84px] rounded-[20px] bg-white shadow-[0_12px_28px_-14px_rgba(15,20,50,0.45)] transition-transform duration-300 ease-out group-hover:scale-[1.05]">
-          <f.Spot size={56} />
+      <span className="grid place-items-center h-[136px]" style={{ background: f.well }}>
+        <span className="grid place-items-center w-16 h-16 rounded-[12px] bg-white text-[#1F4FE6] transition-transform duration-300 ease-out group-hover:scale-[1.05]">
+          <f.Icon size={32} />
         </span>
       </span>
-      <span className="flex items-center justify-between gap-2 px-2.5 pt-3 pb-2 font-sans-g text-[14.5px]" style={{ color: SA.ink }}>
+      <span
+        className="flex items-center justify-between gap-4 h-12 px-4 font-mono-g text-[13px] font-medium uppercase tracking-[0.06em]"
+        style={{ color: BB.ink }}
+      >
         {f.t}
-        <IconArrowUpRight
-          size={14}
-          className="transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          style={{ color: SA.faint }}
-        />
+        <A size={16} className="shrink-0 transition-transform duration-200 group-hover:translate-x-1" style={{ color: BB.cobalt }} />
       </span>
     </a>
   );
@@ -173,8 +151,9 @@ function Chevron({ open }: { open: boolean }) {
   );
 }
 
-/* `overDark` is accepted for compatibility with older pages and ignored. */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* `overDark`: the page opens on the cobalt hero (home), so the bar starts
+   transparent with white type and turns white once the page scrolls or a
+   menu opens. Other pages pass false and get the white bar throughout. */
 function SiteNav({ overDark }: { overDark?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
@@ -198,6 +177,7 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
   }, []);
 
   const active = menus.find((m) => m.id === open);
+  const onBlue = !!overDark && !scrolled && !open && !mobile;
   const closeMobile = () => {
     setMobile(false);
     setSection(null);
@@ -205,6 +185,8 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
 
   return (
     <>
+      {/* the two end guides, on every page (every page renders the nav) */}
+      <Guides />
       {/* the page behind softens while a panel is open */}
       <AnimatePresence>
         {active && (
@@ -215,7 +197,7 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="hidden lg:block fixed inset-0 z-[55] bg-[rgba(30,33,48,0.12)] backdrop-blur-[6px]"
+            className="hidden lg:block fixed inset-0 z-[55] bg-[rgba(14,17,22,0.12)]"
             onMouseEnter={() => setOpen(null)}
           />
         )}
@@ -225,13 +207,13 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
         <div
           className="transition-[background-color,border-color] duration-200"
           style={{
-            background: scrolled || open || mobile ? "#FFFFFF" : "transparent",
-            borderBottom: `1px solid ${scrolled || open || mobile ? SA.line : "transparent"}`,
+            background: scrolled || open || mobile ? "#F3F4F6" : "transparent",
+            borderBottom: `1px solid ${scrolled || open || mobile ? BB.line : "transparent"}`,
           }}
         >
-          <div className="max-w-[1240px] mx-auto px-5 sm:px-8 h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
+          <div className="max-w-[1176px] mx-auto px-6 sm:px-8 h-[72px] grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center gap-6">
             <Link href="/" aria-label="Blue-IQ home" className="flex items-center justify-self-start" onMouseEnter={() => setOpen(null)}>
-              <Image src="/logo.svg" alt="Blue-IQ" width={115} height={30} priority />
+              <Image src={onBlue ? "/logo-white.svg" : "/logo.svg"} alt="Blue-IQ" width={115} height={30} priority />
             </Link>
 
             <nav className="hidden lg:flex items-center justify-center gap-1" aria-label="Primary">
@@ -243,8 +225,8 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
                     type="button"
                     onMouseEnter={() => setOpen(m.id)}
                     onClick={() => setOpen(isOn ? null : m.id)}
-                    className="inline-flex items-center px-4 py-2 rounded-full font-sans-g text-[15px] transition-colors duration-150 hover:text-[#1F1F1F]"
-                    style={{ color: SA.ink, background: isOn ? "rgba(255,255,255,0.7)" : "transparent" }}
+                    className={`inline-flex items-center px-4 py-2 rounded-[10px] font-mono-g text-[13px] font-medium uppercase tracking-[0.06em] transition-colors duration-150 ${onBlue ? "text-white hover:bg-white/10" : "text-[#0E1116] hover:bg-[#E7EAF0]"}`}
+                    style={{ background: isOn ? "#E7EAF0" : undefined }}
                     aria-expanded={isOn}
                     aria-controls={`menu-${m.id}`}
                   >
@@ -256,23 +238,17 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
 
             <div className="flex items-center justify-self-end gap-2" onMouseEnter={() => setOpen(null)}>
               <Link
-                href="/contact"
-                className="hidden md:inline-flex items-center h-10 px-5 rounded-full font-sans-g text-[15px] font-medium bg-white text-[#1F1F1F] border border-[#E2E2E6] transition-colors duration-150 hover:bg-[#FAFAFA] hover:border-[#C9C9CF]"
-              >
-                Contact us
-              </Link>
-              <Link
                 href="/contact?topic=A%20demo"
-                className="hidden sm:inline-flex items-center h-10 px-5 rounded-full font-sans-g text-[15px] font-medium text-white bg-[#1E2130] transition-colors duration-150 hover:bg-[#2A2E42] active:bg-[#14161F]"
+                className={`hidden sm:inline-flex items-center h-12 px-6 rounded-[12px] font-mono-g text-[13px] font-medium uppercase tracking-[0.06em] transition-colors duration-200 ${onBlue ? "bg-white text-[#0E1116] hover:bg-[#E7EAF0]" : "text-white bg-[#0E1116] hover:bg-[#1F4FE6]"}`}
               >
                 Book a demo
               </Link>
               <button
-                className="lg:hidden w-11 h-11 grid place-items-center -mr-2 rounded-lg"
+                className="lg:hidden w-12 h-12 grid place-items-center -mr-2"
                 onClick={() => (mobile ? closeMobile() : setMobile(true))}
                 aria-label={mobile ? "Close menu" : "Open menu"}
                 aria-expanded={mobile}
-                style={{ color: SA.ink }}
+                style={{ color: onBlue ? "#FFFFFF" : BB.ink }}
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" aria-hidden>
                   {mobile ? <path d="M6 6l12 12M18 6 6 18" /> : <path d="M4 8h16M4 16h16" />}
@@ -282,33 +258,33 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
           </div>
         </div>
 
-        {/* the full-width panel */}
+        {/* the panel: inside the page column, tick-framed, like every block */}
         <AnimatePresence>
           {active && (
             <motion.div
               key={active.id}
               id={`menu-${active.id}`}
-              initial={{ opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="hidden lg:block absolute inset-x-0 top-full bg-white"
-              style={{ borderBottom: `1px solid ${SA.line}`, boxShadow: "0 30px 60px -40px rgba(15,20,50,0.35)" }}
+              className="hidden lg:block absolute inset-x-0 top-full px-6 sm:px-8 pt-2"
             >
-              <div className="max-w-[1240px] mx-auto px-8 py-10 flex gap-12">
+              <div
+                className="relative max-w-[1112px] mx-auto bg-white p-8 flex gap-8 rounded-2xl"
+                style={{ border: `1px solid ${BB.line}`, boxShadow: "0 16px 32px -16px rgba(14,17,22,0.25)" }}
+              >
                 <div className="flex-1 min-w-0">
-                  <p className="font-sans-g text-[12.5px] font-medium uppercase tracking-[0.12em]" style={{ color: SA.faint }}>
-                    {active.header}
-                  </p>
-                  <div className={`mt-6 grid gap-x-10 gap-y-6 ${active.items.length > 3 ? "grid-cols-2" : "grid-cols-1 max-w-[380px]"}`}>
+                  <Label className="px-4">{active.header}</Label>
+                  <div className={`mt-4 grid gap-x-4 ${active.items.length > 3 ? "grid-cols-2" : "grid-cols-1 max-w-[400px]"}`}>
                     {active.items.map((it) => (
                       <ItemRow key={it.t} it={it} onClick={() => setOpen(null)} />
                     ))}
                   </div>
                 </div>
-                <div className="flex gap-3 shrink-0">
+                <div className="flex gap-4 shrink-0 self-start">
                   {active.features.map((f) => (
-                    <FeatureCard key={f.t} f={f} />
+                    <FeatureCard key={f.t} f={f} narrow={active.features.length > 1} onClick={() => setOpen(null)} />
                   ))}
                 </div>
               </div>
@@ -318,23 +294,23 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
 
         {/* mobile sheet */}
         {mobile && (
-          <div className="lg:hidden max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain bg-white">
-            <div className="px-5 sm:px-8 pb-10 flex flex-col">
+          <div className="lg:hidden h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain" style={{ background: BB.canvas }}>
+            <div className="px-6 sm:px-8 pb-12 flex flex-col">
               {menus.map((m) => {
                 const exp = section === m.id;
                 return (
-                  <div key={m.id} style={{ borderBottom: `1px solid ${SA.line}` }}>
+                  <div key={m.id} style={{ borderBottom: `1px solid ${BB.line}` }}>
                     <button
                       onClick={() => setSection(exp ? null : m.id)}
                       aria-expanded={exp}
-                      className="w-full flex items-center justify-between py-4 text-left font-sans-g text-[17px] font-medium"
-                      style={{ color: SA.ink }}
+                      className="w-full flex items-center justify-between h-16 text-left font-mono-g text-[13px] font-medium uppercase tracking-[0.06em]"
+                      style={{ color: BB.ink }}
                     >
                       {m.label}
                       <Chevron open={exp} />
                     </button>
                     {exp && (
-                      <div className="pb-6 pt-1 grid gap-5 pl-2">
+                      <div className="pb-4 grid -mx-4">
                         {m.items.map((it) => (
                           <ItemRow key={it.t} it={it} onClick={closeMobile} />
                         ))}
@@ -343,20 +319,13 @@ function SiteNav({ overDark }: { overDark?: boolean }) {
                   </div>
                 );
               })}
-              <div className="mt-6 grid gap-3">
+              <div className="mt-8 grid gap-4">
                 <Link
                   href="/contact?topic=A%20demo"
                   onClick={closeMobile}
-                  className="inline-flex items-center justify-center h-12 font-sans-g text-base font-medium text-white rounded-full bg-[#1E2130] hover:bg-[#2A2E42] transition-colors duration-150"
+                  className="inline-flex items-center justify-center h-12 rounded-[12px] font-mono-g text-[13px] font-medium uppercase tracking-[0.06em] text-white bg-[#0E1116] hover:bg-[#1F4FE6] transition-colors duration-200"
                 >
                   Book a demo
-                </Link>
-                <Link
-                  href="/contact"
-                  onClick={closeMobile}
-                  className="inline-flex items-center justify-center h-12 font-sans-g text-base font-medium rounded-full bg-white border border-[#E2E2E6] text-[#1F1F1F]"
-                >
-                  Contact us
                 </Link>
               </div>
             </div>
