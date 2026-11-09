@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   /* first-visit speed: Tailwind CSS is small, so ship it inside the HTML
      instead of a render-blocking stylesheet request */
-  experimental: { inlineCss: true },
+  experimental: { inlineCss: true, agentUpgrade: "security" },
   /* lets the dev server hydrate when opened as 127.0.0.1 (screenshot tooling) */
   allowedDevOrigins: ["127.0.0.1"],
   /* product detail pages were retired: the site speaks for the company */
